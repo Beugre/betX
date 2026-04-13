@@ -347,7 +347,7 @@ def page_external_benchmark(session):
     with col_b:
         score_window = st.selectbox("Fenêtre de score", [30, 60, 90], index=1)
     with col_c:
-        min_graded = st.slider("Min matchs classés", 5, 100, 10, 5)
+        min_graded = st.slider("Min matchs classés", 1, 100, 5, 1)
 
     service = ExternalBenchmarkService(session=session)
 
@@ -365,10 +365,32 @@ def page_external_benchmark(session):
 
     leaderboard = service.leaderboard_dataframe(window_days=score_window, min_graded=min_graded)
     if not leaderboard:
+        fallback = service.leaderboard_dataframe(window_days=score_window, min_graded=1)
         st.warning(
             "Pas encore assez de données évaluées pour classer les sites. "
             "Lance un refresh avec plus d'historique ou attends la fin de matchs."
         )
+        if fallback:
+            st.info(
+                "Des données existent avec un seuil plus bas. "
+                "Baissez 'Min matchs classés' pour afficher le classement."
+            )
+            fb = pd.DataFrame(fallback).rename(
+                columns={
+                    "site_name": "Site",
+                    "graded_count": "Matchs évalués",
+                    "hit_rate": "Hit Rate",
+                    "roi_flat": "ROI Flat",
+                    "quality_score": "Score qualité",
+                }
+            )
+            if "Hit Rate" in fb:
+                fb["Hit Rate"] = fb["Hit Rate"].map(lambda x: f"{x:.1%}")
+            if "ROI Flat" in fb:
+                fb["ROI Flat"] = fb["ROI Flat"].map(lambda x: f"{x:+.1%}")
+            if "Score qualité" in fb:
+                fb["Score qualité"] = fb["Score qualité"].map(lambda x: f"{x:.2f}")
+            st.dataframe(fb, use_container_width=True, hide_index=True)
         return
 
     st.subheader(f"Top sites – fenêtre {score_window} jours")
