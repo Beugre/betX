@@ -458,7 +458,8 @@ class ExternalBenchmarkService:
     ) -> list[dict[str, Any]]:
         """Build recommended bets from consensus of top-ranked sites."""
         target_date = target_date or date.today()
-        top_sites = self.get_top_sites(window_days=window_days, limit=top_n_sites)
+        # Keep a wider pool here to avoid a single-site lock when history is still small.
+        top_sites = self.get_top_sites(window_days=window_days, limit=top_n_sites, min_graded=1)
         if not top_sites:
             return []
 
@@ -492,7 +493,7 @@ class ExternalBenchmarkService:
                 rows.append(row)
                 continue
 
-            if pred_date and target_date < pred_date <= (target_date + timedelta(days=1)):
+            if pred_date and target_date < pred_date <= (target_date + timedelta(days=3)):
                 if row.result_status == "pending":
                     future_rows.append(row)
 
@@ -525,6 +526,9 @@ class ExternalBenchmarkService:
                 kickoff = str(first.kickoff_time)
 
             cur = by_match.get(match_key)
+            raw_score = round(score, 2)
+            confidence_index = max(0.0, min(100.0, round(50.0 + (raw_score * 8.0) + ((votes - 1) * 12.0), 1)))
+
             row = {
                 "match_id": first.match_id,
                 "match": match_label,
@@ -532,7 +536,8 @@ class ExternalBenchmarkService:
                 "kickoff": kickoff,
                 "selection": selection,
                 "consensus_votes": votes,
-                "confidence_score": round(score, 2),
+                "confidence_score": confidence_index,
+                "confidence_raw": raw_score,
                 "sites": ", ".join(sorted({p.site.name for p in preds})),
                 "league_priority": self._league_priority_rank(league),
             }

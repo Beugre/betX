@@ -417,7 +417,8 @@ def page_external_consensus(session):
 def page_recommendations(session):
     """Ecran actionnable: liste des paris à faire + choix + indice de confiance."""
     st.title("🎯 Paris Recommandes")
-    st.caption("Liste des équipes à parier, choix 1/X/2, et indice de confiance.")
+    st.caption("Liste des equipes a parier, choix 1/X/2, et indice de confiance normalise (/100).")
+    st.caption("Formule: indice = clamp(0..100, 50 + 8*score_brut + 12*(votes-1)).")
 
     col1, col2, col3 = st.columns(3)
     with col1:
@@ -463,14 +464,17 @@ def page_recommendations(session):
         "league": "Ligue",
         "selection": "Choix",
         "consensus_votes": "Votes",
-        "confidence_score": "Indice confiance",
+        "confidence_score": "Indice confiance (/100)",
+        "confidence_raw": "Score brut",
         "sites": "Sites alignés",
         "kickoff": "Coup d'envoi",
         "site_leader": "Site leader",
     }
     df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
-    if "Indice confiance" in df.columns:
-        df["Indice confiance"] = df["Indice confiance"].map(lambda x: f"{float(x):.1f}")
+    if "Indice confiance (/100)" in df.columns:
+        df["Indice confiance (/100)"] = df["Indice confiance (/100)"].map(lambda x: f"{float(x):.1f}")
+    if "Score brut" in df.columns:
+        df["Score brut"] = df["Score brut"].map(lambda x: f"{float(x):.2f}")
 
     st.subheader("Equipes a parier maintenant")
     st.dataframe(df, use_container_width=True, hide_index=True)
