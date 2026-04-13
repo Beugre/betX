@@ -363,6 +363,22 @@ def page_external_benchmark(session):
     c2.metric("Pronos collectés", activity.get("predictions", 0))
     c3.metric("Pronos évalués", activity.get("graded", 0))
 
+    st.subheader("Etat des sources")
+    health_rows = service.collect_source_health()
+    if health_rows:
+        health_df = pd.DataFrame(health_rows).rename(
+            columns={
+                "site_name": "Site",
+                "status": "Etat",
+                "status_code": "HTTP",
+                "parsed_count": "Extraits",
+                "recent_predictions_7d": "Pronos 7j",
+                "url": "URL testee",
+                "error": "Erreur",
+            }
+        )
+        st.dataframe(health_df, use_container_width=True, hide_index=True)
+
     leaderboard = service.leaderboard_dataframe(window_days=score_window, min_graded=min_graded)
     if not leaderboard:
         fallback = service.leaderboard_dataframe(window_days=score_window, min_graded=1)

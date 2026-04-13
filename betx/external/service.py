@@ -485,6 +485,7 @@ class ExternalBenchmarkService:
         scores = self.compute_site_scores(windows=[30, 60, 90], min_graded=5)
         top_sites = self.get_top_sites(window_days=60, limit=10, min_graded=5)
         recos = self.build_daily_recommendations(window_days=60)
+        health = self.collect_source_health()
 
         return {
             "scraped": scraped,
@@ -494,7 +495,80 @@ class ExternalBenchmarkService:
             "top_sites": top_sites,
             "recommendations_count": len(recos),
             "scores_generated": len(scores),
+            "source_health": health,
         }
+
+    def collect_source_health(self) -> list[dict[str, Any]]:
+        """Provide transparent status for each source: ok/blocked/url_invalid/parsed_0."""
+        self.bootstrap_sites()
+        out: list[dict[str, Any]] = []
+
+        for site in [s for s in DEFAULT_SITES if s.enabled]:
+            db_site = self.session.query(PredictionSite).filter_by(slug=site.slug).first()
+            if not db_site:
+                continue
+
+            recent_count = (
+                self.session.query(ExternalPrediction)
+                .filter(
+                    ExternalPrediction.site_id == db_site.id,
+                    ExternalPrediction.scraped_at >= datetime.utcnow() - timedelta(days=7),
+                )
+                .count()
+            )
+
+            if site.parse_mode == "api_football":
+                out.append(
+                    {
+                        "site_slug": site.slug,
+                        "site_name": site.name,
+                        "status": "ok" if recent_count > 0 else "api_no_data",
+                        "status_code": None,
+                        "parsed_count": recent_count,
+                        "url": "api-football://predictions",
+                        "recent_predictions_7d": recent_count,
+                    }
+                )
+                continue
+
+            urls = site.today_urls or [site.base_url]
+            status = "fetch_error"
+            status_code = None
+            parsed_count = 0
+            url_used = urls[0]
+            error = None
+
+            for url in urls:
+                url_used = url
+                html, code, err = self.scraper._fetch_with_status(url)
+                status_code = code
+                error = err
+                if html:
+                    parsed = self.scraper._parse_page(site.parse_mode, html, source_url=url)
+                    parsed_count = len(parsed)
+                    if parsed_count > 0:
+                        status = "ok"
+                        break
+                    status = "parsed_0"
+                elif code == 403:
+                    status = "http_403"
+                elif code == 404:
+                    status = "url_invalid"
+
+            out.append(
+                {
+                    "site_slug": site.slug,
+                    "site_name": site.name,
+                    "status": status,
+                    "status_code": status_code,
+                    "parsed_count": parsed_count,
+                    "url": url_used,
+                    "recent_predictions_7d": recent_count,
+                    "error": error,
+                }
+            )
+
+        return out
 
     def leaderboard_dataframe(self, window_days: int = 60, min_graded: int = 5) -> list[dict[str, Any]]:
         rows = self.get_top_sites(window_days=window_days, limit=50, min_graded=min_graded)
