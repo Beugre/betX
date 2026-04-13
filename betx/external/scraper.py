@@ -121,26 +121,76 @@ class PredictionSitesScraper:
 
     def _parse_bettingexpert(self, html: str, source_url: str) -> list[ScrapedPrediction]:
         soup = BeautifulSoup(html, "html.parser")
-        lines = [ln.strip() for ln in soup.get_text("\n", strip=True).splitlines() if ln.strip()]
-        out: list[ScrapedPrediction] = []
-
-        for i, line in enumerate(lines):
-            if not re.fullmatch(r"[A-Z0-9 .&'()/-]{4,}-[A-Z0-9 .&'()/-]{4,}", line):
+        match_links: list[tuple[str, str]] = []
+        seen: set[str] = set()
+        for a in soup.find_all("a", href=True):
+            href = a.get("href", "").strip()
+            text = a.get_text(" ", strip=True)
+            if not text or " vs " not in text.lower():
+                continue
+            if "/football/" not in href:
                 continue
 
-            home, away = [p.strip().title() for p in line.split("-", 1)]
-            window = " ".join(lines[i + 1: i + 5])
-            selection = self._selection_from_tip_text(window, home, away)
+            full_url = href if href.startswith("http") else f"https://www.bettingexpert.com{href}"
+            if full_url in seen:
+                continue
+            seen.add(full_url)
+            match_links.append((text, full_url))
+
+        out: list[ScrapedPrediction] = []
+        for label, match_url in match_links[:20]:
+            team_match = re.search(r"([A-Za-z0-9 .&'()/-]{2,})\s+vs\s+([A-Za-z0-9 .&'()/-]{2,})", label, re.IGNORECASE)
+            if not team_match:
+                continue
+
+            home = team_match.group(1).strip()
+            away = team_match.group(2).strip()
+
+            page_html = self._fetch(match_url)
+            if not page_html:
+                continue
+
+            page_text = BeautifulSoup(page_html, "html.parser").get_text(" ", strip=True)
+
+            # Prefer explicit 1X2 odds block, then map lowest odd to implied pick.
+            odds_match = re.search(
+                rf"{re.escape(home)}\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)\s+"
+                rf"Draw\s+([0-9]+(?:\.[0-9]+)?)\s+"
+                rf"{re.escape(away)}\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)",
+                page_text,
+                flags=re.IGNORECASE,
+            )
+
+            selection = None
+            raw_pick = None
+            if odds_match:
+                home_odd = float(odds_match.group(1))
+                draw_odd = float(odds_match.group(2))
+                away_odd = float(odds_match.group(3))
+                min_odd = min(home_odd, draw_odd, away_odd)
+                if min_odd == home_odd:
+                    selection = "home"
+                elif min_odd == away_odd:
+                    selection = "away"
+                else:
+                    selection = "draw"
+                raw_pick = f"odds:{home_odd}/{draw_odd}/{away_odd}"
+
+            if not selection:
+                selection = self._selection_from_tip_text(page_text, home, away)
+                raw_pick = "text_heuristic"
+
             if not selection:
                 continue
 
+
             out.append(
                 ScrapedPrediction(
-                    source_url=source_url,
+                    source_url=match_url,
                     home_name=home,
                     away_name=away,
                     predicted_selection=selection,
-                    raw_prediction=window[:120],
+                    raw_prediction=raw_pick,
                 )
             )
 
