@@ -411,6 +411,7 @@ class ExternalBenchmarkService:
                 SiteScore.window_days == window_days,
                 SiteScore.league == "all",
                 SiteScore.graded_count >= min_graded,
+                PredictionSite.is_active.is_(True),
             )
             .order_by(SiteScore.quality_score.desc())
             .limit(limit)
