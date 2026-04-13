@@ -34,6 +34,7 @@ DEFAULT_SITES: list[SiteDefinition] = [
         parse_mode="api_football",
         today_urls=[],
         history_templates=[],
+        enabled=False,
     ),
     SiteDefinition(
         slug="eaglepredict",

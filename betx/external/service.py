@@ -19,7 +19,7 @@ from betx.database import (
     get_session,
 )
 from betx.external.normalization import normalize_team_name, score_to_1x2, similarity
-from betx.external.api_source import ApiFootballPredictionSource
+from betx.external.espn_outcome_source import EspnOutcomeSource
 from betx.external.scoring import SiteScoreRow, compute_quality_score, flat_roi
 from betx.external.scraper import PredictionSitesScraper
 from betx.external.sites_registry import DEFAULT_SITES, SiteDefinition
@@ -34,7 +34,7 @@ class ExternalBenchmarkService:
     def __init__(self, session: Session | None = None) -> None:
         self.session = session or get_session()
         self.scraper = PredictionSitesScraper()
-        self.api_source = ApiFootballPredictionSource()
+        self.espn_outcomes = EspnOutcomeSource()
 
     def bootstrap_sites(self) -> list[PredictionSite]:
         out: list[PredictionSite] = []
@@ -74,12 +74,7 @@ class ExternalBenchmarkService:
             if not db_site:
                 continue
 
-            if site.parse_mode == "api_football":
-                scraped = self.api_source.fetch_from_known_matches(self.session, days_back=days_back)
-                if not scraped:
-                    scraped = self.api_source.fetch_from_fixtures_window(days_back=days_back)
-            else:
-                scraped = self.scraper.scrape_site(site, days_back=days_back, include_today=include_today)
+            scraped = self.scraper.scrape_site(site, days_back=days_back, include_today=include_today)
             inserted = 0
             for pred in scraped:
                 source_prediction_id = (
@@ -207,8 +202,6 @@ class ExternalBenchmarkService:
 
     def grade_predictions(self) -> dict[str, int]:
         """Grade linked predictions where the match is finished."""
-        api_graded, api_won, api_lost = self._grade_api_football_predictions()
-
         rows = (
             self.session.query(ExternalPrediction)
             .join(Match, Match.id == ExternalPrediction.match_id)
@@ -234,52 +227,17 @@ class ExternalBenchmarkService:
             else:
                 lost += 1
 
-        fb_graded, fb_won, fb_lost = self._grade_non_api_with_api_fallback()
+        fb_graded, fb_won, fb_lost = self._grade_with_espn_fallback()
 
         self.session.commit()
         return {
-            "graded": graded + api_graded + fb_graded,
-            "won": won + api_won + fb_won,
-            "lost": lost + api_lost + fb_lost,
+            "graded": graded + fb_graded,
+            "won": won + fb_won,
+            "lost": lost + fb_lost,
         }
 
-    def _grade_api_football_predictions(self) -> tuple[int, int, int]:
-        """Grade API-Football rows even when no internal match is linked."""
-        site = self.session.query(PredictionSite).filter_by(slug="api_football").first()
-        if not site:
-            return (0, 0, 0)
-
-        rows = (
-            self.session.query(ExternalPrediction)
-            .filter(
-                ExternalPrediction.site_id == site.id,
-                ExternalPrediction.result_status == "pending",
-                ExternalPrediction.source_url.like("api-football://predictions/%"),
-            )
-            .all()
-        )
-
-        graded = 0
-        won = 0
-        lost = 0
-        for row in rows:
-            fixture_id = row.source_url.rsplit("/", 1)[-1].strip()
-            outcome = self.api_source.get_fixture_outcome(fixture_id)
-            if not outcome:
-                continue
-            row.result_status = "won" if row.predicted_selection == outcome else "lost"
-            row.grade_points = 1.0 if row.result_status == "won" else 0.0
-            graded += 1
-            if row.result_status == "won":
-                won += 1
-            else:
-                lost += 1
-
-        self.session.commit()
-        return (graded, won, lost)
-
-    def _grade_non_api_with_api_fallback(self) -> tuple[int, int, int]:
-        """Grade pending non-API predictions by matching team/date to API finished fixtures."""
+    def _grade_with_espn_fallback(self) -> tuple[int, int, int]:
+        """Grade pending predictions by matching team/date to ESPN finished fixtures."""
         rows = (
             self.session.query(ExternalPrediction, PredictionSite)
             .join(PredictionSite, PredictionSite.id == ExternalPrediction.site_id)
@@ -316,7 +274,7 @@ class ExternalBenchmarkService:
 
             outcome = None
             for dt in candidate_dates:
-                outcome = self.api_source.get_outcome_by_match(
+                outcome = self.espn_outcomes.get_outcome_by_match(
                     match_date=dt,
                     home_name=row.home_name,
                     away_name=row.away_name,
@@ -601,20 +559,6 @@ class ExternalBenchmarkService:
                 )
                 .count()
             )
-
-            if site.parse_mode == "api_football":
-                out.append(
-                    {
-                        "site_slug": site.slug,
-                        "site_name": site.name,
-                        "status": "ok" if recent_count > 0 else "api_no_data",
-                        "status_code": None,
-                        "parsed_count": recent_count,
-                        "url": "api-football://predictions",
-                        "recent_predictions_7d": recent_count,
-                    }
-                )
-                continue
 
             urls = site.today_urls or [site.base_url]
             status = "fetch_error"
