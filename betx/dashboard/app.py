@@ -13,6 +13,7 @@ Interface visuelle pour :
 from __future__ import annotations
 
 import sys
+from collections import defaultdict
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -25,7 +26,15 @@ import matplotlib.dates as mdates
 # Ajouter le root au path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
 
-from betx.database import init_db, get_session, Bet, BankrollHistory, Match, Prediction
+from betx.database import (
+    init_db,
+    get_session,
+    BankrollHistory,
+    ExternalPrediction,
+    Match,
+    PredictionSite,
+    SiteScore,
+)
 from betx.analytics.performance_metrics import PerformanceTracker
 from betx.analytics.clv_tracker import CLVTracker
 from betx.config import settings
@@ -52,20 +61,14 @@ def main():
 
     # ── Sidebar ──
     st.sidebar.title("🎯 betX")
-    st.sidebar.markdown("*Analyse de paris sportifs*")
+    st.sidebar.markdown("*Radar pronostics externes*")
 
     page = st.sidebar.radio(
         "Navigation",
         [
-            "📊 Vue d'ensemble",
-            "💰 Value Bets du jour",
-            "📋 Historique des paris",
-            "📈 CLV Tracking",
-            "🏆 Analyse par sport",
-            "🌐 Benchmark Sites",
-            "🤝 Consensus Sites",
-            "🧪 Backtesting",
-            "⚙️ Configuration",
+            "🌐 Aggregation Sites",
+            "🏆 Meilleurs Sites",
+            "🎯 Paris Recommandes",
         ],
     )
 
@@ -85,25 +88,13 @@ def main():
         delta=f"{last_entry.daily_pnl:+.2f}€" if last_entry else None,
     )
 
-    # Dispatch
-    if page == "📊 Vue d'ensemble":
-        page_overview(session)
-    elif page == "💰 Value Bets du jour":
-        page_value_bets(session)
-    elif page == "📋 Historique des paris":
-        page_history(session)
-    elif page == "📈 CLV Tracking":
-        page_clv(session)
-    elif page == "🏆 Analyse par sport":
-        page_sports(session)
-    elif page == "🌐 Benchmark Sites":
+    # Dispatch (dashboard simplifie)
+    if page == "🌐 Aggregation Sites":
         page_external_benchmark(session)
-    elif page == "🤝 Consensus Sites":
+    elif page == "🏆 Meilleurs Sites":
         page_external_consensus(session)
-    elif page == "🧪 Backtesting":
-        page_backtest(session)
-    elif page == "⚙️ Configuration":
-        page_config()
+    elif page == "🎯 Paris Recommandes":
+        page_recommendations(session)
 
     session.close()
 
@@ -337,35 +328,26 @@ def page_backtest(session):
 
 
 def page_external_benchmark(session):
-    """Classement des sites de prediction externes."""
-    st.title("🌐 Benchmark Sites de Pronostics")
-    st.caption("Collecte multi-sites, comparaison aux résultats réels, et classement qualité.")
+    """Vue agrégée brute: toutes les sélections détectées par match."""
+    st.title("🌐 Aggregation Sites")
+    st.caption("Toutes les aggregations par match: votes, sites alignés, et confiance estimée.")
 
-    col_a, col_b, col_c = st.columns(3)
+    col_a, col_b = st.columns(2)
     with col_a:
-        history_days = st.selectbox("Historique à scraper", [7, 15, 30, 60, 90], index=2)
+        history_days = st.selectbox("Historique à scraper", [3, 7, 15, 30, 60, 90], index=3)
     with col_b:
         score_window = st.selectbox("Fenêtre de score", [30, 60, 90], index=1)
-    with col_c:
-        min_graded = st.slider("Min matchs classés", 1, 100, 5, 1)
 
     service = ExternalBenchmarkService(session=session)
-
-    if st.button("🔄 Refresh benchmark (scrape + scoring)", type="primary"):
-        with st.spinner("Scraping des sites et recalcul des classements..."):
+    if st.button("🔄 Rafraîchir les agrégations", type="primary"):
+        with st.spinner("Scraping + recalcul en cours..."):
             summary = service.run_full_refresh(history_days=history_days)
-        st.success("Benchmark mis à jour")
+        st.success("Agrégations mises à jour")
         st.json(summary)
 
-    activity = service.latest_activity()
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Sites suivis", activity.get("sites", 0))
-    c2.metric("Pronos collectés", activity.get("predictions", 0))
-    c3.metric("Pronos évalués", activity.get("graded", 0))
-
-    st.subheader("Etat des sources")
     health_rows = service.collect_source_health()
     if health_rows:
+        st.subheader("Etat des sources")
         health_df = pd.DataFrame(health_rows).rename(
             columns={
                 "site_name": "Site",
@@ -374,45 +356,37 @@ def page_external_benchmark(session):
                 "parsed_count": "Extraits",
                 "recent_predictions_7d": "Pronos 7j",
                 "url": "URL testee",
-                "error": "Erreur",
             }
         )
         st.dataframe(health_df, use_container_width=True, hide_index=True)
 
-    leaderboard = service.leaderboard_dataframe(window_days=score_window, min_graded=min_graded)
-    if not leaderboard:
-        fallback = service.leaderboard_dataframe(window_days=score_window, min_graded=1)
-        st.warning(
-            "Pas encore assez de données évaluées pour classer les sites. "
-            "Lance un refresh avec plus d'historique ou attends la fin de matchs."
-        )
-        if fallback:
-            st.info(
-                "Des données existent avec un seuil plus bas. "
-                "Baissez 'Min matchs classés' pour afficher le classement."
-            )
-            fb = pd.DataFrame(fallback).rename(
-                columns={
-                    "site_name": "Site",
-                    "graded_count": "Matchs évalués",
-                    "hit_rate": "Hit Rate",
-                    "roi_flat": "ROI Flat",
-                    "quality_score": "Score qualité",
-                }
-            )
-            if "Hit Rate" in fb:
-                fb["Hit Rate"] = fb["Hit Rate"].map(lambda x: f"{x:.1%}")
-            if "ROI Flat" in fb:
-                fb["ROI Flat"] = fb["ROI Flat"].map(lambda x: f"{x:+.1%}")
-            if "Score qualité" in fb:
-                fb["Score qualité"] = fb["Score qualité"].map(lambda x: f"{x:.2f}")
-            st.dataframe(fb, use_container_width=True, hide_index=True)
+    rows, _ = build_aggregated_predictions(session=session, window_days=score_window, top_only=False, top_n_sites=20)
+    st.subheader("Aggregation brute par match")
+    if not rows:
+        st.warning("Aucune aggregation disponible. Lance un refresh pour alimenter les données.")
         return
 
-    st.subheader(f"Top sites – fenêtre {score_window} jours")
-    df = pd.DataFrame(leaderboard)
-    df = df.rename(
+    agg_df = pd.DataFrame(rows)
+    st.dataframe(agg_df, use_container_width=True, hide_index=True)
+
+
+def page_external_consensus(session):
+    """Classement des meilleurs sites + leurs derniers choix détectés."""
+    st.title("🏆 Meilleurs Sites")
+    st.caption("Top sites classés et leurs derniers choix 1X2 détectés.")
+
+    score_window = st.selectbox("Fenêtre scoring", [30, 60, 90], index=1)
+    top_n_sites = st.selectbox("Nombre de sites à afficher", [3, 5, 8, 10], index=1)
+
+    service = ExternalBenchmarkService(session=session)
+    leaderboard = service.leaderboard_dataframe(window_days=score_window, min_graded=1)
+    if not leaderboard:
+        st.warning("Classement indisponible pour le moment. Lance un refresh dans Aggregation Sites.")
+        return
+
+    top_df = pd.DataFrame(leaderboard[:top_n_sites]).rename(
         columns={
+            "site_slug": "Slug",
             "site_name": "Site",
             "graded_count": "Matchs évalués",
             "hit_rate": "Hit Rate",
@@ -420,36 +394,40 @@ def page_external_benchmark(session):
             "quality_score": "Score qualité",
         }
     )
+    top_df["Hit Rate"] = top_df["Hit Rate"].map(lambda x: f"{x:.1%}")
+    top_df["ROI Flat"] = top_df["ROI Flat"].map(lambda x: f"{x:+.1%}")
+    top_df["Score qualité"] = top_df["Score qualité"].map(lambda x: f"{x:.2f}")
+    st.dataframe(top_df, use_container_width=True, hide_index=True)
 
-    if "Hit Rate" in df:
-        df["Hit Rate"] = df["Hit Rate"].map(lambda x: f"{x:.1%}")
-    if "ROI Flat" in df:
-        df["ROI Flat"] = df["ROI Flat"].map(lambda x: f"{x:+.1%}")
-    if "Score qualité" in df:
-        df["Score qualité"] = df["Score qualité"].map(lambda x: f"{x:.2f}")
+    top_slugs = set(top_df["Slug"].tolist())
+    picks_rows, _ = build_aggregated_predictions(
+        session=session,
+        window_days=score_window,
+        top_only=True,
+        top_n_sites=top_n_sites,
+    )
+    picks_df = pd.DataFrame([r for r in picks_rows if r["Site leader"] in top_slugs])
+    st.subheader("Choix détectés des meilleurs sites")
+    if picks_df.empty:
+        st.info("Aucun choix détecté sur la période actuelle pour ces sites.")
+        return
+    st.dataframe(picks_df, use_container_width=True, hide_index=True)
 
-    st.dataframe(df, use_container_width=True, hide_index=True)
 
-
-def page_external_consensus(session):
-    """Recommendations built from best-performing external sites."""
-    st.title("🤝 Consensus des Meilleurs Sites")
-    st.caption("Paris recommandés selon le consensus des sites les mieux classés.")
-
-    service = ExternalBenchmarkService(session=session)
+def page_recommendations(session):
+    """Ecran actionnable: liste des paris à faire + choix + indice de confiance."""
+    st.title("🎯 Paris Recommandes")
+    st.caption("Liste des équipes à parier, choix 1/X/2, et indice de confiance.")
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        top_n = st.selectbox("Top sites retenus", [2, 3, 4, 5], index=1)
+        score_window = st.selectbox("Fenêtre scoring", [30, 60, 90], index=1, key="reco_window")
     with col2:
-        min_votes = st.selectbox("Consensus minimum", [2, 3, 4], index=0)
+        top_n = st.selectbox("Top sites utilisés", [3, 5, 8, 10], index=1)
     with col3:
-        score_window = st.selectbox("Fenêtre scoring", [30, 60, 90], index=1, key="consensus_window")
+        min_votes = st.selectbox("Votes minimum", [1, 2, 3], index=0)
 
-    if st.button("🧠 Recalculer recommandations"):
-        with st.spinner("Calcul en cours..."):
-            service.compute_site_scores(windows=[30, 60, 90], min_graded=5)
-
+    service = ExternalBenchmarkService(session=session)
     recommendations = service.build_daily_recommendations(
         target_date=date.today(),
         top_n_sites=top_n,
@@ -457,27 +435,128 @@ def page_external_consensus(session):
         window_days=score_window,
     )
 
+    # Fallback automatique pour toujours fournir une short-list exploitable.
     if not recommendations:
-        st.info(
-            "Aucun pari consensus trouvé aujourd'hui. Soit les sites n'ont pas encore été scrapés, "
-            "soit le consensus est insuffisant."
+        recommendations = service.build_daily_recommendations(
+            target_date=date.today(),
+            top_n_sites=10,
+            min_consensus_votes=1,
+            window_days=score_window,
         )
+
+    if not recommendations:
+        _, best_rows = build_aggregated_predictions(
+            session=session,
+            window_days=score_window,
+            top_only=True,
+            top_n_sites=max(5, top_n),
+        )
+        recommendations = best_rows
+
+    if not recommendations:
+        st.warning("Aucune recommandation encore disponible. Lance un refresh dans Aggregation Sites.")
         return
 
     df = pd.DataFrame(recommendations)
-    df = df.rename(
-        columns={
-            "match": "Match",
-            "league": "Ligue",
-            "selection": "Sélection",
-            "consensus_votes": "Votes",
-            "confidence_score": "Score confiance",
-            "sites": "Sites alignés",
-            "kickoff": "Coup d'envoi",
-        }
-    )
-    st.subheader("Équipes à parier (selon top sites)")
+    rename_map = {
+        "match": "Match",
+        "league": "Ligue",
+        "selection": "Choix",
+        "consensus_votes": "Votes",
+        "confidence_score": "Indice confiance",
+        "sites": "Sites alignés",
+        "kickoff": "Coup d'envoi",
+        "site_leader": "Site leader",
+    }
+    df = df.rename(columns={k: v for k, v in rename_map.items() if k in df.columns})
+    if "Indice confiance" in df.columns:
+        df["Indice confiance"] = df["Indice confiance"].map(lambda x: f"{float(x):.1f}")
+
+    st.subheader("Equipes a parier maintenant")
     st.dataframe(df, use_container_width=True, hide_index=True)
+
+
+def build_aggregated_predictions(
+    session,
+    window_days: int = 60,
+    top_only: bool = False,
+    top_n_sites: int = 5,
+) -> tuple[list[dict[str, str]], list[dict[str, str]]]:
+    """Aggregate raw external predictions into actionable match-level selections."""
+    service = ExternalBenchmarkService(session=session)
+    top_sites = service.get_top_sites(window_days=window_days, limit=top_n_sites, min_graded=1)
+    top_slugs = [s["site_slug"] for s in top_sites]
+    site_quality = {s["site_slug"]: float(s["quality_score"]) for s in top_sites}
+
+    query = session.query(ExternalPrediction, PredictionSite).join(PredictionSite, PredictionSite.id == ExternalPrediction.site_id)
+    if top_only and top_slugs:
+        query = query.filter(PredictionSite.slug.in_(top_slugs))
+
+    source_rows = query.order_by(ExternalPrediction.scraped_at.desc()).limit(800).all()
+
+    grouped: dict[tuple[str, str], dict[str, dict[str, object]]] = defaultdict(lambda: defaultdict(dict))
+    match_meta: dict[str, dict[str, str]] = {}
+    for pred, site in source_rows:
+        if pred.market != "1x2":
+            continue
+        if pred.result_status not in {"pending", "won", "lost"}:
+            continue
+
+        match_key = f"{pred.normalized_home}::{pred.normalized_away}"
+        match_meta[match_key] = {
+            "match": f"{pred.home_name} vs {pred.away_name}",
+            "league": pred.league or "N/A",
+            "kickoff": str(pred.kickoff_time) if pred.kickoff_time else "",
+        }
+        grouped[match_key][pred.predicted_selection][site.slug] = {
+            "site_name": site.name,
+            "quality": site_quality.get(site.slug, 1.0),
+        }
+
+    table_rows: list[dict[str, str]] = []
+    best_rows: list[dict[str, str]] = []
+
+    for match_key, by_selection in grouped.items():
+        best = None
+        for selection, by_site in by_selection.items():
+            votes = len(by_site)
+            weighted = sum(float(v["quality"]) for v in by_site.values())
+            confidence = min(100.0, round(votes * 18.0 + weighted * 6.0, 1))
+            sites = ", ".join(sorted(v["site_name"] for v in by_site.values()))
+            leader_slug = sorted(by_site.items(), key=lambda kv: float(kv[1]["quality"]), reverse=True)[0][0]
+
+            row = {
+                "Match": match_meta[match_key]["match"],
+                "Ligue": match_meta[match_key]["league"],
+                "Choix": selection,
+                "Votes": str(votes),
+                "Indice confiance": f"{confidence:.1f}",
+                "Sites alignés": sites,
+                "Site leader": leader_slug,
+                "Coup d'envoi": match_meta[match_key]["kickoff"],
+            }
+            table_rows.append(row)
+
+            if best is None or (confidence > float(best["Indice confiance"])):
+                best = row
+
+        if best is not None:
+            best_rows.append(
+                {
+                    "match": best["Match"],
+                    "league": best["Ligue"],
+                    "selection": best["Choix"],
+                    "consensus_votes": int(best["Votes"]),
+                    "confidence_score": float(best["Indice confiance"]),
+                    "sites": best["Sites alignés"],
+                    "site_leader": best["Site leader"],
+                    "kickoff": best["Coup d'envoi"],
+                }
+            )
+
+    table_rows.sort(key=lambda r: float(r["Indice confiance"]), reverse=True)
+    best_rows.sort(key=lambda r: float(r["confidence_score"]), reverse=True)
+    return table_rows, best_rows
 
 
 def page_config():
