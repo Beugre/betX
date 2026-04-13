@@ -240,7 +240,7 @@ After=network.target nginx.service
 Type=simple
 User=$USER
 WorkingDirectory=$APP_DIR
-ExecStart=$VENV_DIR/bin/streamlit run app.py --server.port=$STREAMLIT_PORT --server.headless=true --server.address=127.0.0.1 --server.enableCORS=false --server.enableXsrfProtection=false --browser.gatherUsageStats=false
+ExecStart=$VENV_DIR/bin/streamlit run betx/dashboard/app.py --server.port=$STREAMLIT_PORT --server.headless=true --server.address=127.0.0.1 --server.enableCORS=false --server.enableXsrfProtection=false --browser.gatherUsageStats=false
 Restart=always
 RestartSec=10
 Environment=PATH=$VENV_DIR/bin:/usr/local/bin:/usr/bin
