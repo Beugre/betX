@@ -84,6 +84,8 @@ class EspnOutcomeSource:
             f"{self.base_url}/ita.1/scoreboard?dates={yyyymmdd}",
             f"{self.base_url}/ger.1/scoreboard?dates={yyyymmdd}",
             f"{self.base_url}/fra.1/scoreboard?dates={yyyymmdd}",
+            f"{self.base_url}/uefa.champions/scoreboard?dates={yyyymmdd}",
+            f"{self.base_url}/uefa.europa/scoreboard?dates={yyyymmdd}",
         ]
 
         events: list[dict] = []

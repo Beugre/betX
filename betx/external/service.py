@@ -27,6 +27,26 @@ from betx.logger import get_logger
 
 log = get_logger("external.service")
 
+PRIORITY_LEAGUE_PATTERNS: list[tuple[str, tuple[str, ...]]] = [
+    ("uefa champions league", ("champions league", "uefa champions", "ucl", "ldc")),
+    ("uefa europa league", ("europa league", "uefa europa", "uel")),
+    ("la liga", ("la liga", "laliga", "liga")),
+    ("premier league", ("premier league", "epl")),
+    ("ligue 1", ("ligue 1", "ligue1")),
+    ("bundesliga", ("bundesliga",)),
+    ("serie a", ("serie a",)),
+]
+
+PRIORITY_LEAGUE_RANK: dict[str, int] = {
+    "uefa champions league": 1,
+    "uefa europa league": 2,
+    "la liga": 3,
+    "premier league": 4,
+    "ligue 1": 5,
+    "bundesliga": 6,
+    "serie a": 7,
+}
+
 
 class ExternalBenchmarkService:
     """Main entry point used by pipeline scripts and Streamlit dashboard."""
@@ -497,6 +517,7 @@ class ExternalBenchmarkService:
             first = preds[0]
             match_label = f"{first.home_name} vs {first.away_name}"
             league = first.league or (first.match.league if first.match_id and first.match else "N/A")
+            league = self._normalize_league_name(league) or "N/A"
             kickoff = ""
             if first.match_id and first.match and first.match.kickoff_time:
                 kickoff = str(first.match.kickoff_time)
@@ -513,11 +534,20 @@ class ExternalBenchmarkService:
                 "consensus_votes": votes,
                 "confidence_score": round(score, 2),
                 "sites": ", ".join(sorted({p.site.name for p in preds})),
+                "league_priority": self._league_priority_rank(league),
             }
             if cur is None or row["confidence_score"] > cur["confidence_score"]:
                 by_match[match_key] = row
 
-        return sorted(by_match.values(), key=lambda x: x["confidence_score"], reverse=True)
+        out = list(by_match.values())
+        has_priority = any(r["league_priority"] < 999 for r in out)
+        if has_priority:
+            out = [r for r in out if r["league_priority"] < 999]
+
+        out.sort(key=lambda x: (x["league_priority"], -x["confidence_score"]))
+        for r in out:
+            r.pop("league_priority", None)
+        return out
 
     def run_full_refresh(self, history_days: int = 30) -> dict[str, Any]:
         scraped = self.scrape_predictions(days_back=history_days, include_today=True)
@@ -613,6 +643,7 @@ class ExternalBenchmarkService:
         for row, site in rows:
             home = row.home_name
             away = row.away_name
+            league = self._normalize_league_name(row.league)
 
             if site.slug == "eaglepredict":
                 parsed = self._parse_eaglepredict_teams_from_url(row.source_url)
@@ -623,11 +654,17 @@ class ExternalBenchmarkService:
                 if parsed:
                     home, away = parsed
 
+            if not league:
+                league = self._infer_priority_league(row.source_url)
+
             if home != row.home_name or away != row.away_name:
                 row.home_name = home
                 row.away_name = away
                 row.normalized_home = normalize_team_name(home)
                 row.normalized_away = normalize_team_name(away)
+                updated += 1
+            if league and league != row.league:
+                row.league = league
                 updated += 1
 
         if updated:
@@ -660,6 +697,35 @@ class ExternalBenchmarkService:
         if not home or not away:
             return None
         return home, away
+
+    @staticmethod
+    def _normalize_league_name(raw: str | None) -> str | None:
+        if not raw:
+            return None
+        league = raw.strip().lower()
+        if not league:
+            return None
+        for canonical, tokens in PRIORITY_LEAGUE_PATTERNS:
+            if any(tok in league for tok in tokens):
+                return canonical
+        return raw.strip()
+
+    @staticmethod
+    def _infer_priority_league(url: str | None) -> str | None:
+        if not url:
+            return None
+        lower = url.lower()
+        for canonical, tokens in PRIORITY_LEAGUE_PATTERNS:
+            if any(tok in lower or tok.replace(" ", "-") in lower for tok in tokens):
+                return canonical
+        return None
+
+    @staticmethod
+    def _league_priority_rank(league: str | None) -> int:
+        normalized = ExternalBenchmarkService._normalize_league_name(league)
+        if not normalized:
+            return 999
+        return PRIORITY_LEAGUE_RANK.get(normalized.lower(), 999)
 
     def leaderboard_dataframe(self, window_days: int = 60, min_graded: int = 5) -> list[dict[str, Any]]:
         rows = self.get_top_sites(window_days=window_days, limit=50, min_graded=min_graded)
