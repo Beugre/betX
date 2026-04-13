@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from dataclasses import asdict
 from datetime import date, datetime, timedelta
+import re
 from typing import Any
 
 from sqlalchemy import and_
@@ -233,11 +234,13 @@ class ExternalBenchmarkService:
             else:
                 lost += 1
 
+        fb_graded, fb_won, fb_lost = self._grade_non_api_with_api_fallback()
+
         self.session.commit()
         return {
-            "graded": graded + api_graded,
-            "won": won + api_won,
-            "lost": lost + api_lost,
+            "graded": graded + api_graded + fb_graded,
+            "won": won + api_won + fb_won,
+            "lost": lost + api_lost + fb_lost,
         }
 
     def _grade_api_football_predictions(self) -> tuple[int, int, int]:
@@ -274,6 +277,86 @@ class ExternalBenchmarkService:
 
         self.session.commit()
         return (graded, won, lost)
+
+    def _grade_non_api_with_api_fallback(self) -> tuple[int, int, int]:
+        """Grade pending non-API predictions by matching team/date to API finished fixtures."""
+        rows = (
+            self.session.query(ExternalPrediction, PredictionSite)
+            .join(PredictionSite, PredictionSite.id == ExternalPrediction.site_id)
+            .filter(
+                ExternalPrediction.result_status == "pending",
+                PredictionSite.slug != "api_football",
+            )
+            .all()
+        )
+
+        graded = 0
+        won = 0
+        lost = 0
+        for row, _site in rows:
+            if row.match_id and row.match and row.match.status == "finished":
+                # Already handled by internal match grading path.
+                continue
+
+            pred_date = row.kickoff_time.date() if row.kickoff_time else None
+            if not pred_date and row.match_id and row.match:
+                pred_date = row.match.match_date
+            if not pred_date:
+                pred_date = self._extract_date_from_source_url(row.source_url)
+
+            candidate_dates: list[date] = []
+            if pred_date:
+                candidate_dates = [
+                    pred_date,
+                    pred_date - timedelta(days=1),
+                    pred_date + timedelta(days=1),
+                ]
+            else:
+                candidate_dates = [date.today() - timedelta(days=d) for d in range(1, 6)]
+
+            outcome = None
+            for dt in candidate_dates:
+                outcome = self.api_source.get_outcome_by_match(
+                    match_date=dt,
+                    home_name=row.home_name,
+                    away_name=row.away_name,
+                )
+                if outcome:
+                    break
+            if not outcome:
+                continue
+
+            row.result_status = "won" if row.predicted_selection == outcome else "lost"
+            row.grade_points = 1.0 if row.result_status == "won" else 0.0
+            graded += 1
+            if row.result_status == "won":
+                won += 1
+            else:
+                lost += 1
+
+        return graded, won, lost
+
+    @staticmethod
+    def _extract_date_from_source_url(source_url: str) -> date | None:
+        """Parse dates from common source URL formats like dd-mm-yyyy or yyyymmdd."""
+        if not source_url:
+            return None
+
+        m1 = re.search(r"(\d{2})-(\d{2})-(\d{4})", source_url)
+        if m1:
+            try:
+                return date(int(m1.group(3)), int(m1.group(2)), int(m1.group(1)))
+            except Exception:
+                return None
+
+        m2 = re.search(r"(\d{4})(\d{2})(\d{2})", source_url)
+        if m2:
+            try:
+                return date(int(m2.group(1)), int(m2.group(2)), int(m2.group(3)))
+            except Exception:
+                return None
+
+        return None
 
     def compute_site_scores(
         self,
@@ -479,6 +562,7 @@ class ExternalBenchmarkService:
 
     def run_full_refresh(self, history_days: int = 30) -> dict[str, Any]:
         scraped = self.scrape_predictions(days_back=history_days, include_today=True)
+        sanitized = self._sanitize_prediction_names()
         materialized = self.materialize_matches_from_external()
         linked = self.link_predictions_to_matches(lookback_days=max(120, history_days + 30))
         graded = self.grade_predictions()
@@ -489,6 +573,7 @@ class ExternalBenchmarkService:
 
         return {
             "scraped": scraped,
+            "sanitized_names": sanitized,
             "materialized_matches": materialized,
             "linked": linked,
             "graded": graded,
@@ -569,6 +654,67 @@ class ExternalBenchmarkService:
             )
 
         return out
+
+    def _sanitize_prediction_names(self) -> int:
+        """Repair noisy team names for stored predictions using source URL patterns."""
+        rows = (
+            self.session.query(ExternalPrediction, PredictionSite)
+            .join(PredictionSite, PredictionSite.id == ExternalPrediction.site_id)
+            .filter(ExternalPrediction.result_status == "pending")
+            .all()
+        )
+
+        updated = 0
+        for row, site in rows:
+            home = row.home_name
+            away = row.away_name
+
+            if site.slug == "eaglepredict":
+                parsed = self._parse_eaglepredict_teams_from_url(row.source_url)
+                if parsed:
+                    home, away = parsed
+            elif site.slug == "bettingexpert":
+                parsed = self._parse_bettingexpert_teams_from_url(row.source_url)
+                if parsed:
+                    home, away = parsed
+
+            if home != row.home_name or away != row.away_name:
+                row.home_name = home
+                row.away_name = away
+                row.normalized_home = normalize_team_name(home)
+                row.normalized_away = normalize_team_name(away)
+                updated += 1
+
+        if updated:
+            self.session.commit()
+        return updated
+
+    @staticmethod
+    def _parse_eaglepredict_teams_from_url(url: str) -> tuple[str, str] | None:
+        m = re.search(r"/match/([a-z0-9\-]+)-pronostics-", url)
+        if not m:
+            return None
+        parts = m.group(1).split("-")
+        if len(parts) < 2:
+            return None
+        mid = max(1, len(parts) // 2)
+        home = " ".join(parts[:mid]).title().strip()
+        away = " ".join(parts[mid:]).title().strip()
+        if not home or not away:
+            return None
+        return home, away
+
+    @staticmethod
+    def _parse_bettingexpert_teams_from_url(url: str) -> tuple[str, str] | None:
+        if "/football/" not in url or "-vs-" not in url:
+            return None
+        slug = url.rsplit("/", 1)[-1]
+        left, right = slug.split("-vs-", 1)
+        home = left.replace("-", " ").title().strip()
+        away = right.replace("-", " ").title().strip()
+        if not home or not away:
+            return None
+        return home, away
 
     def leaderboard_dataframe(self, window_days: int = 60, min_graded: int = 5) -> list[dict[str, Any]]:
         rows = self.get_top_sites(window_days=window_days, limit=50, min_graded=min_graded)

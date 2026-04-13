@@ -9,7 +9,7 @@ import httpx
 from sqlalchemy.orm import Session
 
 from betx.database import Match
-from betx.external.normalization import parse_selection_to_1x2
+from betx.external.normalization import normalize_team_name, parse_selection_to_1x2, similarity
 from betx.external.scraper import ScrapedPrediction
 from betx.logger import get_logger
 
@@ -24,6 +24,7 @@ class ApiFootballPredictionSource:
         self.api_key = os.getenv("API_FOOTBALL_KEY", "")
         leagues_env = os.getenv("API_FOOTBALL_LEAGUES", "")
         self.leagues = [int(x.strip()) for x in leagues_env.split(",") if x.strip().isdigit()]
+        self._fixtures_by_date_cache: dict[str, list[dict]] = {}
 
     def fetch_from_known_matches(self, session: Session, days_back: int = 60) -> list[ScrapedPrediction]:
         if not self.api_key:
@@ -231,3 +232,72 @@ class ApiFootballPredictionSource:
         if home_score < away_score:
             return "away"
         return "draw"
+
+    def get_outcome_by_match(self, match_date: date, home_name: str, away_name: str) -> str | None:
+        """Find outcome by date + fuzzy team names for non-API scraped predictions."""
+        if not self.api_key:
+            return None
+
+        fixtures = self._get_fixtures_for_date(match_date)
+        if not fixtures:
+            return None
+
+        target_home = normalize_team_name(home_name)
+        target_away = normalize_team_name(away_name)
+        best: tuple[float, dict] | None = None
+
+        for fx in fixtures:
+            teams = fx.get("teams", {}) or {}
+            home = (teams.get("home", {}) or {}).get("name", "")
+            away = (teams.get("away", {}) or {}).get("name", "")
+            if not home or not away:
+                continue
+
+            s1 = similarity(target_home, normalize_team_name(home))
+            s2 = similarity(target_away, normalize_team_name(away))
+            score_direct = (s1 + s2) / 2.0
+
+            s1_sw = similarity(target_home, normalize_team_name(away))
+            s2_sw = similarity(target_away, normalize_team_name(home))
+            score_swapped = (s1_sw + s2_sw) / 2.0
+
+            score = max(score_direct, score_swapped)
+            if best is None or score > best[0]:
+                best = (score, fx)
+
+        if not best or best[0] < 0.82:
+            return None
+
+        goals = (best[1].get("goals", {}) or {})
+        home_score = goals.get("home")
+        away_score = goals.get("away")
+        if home_score is None or away_score is None:
+            return None
+        if home_score > away_score:
+            return "home"
+        if home_score < away_score:
+            return "away"
+        return "draw"
+
+    def _get_fixtures_for_date(self, dt: date) -> list[dict]:
+        key = dt.isoformat()
+        if key in self._fixtures_by_date_cache:
+            return self._fixtures_by_date_cache[key]
+
+        headers = {"x-apisports-key": self.api_key}
+        try:
+            with httpx.Client(base_url=self.base_url, headers=headers, timeout=20.0) as client:
+                resp = client.get("/fixtures", params={"date": key})
+                resp.raise_for_status()
+                payload = resp.json().get("response", [])
+        except Exception:
+            self._fixtures_by_date_cache[key] = []
+            return []
+
+        finished = []
+        for fx in payload:
+            status_short = ((fx.get("fixture", {}) or {}).get("status", {}) or {}).get("short", "")
+            if status_short in {"FT", "AET", "PEN"}:
+                finished.append(fx)
+        self._fixtures_by_date_cache[key] = finished
+        return finished

@@ -138,13 +138,9 @@ class PredictionSitesScraper:
             match_links.append((text, full_url))
 
         out: list[ScrapedPrediction] = []
-        for label, match_url in match_links[:20]:
-            team_match = re.search(r"([A-Za-z0-9 .&'()/-]{2,})\s+vs\s+([A-Za-z0-9 .&'()/-]{2,})", label, re.IGNORECASE)
-            if not team_match:
-                continue
-
-            home = team_match.group(1).strip()
-            away = team_match.group(2).strip()
+        for _label, match_url in match_links[:20]:
+            home = ""
+            away = ""
 
             page_html = self._fetch(match_url)
             if not page_html:
@@ -154,9 +150,8 @@ class PredictionSitesScraper:
 
             # Prefer explicit 1X2 odds block, then map lowest odd to implied pick.
             odds_match = re.search(
-                rf"{re.escape(home)}\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)\s+"
-                rf"Draw\s+([0-9]+(?:\.[0-9]+)?)\s+"
-                rf"{re.escape(away)}\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)",
+                r"Betting\s+Tip\s+Odds\s+(.+?)\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)\s+"
+                r"Draw\s+([0-9]+(?:\.[0-9]+)?)\s+(.+?)\s+to\s+win\s+([0-9]+(?:\.[0-9]+)?)",
                 page_text,
                 flags=re.IGNORECASE,
             )
@@ -164,9 +159,11 @@ class PredictionSitesScraper:
             selection = None
             raw_pick = None
             if odds_match:
-                home_odd = float(odds_match.group(1))
-                draw_odd = float(odds_match.group(2))
-                away_odd = float(odds_match.group(3))
+                home = odds_match.group(1).strip()
+                home_odd = float(odds_match.group(2))
+                draw_odd = float(odds_match.group(3))
+                away = odds_match.group(4).strip()
+                away_odd = float(odds_match.group(5))
                 min_odd = min(home_odd, draw_odd, away_odd)
                 if min_odd == home_odd:
                     selection = "home"
@@ -175,6 +172,12 @@ class PredictionSitesScraper:
                 else:
                     selection = "draw"
                 raw_pick = f"odds:{home_odd}/{draw_odd}/{away_odd}"
+
+            if (not home or not away) and "/football/" in match_url and "-vs-" in match_url:
+                slug = match_url.rsplit("/", 1)[-1]
+                a, b = slug.split("-vs-", 1)
+                home = a.replace("-", " ").strip().title()
+                away = b.replace("-", " ").strip().title()
 
             if not selection:
                 selection = self._selection_from_tip_text(page_text, home, away)
@@ -214,14 +217,12 @@ class PredictionSitesScraper:
                 continue
 
             article_soup = BeautifulSoup(article_html, "html.parser")
-            title = (article_soup.title.string if article_soup.title else "") or ""
             text = article_soup.get_text(" ", strip=True)
-            match_obj = _MATCH_LINE_PATTERN.search(title) or _MATCH_LINE_PATTERN.search(text)
-            if not match_obj:
-                continue
 
-            home = match_obj.group(1).strip()
-            away = match_obj.group(2).strip()
+            teams = self._teams_from_eaglepredict_url(link)
+            if not teams:
+                continue
+            home, away = teams
             selection = self._selection_from_tip_text(text, home, away)
             if not selection:
                 continue
@@ -237,6 +238,22 @@ class PredictionSitesScraper:
             )
 
         return self._dedupe(out)
+
+    @staticmethod
+    def _teams_from_eaglepredict_url(url: str) -> tuple[str, str] | None:
+        m = re.search(r"/match/([a-z0-9\-]+)-pronostics-", url)
+        if not m:
+            return None
+        slug = m.group(1)
+        parts = slug.split("-")
+        if len(parts) < 2:
+            return None
+        mid = max(1, len(parts) // 2)
+        home = " ".join(parts[:mid]).replace("-", " ").strip().title()
+        away = " ".join(parts[mid:]).replace("-", " ").strip().title()
+        if not home or not away:
+            return None
+        return home, away
 
     @staticmethod
     def _selection_from_tip_text(text: str, home: str, away: str) -> str | None:
