@@ -148,6 +148,27 @@ def fetch_group_matches(
                 if "1A" in h_name or "2B" in h_name or "3RD" in h_name:
                     continue
 
+                # Cotes ESPN (moneyline US → décimal)
+                def _ml_to_dec(ml) -> float | None:
+                    if ml is None:
+                        return None
+                    try:
+                        v = float(str(ml).replace("+", ""))
+                        if str(ml).upper() == "EVEN":
+                            return 2.0
+                        return round(1 + v / 100, 2) if v > 0 else round(1 + 100 / abs(v), 2)
+                    except Exception:
+                        return None
+
+                odds_home = odds_draw = odds_away = None
+                odds_raw = [x for x in comp.get("odds", []) if x]
+                if odds_raw:
+                    o = odds_raw[0]
+                    ml = o.get("moneyline", {})
+                    odds_home = _ml_to_dec(ml.get("home", {}).get("close", {}).get("odds"))
+                    odds_away = _ml_to_dec(ml.get("away", {}).get("close", {}).get("odds"))
+                    odds_draw = _ml_to_dec(o.get("drawOdds", {}).get("moneyLine"))
+
                 all_matches.append({
                     "date": e.get("date", "")[:16],
                     "home": h_name,
@@ -159,6 +180,9 @@ def fetch_group_matches(
                     "status": state,
                     "group": group,
                     "espn_id": espn_id,
+                    "odds_home": odds_home,
+                    "odds_draw": odds_draw,
+                    "odds_away": odds_away,
                 })
         except Exception as e:
             console.print(f"[yellow]⚠️  ESPN {d}: {e}[/yellow]")
@@ -525,8 +549,23 @@ def _tg_send(token: str, chat_id: str, text: str) -> bool:
                 timeout=30,
             )
             if r.status_code != 200:
-                console.print(f"  [red]❌ Telegram: {r.json().get('description', r.text)}[/red]")
-                ok = False
+                # Fallback : réessayer sans parse_mode si erreur HTML
+                err = r.json().get("description", "")
+                if "parse" in err.lower() or "entities" in err.lower():
+                    import re as _re
+                    clean = _re.sub(r'<[^>]+>', '', chunk)
+                    r2 = httpx.post(
+                        _TG_API.format(token=token, method="sendMessage"),
+                        json={"chat_id": chat_id, "text": clean,
+                              "disable_web_page_preview": True},
+                        timeout=30,
+                    )
+                    if r2.status_code != 200:
+                        console.print(f"  [red]❌ Telegram: {r2.json().get('description', r2.text)}[/red]")
+                        ok = False
+                else:
+                    console.print(f"  [red]❌ Telegram: {err}[/red]")
+                    ok = False
         except Exception as e:
             console.print(f"  [red]❌ Telegram: {e}[/red]")
             ok = False
@@ -536,9 +575,11 @@ def _tg_send(token: str, chat_id: str, text: str) -> bool:
 
 def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
     """
-    Construit les messages Telegram CdM : aujourd'hui + demain, analyse par match.
+    Construit 3 messages Telegram distincts pour le canal betX CdM :
 
-    Retourne une liste de messages (un par match) pour éviter les messages trop longs.
+    MSG 1 – 🎯 Value Bets (bets avec edge > 5% vs bookmaker)
+    MSG 2 – 📊 Prédictions concises (tous matchs du jour + demain)
+    MSG 3 – 💎 Combiné du jour (si P(combiné) > 15% ET cote > 4.00)
     """
     today_str = filter_date or date.today().isoformat()
     tomorrow_str = (date.fromisoformat(today_str) + timedelta(days=1)).isoformat()
@@ -551,8 +592,6 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         )
 
     def _is_tomorrow(m: dict) -> bool:
-        # Demain = matchs dont la date UTC est tomorrow_str (hors ceux "de nuit")
-        # et les matchs 00:00–06:00 UTC du surlendemain
         if m["date"].startswith(tomorrow_str) and m["date"][11:13] >= "06":
             return True
         if m["date"].startswith(day_after_str) and m["date"][11:13] < "06":
@@ -561,119 +600,189 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
     today_matches = [m for m in data["matches"] if m.get("prediction") and _is_today(m)]
     tomorrow_matches = [m for m in data["matches"] if m.get("prediction") and _is_tomorrow(m)]
+    all_day_matches = sorted(today_matches, key=lambda x: x["date"]) + \
+                      sorted(tomorrow_matches, key=lambda x: x["date"])
 
-    if not today_matches and not tomorrow_matches:
+    if not all_day_matches:
         return []
 
-    icon_result = {"STATUS_FINAL": "✅", "STATUS_IN_PROGRESS": "🔴"}
+    # ── Helpers ──────────────────────────────────────────────────────────
 
-    def _match_block(m: dict, label: str = "") -> str:
-        """Analyse complète d'un match en HTML Telegram."""
-        pred = m["prediction"]
-        top5 = pred.get("top_scores", [])
+    def _implied(odds: float | None) -> float | None:
+        """Probabilité implicite sans marge."""
+        return (1.0 / odds) if odds and odds > 1.0 else None
+
+    def _edge(model_p: float, market_odds: float | None) -> float | None:
+        """Edge = modèle - marché."""
+        imp = _implied(market_odds)
+        return round(model_p - imp, 4) if imp else None
+
+    def _conf_badge(edge: float) -> str:
+        if edge >= 0.20: return "🟢🟢🟢"
+        if edge >= 0.15: return "🟢🟢"
+        if edge >= 0.10: return "🟢"
+        return "🟡"
+
+    COUNTRY_FLAGS = {
+        "mexico": "🇲🇽", "south africa": "🇿🇦", "south korea": "🇰🇷",
+        "czechia": "🇨🇿", "czech republic": "🇨🇿", "canada": "🇨🇦",
+        "bosnia-herzegovina": "🇧🇦", "usa": "🇺🇸", "united states": "🇺🇸",
+        "paraguay": "🇵🇾", "qatar": "🇶🇦", "switzerland": "🇨🇭",
+        "brazil": "🇧🇷", "morocco": "🇲🇦", "haiti": "🇭🇹",
+        "scotland": "🏴🇬🇧", "australia": "🇦🇺", "türkiye": "🇹🇷",
+        "germany": "🇩🇪", "curaçao": "🇨🇼", "netherlands": "🇳🇱",
+        "japan": "🇯🇵", "ivory coast": "🇨🇮", "ecuador": "🇪🇨",
+        "sweden": "🇸🇪", "tunisia": "🇹🇳", "spain": "🇪🇸",
+        "cape verde": "🇨🇻", "belgium": "🇧🇪", "egypt": "🇪🇬",
+        "saudi arabia": "🇸🇦", "uruguay": "🇺🇾", "iran": "🇮🇷",
+        "new zealand": "🇳🇿", "france": "🇫🇷", "senegal": "🇸🇳",
+        "iraq": "🇮🇶", "norway": "🇳🇴", "argentina": "🇦🇷",
+        "algeria": "🇩🇿", "austria": "🇦🇹", "jordan": "🇯🇴",
+        "portugal": "🇵🇹", "congo dr": "🇨🇩", "england": "🏴🇬🇧",
+        "croatia": "🇭🇷", "ghana": "🇬🇭", "panama": "🇵🇦",
+        "uzbekistan": "🇺🇿", "colombia": "🇨🇴",
+    }
+
+    def _flag(name: str) -> str:
+        flag = COUNTRY_FLAGS.get(name.lower(), "")
+        return flag  # Les drapeaux emoji sont OK dans Telegram HTML mode
+
+    # ── MSG 1 : Value Bets ────────────────────────────────────────────────
+
+    value_bets = []
+    for m in all_day_matches:
+        pred = m.get("prediction", {})
         ph = pred.get("p_home", 0)
         px = pred.get("p_draw", 0)
         pa = pred.get("p_away", 0)
-        lh = pred.get("lambda_home", 0)
-        la = pred.get("lambda_away", 0)
-        o25 = pred.get("p_over_25", 0)
-        btts = pred.get("p_btts", 0)
-        src = pred.get("source", "FIFA")
+        oh = m.get("odds_home")
+        ox = m.get("odds_draw")
+        oa = m.get("odds_away")
         time_str = m["date"][11:16] + "Z"
-        state = m.get("status", "")
-        icon = icon_result.get(state, "🕐")
-        src_tag = "📡" if src == "API" else ("🔀" if src == "MIXED" else "📊")
+        is_tmrw = _is_tomorrow(m)
+        day_tag = " [demain]" if is_tmrw else ""
 
-        # Favori + confiance
-        max_p = max(ph, px, pa)
-        if ph == max_p and ph > pa + 0.05:
-            fav_line = f"📌 Favori : <b>{m['home_short']}</b> ({ph:.0%})"
-        elif pa == max_p and pa > ph + 0.05:
-            fav_line = f"📌 Favori : <b>{m['away_short']}</b> ({pa:.0%})"
-        else:
-            fav_line = f"📌 Match équilibré ({ph:.0%} / {px:.0%} / {pa:.0%})"
+        for sel, prob, odds, label in [
+            ("home", ph, oh, m["home_short"]),
+            ("draw", px, ox, f"Nul {m['home_short']}-{m['away_short']}"),
+            ("away", pa, oa, m["away_short"]),
+        ]:
+            if not odds or odds <= 1.0:
+                continue
+            e = _edge(prob, odds)
+            if e and e >= 0.05:
+                value_bets.append({
+                    "label": label, "sel": sel, "odds": odds,
+                    "model_p": prob, "implied_p": _implied(odds),
+                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "home": m["home"], "away": m["away"],
+                    "home_short": m["home_short"], "away_short": m["away_short"],
+                })
 
-        # Score prédit
-        best = top5[0] if top5 else {}
-        best_score = best.get("score", "?")
-        best_prob = best.get("prob", 0)
-        h_g, a_g = (best_score.split("-") if "-" in best_score else ("?", "?"))
-        if h_g != "?" and a_g != "?" and int(h_g) > int(a_g):
-            score_icon = "⬆️"
-        elif h_g != "?" and a_g != "?" and int(h_g) < int(a_g):
-            score_icon = "⬇️"
-        else:
-            score_icon = "↔️"
+    value_bets.sort(key=lambda x: x["edge"], reverse=True)
 
-        # Top 5 scores
-        scores_lines = "  ".join(
-            f"<b>{s['score']}</b> {s['prob']*100:.0f}%" for s in top5[:5]
-        )
-
-        # Résultat réel si dispo
-        result_line = ""
-        if state == "STATUS_FINAL" and m.get("home_score") is not None:
-            actual = f"{m['home_score']}-{m['away_score']}"
-            correct_tag = " 🎯" if actual == best_score else ""
-            result_line = f"\n✅ <b>Résultat final : {actual}</b>{correct_tag}"
-
-        # Analyse des marchés
-        # Quel pari a le plus de valeur vs une cote de bookmaker typique ?
-        # On calcule l'edge implicite basé sur notre λ vs marché standard
-        lines = [
-            f"{icon} {src_tag} {label}<b>{m['home']} vs {m['away']}</b>",
-            f"🕐 {time_str} (UTC)",
-            "",
-            f"⚽ Score prédit : {score_icon} <b>{best_score}</b> ({best_prob*100:.0f}%)",
-            f"🎯 Top 5 : {scores_lines}",
-            "",
-            f"📊 <b>Probabilités modèle</b>",
-            f"  1️⃣ {m['home_short']} : <b>{ph:.0%}</b>",
-            f"  ↔️  Nul          : <b>{px:.0%}</b>",
-            f"  2️⃣ {m['away_short']} : <b>{pa:.0%}</b>",
-            "",
-            f"📈 <b>Marchés</b>",
-            f"  Over 2.5 : <b>{o25:.0%}</b>  │  BTTS : <b>{btts:.0%}</b>",
-            f"  λ {m['home_short']} {lh:.2f} buts │ λ {m['away_short']} {la:.2f} buts",
-            "",
-            fav_line,
-            result_line if result_line else "",
+    if value_bets:
+        lines1 = [f"🎯 <b>betX CdM – Value Bets</b>", ""]
+        for vb in value_bets:
+            badge = _conf_badge(vb["edge"])
+            lines1 += [
+                f"{badge} {_flag(vb['label'])} <b>{vb['label']}</b> @{vb['odds']:.2f}{vb['day_tag']}",
+                f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: {vb['implied_p']:.0%}",
+                f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>",
+                f"   🕐 {vb['time']}",
+                "",
+            ]
+        lines1 += [
+            "━" * 28,
+            f'📊 <a href="http://213.199.41.168">Dashboard complet</a>',
         ]
-        # Nettoyage ligne vide finale
-        while lines and lines[-1] == "":
-            lines.pop()
-        return "\n".join(lines)
-
-    # ── Construire les messages ──
-    messages = []
-
-    # Header aujourd'hui
-    if today_matches:
-        header = (
-            f"🌍 <b>CdM 2026 – Matchs d'aujourd'hui</b>\n"
-            f"📅 {today_str} │ {len(today_matches)} match(s)\n"
-            f"━" * 28
+        msg1 = "\n".join(lines1)
+    else:
+        msg1 = (
+            "🎯 <b>betX CdM – Value Bets</b>\n\n"
+            "⚪ Aucun value bet détecté aujourd'hui.\n"
+            "<i>(edge < 5% sur toutes les sélections)</i>\n\n"
+            f'📊 <a href="http://213.199.41.168">Dashboard complet</a>'
         )
-        messages.append(header)
-        for m in sorted(today_matches, key=lambda x: x["date"]):
-            messages.append(_match_block(m))
 
-    # Header demain
-    if tomorrow_matches:
-        sep = (
-            f"\n🌍 <b>CdM 2026 – Matchs de demain</b>\n"
-            f"📅 {tomorrow_str} │ {len(tomorrow_matches)} match(s)\n"
-            f"━" * 28
-        )
-        messages.append(sep)
-        for m in sorted(tomorrow_matches, key=lambda x: x["date"]):
-            messages.append(_match_block(m, label="[demain] "))
+    # ── MSG 2 : Prédictions concises ─────────────────────────────────────
 
-    # Footer
-    messages.append(
-        f'📊 <a href="http://213.199.41.168">Dashboard Live</a>\n'
-        f"<i>📡API-Football | 🔀Mixte | 📊FIFA ranking</i>"
-    )
+    lines2 = ["📊 <b>Prédictions du modèle</b>", ""]
+
+    def _section(matches: list[dict], label: str):
+        nonlocal lines2
+        if not matches:
+            return
+        lines2.append(f"<b>{label}</b>")
+        for m in matches:
+            pred = m.get("prediction", {})
+            ph = pred.get("p_home", 0)
+            px = pred.get("p_draw", 0)
+            pa = pred.get("p_away", 0)
+            top1 = pred.get("top_scores", [{}])[0] if pred.get("top_scores") else {}
+            score = top1.get("score", "?")
+            prob_score = top1.get("prob", 0)
+            state = m.get("status", "")
+            time_str = m["date"][11:16] + "Z"
+
+            # Résultat si disponible
+            if state == "STATUS_FINAL" and m.get("home_score") is not None:
+                actual = f"{m['home_score']}-{m['away_score']}"
+                correct = " 🎯" if actual == score else ""
+                result = f"  ✅ {actual}{correct}"
+            else:
+                result = f"  🕐 {time_str}"
+
+            lines2 += [
+                f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>",
+                f"  1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
+                f"  ⚽ Score : <b>{score}</b> ({prob_score*100:.0f}%){result}",
+                "",
+            ]
+
+    _section(sorted(today_matches, key=lambda x: x["date"]), "📅 Aujourd'hui")
+    _section(sorted(tomorrow_matches, key=lambda x: x["date"]), "📅 Demain")
+
+    lines2.append(f'<i>Modèle : Poisson + Dixon-Coles + MC 10k</i>')
+    msg2 = "\n".join(lines2)
+
+    # ── MSG 3 : Combiné conditionnel ─────────────────────────────────────
+
+    msg3 = None
+    if len(value_bets) >= 2:
+        # Prendre les 2 meilleurs value bets indépendants (matchs différents)
+        seen_matches: set[str] = set()
+        combo = []
+        for vb in value_bets:
+            key = f"{vb['home']}_{vb['away']}"
+            if key not in seen_matches:
+                combo.append(vb)
+                seen_matches.add(key)
+            if len(combo) == 2:
+                break
+
+        if len(combo) == 2:
+            p_combined = combo[0]["model_p"] * combo[1]["model_p"]
+            o_combined = combo[0]["odds"] * combo[1]["odds"]
+            if p_combined >= 0.15 and o_combined >= 4.00:
+                gain_10 = round(10 * o_combined, 2)
+                lines3 = [
+                    "💎 <b>betX CdM – Combiné du jour</b>",
+                    "",
+                    f"✅ {_flag(combo[0]['label'])} <b>{combo[0]['label']}</b> @{combo[0]['odds']:.2f}",
+                    f"✅ {_flag(combo[1]['label'])} <b>{combo[1]['label']}</b> @{combo[1]['odds']:.2f}",
+                    "",
+                    f"🎰 Cote combinée : <b>{o_combined:.2f}</b>",
+                    f"📈 Proba modèle : <b>{p_combined:.0%}</b>",
+                    f"💰 10€ → <b>{gain_10:.0f}€</b>",
+                    "",
+                    "<i>⚠️ Combiné à faible mise. Ne jamais dépasser 2% bankroll.</i>",
+                ]
+                msg3 = "\n".join(lines3)
+
+    messages = [msg1, msg2]
+    if msg3:
+        messages.append(msg3)
     return messages
 
 

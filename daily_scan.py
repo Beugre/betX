@@ -699,27 +699,6 @@ def main():
         else:
             send_telegram(data, chat_id=args.chat_id)
 
-    # ── Prédictions Coupe du Monde (auto pendant la CdM 2026) ──
-    from datetime import date as _date
-    _wc_start = _date(2026, 6, 11)
-    _wc_end   = _date(2026, 6, 28)  # fin phase de groupes
-    if _wc_start <= _date.today() <= _wc_end:
-        print("\n🌍 Mise à jour prédictions Coupe du Monde...")
-        try:
-            from predict_wc_groups import (
-                fetch_group_matches, load_profiles, export_predictions,
-                send_wc_telegram,
-            )
-            wc_matches = fetch_group_matches(_wc_start, _wc_end)
-            wc_teams = list({m["home"] for m in wc_matches} | {m["away"] for m in wc_matches})
-            wc_profiles = load_profiles(wc_teams, fetch=False)
-            wc_data = export_predictions(wc_matches, wc_profiles)
-            if args.notify:
-                send_wc_telegram(wc_data)
-                print("  ✅ Telegram CdM envoyé")
-        except Exception as e:
-            print(f"  ⚠️  CdM update failed: {e}")
-
     print("\n✅ Scan quotidien terminé.")
 
 
