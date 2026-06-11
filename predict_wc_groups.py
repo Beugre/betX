@@ -1051,7 +1051,13 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 e_best = best_edge[0] - 1/best_edge[1] if best_edge[1] > 1 else 0
                 if e_best >= 0.05:
                     vb_label = best_edge[2]
-                    vb_note = " ⚠️ <i>(value ≠ favori)</i>" if vb_label != likely[2] else ""
+                    if vb_label != likely[2]:
+                        if e_best >= 0.20:
+                            vb_note = " ⚠️ <i>(value ≠ favori — écart exceptionnel, valider sur historique)</i>"
+                        else:
+                            vb_note = " ⚠️ <i>(value ≠ favori)</i>"
+                    else:
+                        vb_note = ""
                     value_line = f"  💎 Value bet : <b>{vb_label}</b>{vb_note} — {_edge_display(best_edge[0], best_edge[1])}"
                 elif e_best > 0:
                     value_line = f"  ⚪ Pas de value significatif (edge max {e_best*100:+.1f}%)"
