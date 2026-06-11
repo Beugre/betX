@@ -450,7 +450,7 @@ def display_predictions(matches: list[dict], profiles: dict, filter_date: str | 
                 pa_str = f"{pa:.0%}"
 
             src_color = {"API": "green", "MIXED": "yellow", "FIFA": "dim"}.get(pred["source"], "white")
-            time_str = m["date"][11:16] + "Z"
+            h, mi = int(m["date"][11:13]), int(m["date"][14:16]); fr_h = (h + 2) % 24; time_str = f"{fr_h:02d}h{mi:02d} (heure fr)"
 
             table.add_row(
                 f"[bold]{m['home_short']}[/bold] vs {m['away_short']}\n[dim]{time_str}[/dim]",
@@ -722,7 +722,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         oh = m.get("odds_home")
         ox = m.get("odds_draw")
         oa = m.get("odds_away")
-        time_str = m["date"][11:16] + "Z"
+        h, mi = int(m["date"][11:13]), int(m["date"][14:16]); fr_h = (h + 2) % 24; time_str = f"{fr_h:02d}h{mi:02d} (heure fr)"
         is_tmrw = _is_tomorrow(m)
         day_tag = " [demain]" if is_tmrw else ""
         match_label = f"{m['home_short']}-{m['away_short']}"
@@ -859,7 +859,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             score = top1.get("score", "?")
             prob_score = top1.get("prob", 0)
             state = m.get("status", "")
-            time_str = m["date"][11:16] + "Z"
+            h, mi = int(m["date"][11:13]), int(m["date"][14:16]); fr_h = (h + 2) % 24; time_str = f"{fr_h:02d}h{mi:02d} (heure fr)"
             lh = pred.get("lambda_home", 0)
             la = pred.get("lambda_away", 0)
 
