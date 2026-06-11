@@ -102,7 +102,7 @@ CONFEDERATION_COMP_IDS: dict[str, set[int]] = {
     "concacaf": {9, 22, 31, 536},
     "conmebol": {9, 34},
     "uefa":     {4, 8, 32},
-    "afc":      {26},
+    "afc":      {7, 26, 30},   # 7=Asian Cup, 26=qualifs old, 30=WC Qual Asia
 }
 
 # Toutes les compétitions compétitives (union)
@@ -113,20 +113,22 @@ ALL_COMPETITIVE_IDS: set[int] = set().union(*CONFEDERATION_COMP_IDS.values())
 MATCH_TYPE_WEIGHTS: dict[int, float] = {
     1:   1.8,   # World Cup
     6:   1.6,   # AFCON
+    7:   1.5,   # Asian Cup
     9:   1.6,   # Copa America
     21:  1.5,   # Confederations Cup
-    29:  1.4,   # WC Qualifiers Africa
+    29:  1.2,   # WC Qualifiers Africa (adversaires souvent faibles)
+    30:  1.3,   # WC Qualifiers Asia
     31:  1.4,   # WC Qualifiers CONCACAF
     32:  1.4,   # WC Qualifiers UEFA
     34:  1.4,   # WC Qualifiers CONMEBOL
-    26:  1.4,   # WC Qualifiers AFC
-    36:  1.3,   # AFCON Qualifiers
+    26:  1.3,   # WC Qualifiers AFC
+    36:  1.1,   # AFCON Qualifiers (adversaires très variés)
     8:   1.3,   # UEFA Nations League
     22:  1.3,   # CONCACAF Gold Cup
     4:   1.3,   # Euro
     536: 1.2,   # CONCACAF Nations League
-    859: 1.0,   # COSAFA Cup
-    10:  0.7,   # Friendlies
+    859: 0.8,   # COSAFA Cup (adversaires faibles, impact réduit)
+    10:  0.6,   # Friendlies
 }
 
 # Saisons accessibles en plan Free
