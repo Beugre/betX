@@ -678,10 +678,25 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         return round(model_p - imp, 4) if imp else None
 
     def _conf_badge(edge: float) -> str:
-        if edge >= 0.20: return "🟢🟢🟢"
-        if edge >= 0.15: return "🟢🟢"
-        if edge >= 0.10: return "🟢"
-        return "🟡"
+        if edge >= 0.20: return "★★★★★"
+        if edge >= 0.15: return "★★★★☆"
+        if edge >= 0.10: return "★★★☆☆"
+        return "★★☆☆☆"
+
+    def _kelly_stake(model_p: float, odds: float, fraction: float = 0.25) -> float:
+        """
+        Kelly fractionnel (fraction=0.25 par défaut).
+        f* = (p*(b+1) - 1) / b  où b = odds - 1
+        Retourne le % de bankroll recommandé (0..100).
+        Plafonné à 5% pour éviter les sur-mises.
+        """
+        b = odds - 1
+        if b <= 0:
+            return 0.0
+        kelly = (model_p * (b + 1) - 1) / b
+        if kelly <= 0:
+            return 0.0
+        return round(min(kelly * fraction * 100, 5.0), 1)
 
     COUNTRY_FLAGS = {
         "mexico": "🇲🇽", "south africa": "🇿🇦", "south korea": "🇰🇷",
@@ -788,15 +803,21 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             badge = _conf_badge(vb["edge"])
             mkt_tag = f" [{vb['market']}]" if vb.get("market", "1X2") != "1X2" else ""
             odds_tag = "@~" if vb.get("market") in ("O/U", "BTTS") else "@"
+            kelly = _kelly_stake(vb["model_p"], vb["odds"])
+            kelly_str = f"   💰 Kelly 25% : <b>{kelly:.1f}% bankroll</b>" if kelly > 0 else ""
             lines1 += [
                 f"{badge} {_flag(vb['label'].split()[0] if vb['label'] else '')} <b>{vb['label']}</b>{mkt_tag} {odds_tag}{vb['odds']:.2f}{vb['day_tag']}",
                 f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: {vb['implied_p']:.0%}",
-                f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>",
+                f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>  │  EV: <b>{vb.get('ev', 0)*100:+.0f}%</b>",
+                kelly_str if kelly_str else None,
                 f"   🕐 {vb['time']}",
                 "",
             ]
+            # Filtrer les None
+            lines1 = [l for l in lines1 if l is not None]
         lines1 += [
             "━" * 28,
+            "<i>★★★★★ Edge >20% | ★★★★ >15% | ★★★ >10% | ★★ >5%</i>",
             f'📊 <a href="http://213.199.41.168">Dashboard complet</a>',
         ]
         msg1 = "\n".join(lines1)
