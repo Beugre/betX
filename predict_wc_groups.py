@@ -534,87 +534,151 @@ def _tg_send(token: str, chat_id: str, text: str) -> bool:
     return ok
 
 
-def build_wc_telegram(data: dict, filter_date: str | None = None) -> str:
-    """Construit le message Telegram pour les prédictions CdM du jour.
+def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
+    """
+    Construit les messages Telegram CdM : aujourd'hui + demain, analyse par match.
 
-    Inclut les matchs jusqu'à 06:00 UTC du lendemain (matchs "de nuit"
-    qui sont en soirée heure européenne mais tombent le lendemain en UTC).
+    Retourne une liste de messages (un par match) pour éviter les messages trop longs.
     """
     today_str = filter_date or date.today().isoformat()
-    # Lendemain pour couvrir les matchs 00:00–06:00 UTC (soirée européenne)
     tomorrow_str = (date.fromisoformat(today_str) + timedelta(days=1)).isoformat()
+    day_after_str = (date.fromisoformat(today_str) + timedelta(days=2)).isoformat()
 
-    today_matches = [
-        m for m in data["matches"]
-        if m.get("prediction") and (
+    def _is_today(m: dict) -> bool:
+        return (
             m["date"].startswith(today_str)
             or (m["date"].startswith(tomorrow_str) and m["date"][11:13] < "06")
         )
-    ]
 
-    if not today_matches:
-        return ""
+    def _is_tomorrow(m: dict) -> bool:
+        # Demain = matchs dont la date UTC est tomorrow_str (hors ceux "de nuit")
+        # et les matchs 00:00–06:00 UTC du surlendemain
+        if m["date"].startswith(tomorrow_str) and m["date"][11:13] >= "06":
+            return True
+        if m["date"].startswith(day_after_str) and m["date"][11:13] < "06":
+            return True
+        return False
+
+    today_matches = [m for m in data["matches"] if m.get("prediction") and _is_today(m)]
+    tomorrow_matches = [m for m in data["matches"] if m.get("prediction") and _is_tomorrow(m)]
+
+    if not today_matches and not tomorrow_matches:
+        return []
 
     icon_result = {"STATUS_FINAL": "✅", "STATUS_IN_PROGRESS": "🔴"}
 
-    lines = [
-        "🌍 <b>Coupe du Monde 2026 – Prédictions du jour</b>",
-        f"📅 {today_str} │ Modèle : Poisson + Dixon-Coles + MC",
-        "",
-        "━" * 28,
-    ]
-
-    for m in today_matches:
+    def _match_block(m: dict, label: str = "") -> str:
+        """Analyse complète d'un match en HTML Telegram."""
         pred = m["prediction"]
-        top3 = pred.get("top_scores", [])
+        top5 = pred.get("top_scores", [])
         ph = pred.get("p_home", 0)
         px = pred.get("p_draw", 0)
         pa = pred.get("p_away", 0)
         lh = pred.get("lambda_home", 0)
         la = pred.get("lambda_away", 0)
+        o25 = pred.get("p_over_25", 0)
+        btts = pred.get("p_btts", 0)
         src = pred.get("source", "FIFA")
         time_str = m["date"][11:16] + "Z"
         state = m.get("status", "")
         icon = icon_result.get(state, "🕐")
         src_tag = "📡" if src == "API" else ("🔀" if src == "MIXED" else "📊")
 
-        # Favori
-        if ph > pa + 0.05:
-            fav = f"<b>{m['home_short']}</b> favori"
-        elif pa > ph + 0.05:
-            fav = f"<b>{m['away_short']}</b> favori"
+        # Favori + confiance
+        max_p = max(ph, px, pa)
+        if ph == max_p and ph > pa + 0.05:
+            fav_line = f"📌 Favori : <b>{m['home_short']}</b> ({ph:.0%})"
+        elif pa == max_p and pa > ph + 0.05:
+            fav_line = f"📌 Favori : <b>{m['away_short']}</b> ({pa:.0%})"
         else:
-            fav = "match équilibré"
+            fav_line = f"📌 Match équilibré ({ph:.0%} / {px:.0%} / {pa:.0%})"
 
-        # Score réel si terminé
-        result_line = ""
-        if state == "STATUS_FINAL" and m.get("home_score") is not None:
-            result_line = f"\n  ✅ Résultat : <b>{m['home_score']}-{m['away_score']}</b>"
+        # Score prédit
+        best = top5[0] if top5 else {}
+        best_score = best.get("score", "?")
+        best_prob = best.get("prob", 0)
+        h_g, a_g = (best_score.split("-") if "-" in best_score else ("?", "?"))
+        if h_g != "?" and a_g != "?" and int(h_g) > int(a_g):
+            score_icon = "⬆️"
+        elif h_g != "?" and a_g != "?" and int(h_g) < int(a_g):
+            score_icon = "⬇️"
+        else:
+            score_icon = "↔️"
 
-        scores_str = "  ".join(
-            f"{s['score']} ({s['prob']*100:.0f}%)" for s in top3[:3]
+        # Top 5 scores
+        scores_lines = "  ".join(
+            f"<b>{s['score']}</b> {s['prob']*100:.0f}%" for s in top5[:5]
         )
 
-        lines += [
-            "",
-            f"{icon} {src_tag} <b>{m['home_short']} vs {m['away_short']}</b> — {time_str}",
-            f"  🎯 {scores_str}",
-            f"  λ {lh:.2f}–{la:.2f} │ {ph:.0%} / {px:.0%} / {pa:.0%}",
-            f"  📌 {fav}" + result_line,
-        ]
+        # Résultat réel si dispo
+        result_line = ""
+        if state == "STATUS_FINAL" and m.get("home_score") is not None:
+            actual = f"{m['home_score']}-{m['away_score']}"
+            correct_tag = " 🎯" if actual == best_score else ""
+            result_line = f"\n✅ <b>Résultat final : {actual}</b>{correct_tag}"
 
-    lines += [
-        "",
-        "━" * 28,
-        "",
-        f'📊 <a href="http://213.199.41.168">Dashboard Live</a>',
-        "<i>Src: 📡API-Football | 🔀Mixte | 📊FIFA ranking</i>",
-    ]
-    return "\n".join(lines)
+        # Analyse des marchés
+        # Quel pari a le plus de valeur vs une cote de bookmaker typique ?
+        # On calcule l'edge implicite basé sur notre λ vs marché standard
+        lines = [
+            f"{icon} {src_tag} {label}<b>{m['home']} vs {m['away']}</b>",
+            f"🕐 {time_str} (UTC)",
+            "",
+            f"⚽ Score prédit : {score_icon} <b>{best_score}</b> ({best_prob*100:.0f}%)",
+            f"🎯 Top 5 : {scores_lines}",
+            "",
+            f"📊 <b>Probabilités modèle</b>",
+            f"  1️⃣ {m['home_short']} : <b>{ph:.0%}</b>",
+            f"  ↔️  Nul          : <b>{px:.0%}</b>",
+            f"  2️⃣ {m['away_short']} : <b>{pa:.0%}</b>",
+            "",
+            f"📈 <b>Marchés</b>",
+            f"  Over 2.5 : <b>{o25:.0%}</b>  │  BTTS : <b>{btts:.0%}</b>",
+            f"  λ {m['home_short']} {lh:.2f} buts │ λ {m['away_short']} {la:.2f} buts",
+            "",
+            fav_line,
+            result_line if result_line else "",
+        ]
+        # Nettoyage ligne vide finale
+        while lines and lines[-1] == "":
+            lines.pop()
+        return "\n".join(lines)
+
+    # ── Construire les messages ──
+    messages = []
+
+    # Header aujourd'hui
+    if today_matches:
+        header = (
+            f"🌍 <b>CdM 2026 – Matchs d'aujourd'hui</b>\n"
+            f"📅 {today_str} │ {len(today_matches)} match(s)\n"
+            f"━" * 28
+        )
+        messages.append(header)
+        for m in sorted(today_matches, key=lambda x: x["date"]):
+            messages.append(_match_block(m))
+
+    # Header demain
+    if tomorrow_matches:
+        sep = (
+            f"\n🌍 <b>CdM 2026 – Matchs de demain</b>\n"
+            f"📅 {tomorrow_str} │ {len(tomorrow_matches)} match(s)\n"
+            f"━" * 28
+        )
+        messages.append(sep)
+        for m in sorted(tomorrow_matches, key=lambda x: x["date"]):
+            messages.append(_match_block(m, label="[demain] "))
+
+    # Footer
+    messages.append(
+        f'📊 <a href="http://213.199.41.168">Dashboard Live</a>\n'
+        f"<i>📡API-Football | 🔀Mixte | 📊FIFA ranking</i>"
+    )
+    return messages
 
 
 def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
-    """Envoie les prédictions CdM via Telegram (DM + channel)."""
+    """Envoie les prédictions CdM via Telegram — un message par match."""
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
     dm_id = os.getenv("TELEGRAM_CHAT_ID", "")
     channel_id = os.getenv("TELEGRAM_CHANNEL_ID", "")
@@ -623,9 +687,9 @@ def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
         console.print("[yellow]⚠️  TELEGRAM_BOT_TOKEN manquant — envoi ignoré[/yellow]")
         return False
 
-    msg = build_wc_telegram(data, filter_date)
-    if not msg:
-        console.print("[yellow]⚠️  Aucun match aujourd'hui à envoyer[/yellow]")
+    messages = build_wc_telegram(data, filter_date)
+    if not messages:
+        console.print("[yellow]⚠️  Aucun match à envoyer[/yellow]")
         return False
 
     targets = [(dm_id, "DM"), (channel_id, "Channel")]
@@ -633,9 +697,13 @@ def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
     for cid, label in targets:
         if not cid:
             continue
-        if _tg_send(token, cid, msg):
-            console.print(f"  ✅ Telegram {label} envoyé")
-        else:
+        sent = 0
+        for msg in messages:
+            if msg.strip():
+                if _tg_send(token, cid, msg):
+                    sent += 1
+        console.print(f"  ✅ Telegram {label} : {sent} messages envoyés")
+        if sent == 0:
             ok = False
     return ok
 
