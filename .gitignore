@@ -18,3 +18,9 @@ data/*.csv
 .mypy_cache/
 .coverage
 htmlcov/
+# Données dynamiques générées à l'exécution (non versionnées)
+data/daily_bets.json
+data/prediction_log.json
+data/cache/national_teams.json
+data/cache/wc_tg_sent.txt
+data/cache/espn_league_stats.json
