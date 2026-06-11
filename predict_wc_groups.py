@@ -800,41 +800,39 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
     value_bets.sort(key=lambda x: x["edge"], reverse=True)
 
+    def _signal_score(vb: dict) -> float:
+        """
+        Score composite du signal :
+          signal = prob * 0.4 + edge * 1.5 + ev * 0.3
+        (toutes valeurs en 0..1, ev peut être >1 → cap à 0.5)
+        """
+        prob = vb.get("model_p", 0)
+        edge = vb.get("edge", 0)
+        ev = min(vb.get("ev", 0), 0.5)
+        return prob * 0.4 + edge * 1.5 + ev * 0.3
+
     def _reliability(vb: dict, pred: dict | None = None) -> str:
         """
-        Fiabilité du signal PAR MARCHÉ — deux notions séparées :
+        Qualité du signal composite (prob + edge + EV), par marché.
 
-        O/U et BTTS → confiance = abs(prob - 50%)
-          ≥ 20pts : 🟢 Signal fort     (prob ≥70% ou ≤30%)
-          ≥ 10pts : 🟡 Signal correct  (prob ≥60% ou ≤40%)
-          < 10pts : 🔴 Signal faible
-
-        1X2 → certitude = max(P1, PX, P2)
-          ≥ 60%   : 🟢 Faible incertitude sur le vainqueur
-          ≥ 45%   : 🟡 Incertitude modérée
-          < 45%   : 🔴 Forte incertitude (match à 3 issues équilibrées)
-          → toujours ajouter l'avertissement sur les gros edges 1X2
+        O/U et BTTS : score composite ≥ 0.80 🟢 | ≥ 0.60 🟡 | < 0.60 🔴
+        1X2         : incertitude = max(P1, PX, P2)
         """
         if pred is None:
             return ""
 
         market = vb.get("market", "1X2")
-        model_p = vb.get("model_p", 0.5)
 
         if market in ("O/U", "BTTS"):
-            # Confiance = écart de la probabilité par rapport à 50%
-            conf = abs(model_p - 0.5)  # 0..0.5
-            signal = vb.get("edge", 0) * conf * 4  # score composite 0..1
-            if conf >= 0.20:
+            sc = _signal_score(vb)
+            prob = vb.get("model_p", 0.5)
+            if sc >= 0.80:
                 quality = "🟢 <b>Fort</b>"
-                detail = f"prob {model_p:.0%} → signal clair"
-            elif conf >= 0.10:
+            elif sc >= 0.60:
                 quality = "🟡 Correct"
-                detail = f"prob {model_p:.0%} → signal modéré"
             else:
                 quality = "🔴 Faible"
-                detail = f"prob {model_p:.0%} → trop proche de 50%"
-            return f"🎯 Qualité signal : {quality}  <i>({detail})</i>"
+            return f"🎯 Signal : {quality}  <i>(score {sc:.2f} | prob {prob:.0%})</i>"
 
         else:  # 1X2
             max_prob = max(pred.get("p_home", 0), pred.get("p_draw", 0), pred.get("p_away", 0))
@@ -847,7 +845,55 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             else:
                 uncertainty = "🔴 Forte incertitude"
                 detail = f"3 issues quasi-équiprobables (P max {max_prob:.0%})"
-            return f"🎯 Qualité signal : {uncertainty}  <i>({detail})</i>"
+            return f"🎯 Signal : {uncertainty}  <i>({detail})</i>"
+
+    def _narrative(m: dict, pred: dict) -> str:
+        """
+        Résumé narratif automatique en 2 lignes depuis les λ et probabilités.
+        Ex : "Match ouvert attendu. Corée nettement favorite."
+        """
+        lh = pred.get("lambda_home", 0)
+        la = pred.get("lambda_away", 0)
+        lam_tot = lh + la
+        o25 = pred.get("p_over_25", 0)
+        btts = pred.get("p_btts", 0)
+        ph = pred.get("p_home", 0)
+        px = pred.get("p_draw", 0)
+        pa = pred.get("p_away", 0)
+        home_s = m.get("home_short", "")
+        away_s = m.get("away_short", "")
+
+        # Volume de buts
+        if lam_tot >= 3.0:
+            volume = f"Match offensif attendu ({lam_tot:.1f} buts prévisus)."
+        elif lam_tot >= 2.2:
+            volume = f"Match équilibré avec quelques buts ({lam_tot:.1f} prévisus)."
+        else:
+            volume = f"Match fermé et défensif attendu ({lam_tot:.1f} buts prévisus)."
+
+        # Favoris
+        if ph >= 0.60:
+            fav = f"{home_s} nettement favori ({ph:.0%})."
+        elif pa >= 0.60:
+            fav = f"{away_s} nettement favori ({pa:.0%})."
+        elif ph >= 0.45:
+            fav = f"{home_s} légèrement favori ({ph:.0%})."
+        elif pa >= 0.45:
+            fav = f"{away_s} légèrement favori ({pa:.0%})."
+        else:
+            fav = f"Rencontre très équilibrée ({ph:.0%}/{px:.0%}/{pa:.0%})."
+
+        # Marchés dérivés
+        if o25 >= 0.65:
+            derived = f"Over 2.5 probable ({o25:.0%})."
+        elif o25 <= 0.35:
+            derived = f"Under 2.5 probable ({1-o25:.0%})."
+        else:
+            derived = f"Over 2.5 incertain ({o25:.0%})."
+
+        btts_str = f"BTTS {'probable' if btts >= 0.55 else 'improbable'} ({btts:.0%})."
+
+        return f"{volume} {fav} {derived} {btts_str}"
 
     # Construire un index des prédictions par match pour la fiabilité
     _pred_by_match: dict[str, dict] = {}
@@ -1017,6 +1063,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
             lines2 += [
                 f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>  │  {result_line}",
+                f"  <i>{_narrative(m, pred)}</i>",
                 f"  🔢 Modèle : 1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
                 bk_line,
                 rec_line if rec_line else None,
