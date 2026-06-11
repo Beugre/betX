@@ -802,24 +802,52 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
     def _reliability(vb: dict, pred: dict | None = None) -> str:
         """
-        Indicateur de fiabilité basé sur les λ et la certitude de la prédiction.
-        Ne tient pas compte de la qualité des données (à améliorer avec historique).
+        Fiabilité du signal PAR MARCHÉ — deux notions séparées :
 
-        Haute  : λ diff > 1.0 ET prob > 65%  → modèle très tranché
-        Moyenne: λ diff > 0.5 OU prob > 55%
-        Faible : sinon (match équilibré / λ proches)
+        O/U et BTTS → confiance = abs(prob - 50%)
+          ≥ 20pts : 🟢 Signal fort     (prob ≥70% ou ≤30%)
+          ≥ 10pts : 🟡 Signal correct  (prob ≥60% ou ≤40%)
+          < 10pts : 🔴 Signal faible
+
+        1X2 → certitude = max(P1, PX, P2)
+          ≥ 60%   : 🟢 Faible incertitude sur le vainqueur
+          ≥ 45%   : 🟡 Incertitude modérée
+          < 45%   : 🔴 Forte incertitude (match à 3 issues équilibrées)
+          → toujours ajouter l'avertissement sur les gros edges 1X2
         """
         if pred is None:
             return ""
-        lh = pred.get("lambda_home", 0)
-        la = pred.get("lambda_away", 0)
-        lam_diff = abs(lh - la)
-        max_prob = max(pred.get("p_home", 0), pred.get("p_draw", 0), pred.get("p_away", 0))
-        if lam_diff > 1.0 and max_prob >= 0.65:
-            return "🧠 Fiabilité : <b>Haute</b>  (λ diff {:.2f}, P max {:.0%})".format(lam_diff, max_prob)
-        if lam_diff > 0.5 or max_prob >= 0.55:
-            return "🧠 Fiabilité : Moyenne  (λ diff {:.2f}, P max {:.0%})".format(lam_diff, max_prob)
-        return "🧠 Fiabilité : <i>Faible — match très ouvert</i>  (λ diff {:.2f})".format(lam_diff)
+
+        market = vb.get("market", "1X2")
+        model_p = vb.get("model_p", 0.5)
+
+        if market in ("O/U", "BTTS"):
+            # Confiance = écart de la probabilité par rapport à 50%
+            conf = abs(model_p - 0.5)  # 0..0.5
+            signal = vb.get("edge", 0) * conf * 4  # score composite 0..1
+            if conf >= 0.20:
+                quality = "🟢 <b>Fort</b>"
+                detail = f"prob {model_p:.0%} → signal clair"
+            elif conf >= 0.10:
+                quality = "🟡 Correct"
+                detail = f"prob {model_p:.0%} → signal modéré"
+            else:
+                quality = "🔴 Faible"
+                detail = f"prob {model_p:.0%} → trop proche de 50%"
+            return f"🎯 Qualité signal : {quality}  <i>({detail})</i>"
+
+        else:  # 1X2
+            max_prob = max(pred.get("p_home", 0), pred.get("p_draw", 0), pred.get("p_away", 0))
+            if max_prob >= 0.60:
+                uncertainty = "🟢 Faible incertitude"
+                detail = f"favori clair à {max_prob:.0%}"
+            elif max_prob >= 0.45:
+                uncertainty = "🟡 Incertitude modérée"
+                detail = f"P max {max_prob:.0%}"
+            else:
+                uncertainty = "🔴 Forte incertitude"
+                detail = f"3 issues quasi-équiprobables (P max {max_prob:.0%})"
+            return f"🎯 Qualité signal : {uncertainty}  <i>({detail})</i>"
 
     # Construire un index des prédictions par match pour la fiabilité
     _pred_by_match: dict[str, dict] = {}
