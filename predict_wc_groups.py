@@ -826,9 +826,9 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         if market in ("O/U", "BTTS"):
             sc = _signal_score(vb)
             prob = vb.get("model_p", 0.5)
-            if sc >= 0.80:
+            if sc >= 0.70:
                 quality = "🟢 <b>Fort</b>"
-            elif sc >= 0.60:
+            elif sc >= 0.55:
                 quality = "🟡 Correct"
             else:
                 quality = "🔴 Faible"
@@ -865,11 +865,11 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
         # Volume de buts
         if lam_tot >= 3.0:
-            volume = f"Match offensif attendu ({lam_tot:.1f} buts prévisus)."
+            volume = f"Match offensif attendu ({lam_tot:.1f} buts prévus)."
         elif lam_tot >= 2.2:
-            volume = f"Match équilibré avec quelques buts ({lam_tot:.1f} prévisus)."
+            volume = f"Match équilibré avec quelques buts ({lam_tot:.1f} prévus)."
         else:
-            volume = f"Match fermé et défensif attendu ({lam_tot:.1f} buts prévisus)."
+            volume = f"Match fermé et défensif attendu ({lam_tot:.1f} buts prévus)."
 
         # Favoris
         if ph >= 0.60:
