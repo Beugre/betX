@@ -1,0 +1,685 @@
+"""
+betX – Prédictions complètes phase de groupes Coupe du Monde 2026.
+
+Utilise :
+  1. Profils historiques API-Football (cache 24h, priorité)
+  2. Classement FIFA 2026 comme ELO de fallback (aucune API requise)
+  3. NationalMatchPredictor (Poisson + Dixon-Coles + Monte Carlo)
+
+Usage :
+    python predict_wc_groups.py              # toute la phase de groupes
+    python predict_wc_groups.py --fetch      # enrichir le cache (max 80 req)
+    python predict_wc_groups.py --date 2026-06-14   # un jour précis
+    python predict_wc_groups.py --notify     # envoyer résultats sur Telegram
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import time
+from dataclasses import dataclass
+from datetime import date, datetime, timedelta
+from pathlib import Path
+
+import httpx
+from dotenv import load_dotenv
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+
+load_dotenv()
+console = Console()
+
+WC_JSON_FILE = Path("data/wc_predictions.json")
+
+# ─── Classement FIFA juin 2026 (fallback ELO) ─────────────────────────────────
+# Source : FIFA World Ranking juin 2026 (approximation par points FIFA → ELO)
+# Formule : elo = 1200 + (rang_inverse / 48) * 600
+# (équipe #1 mondiale → ~1800, équipe #48 → ~1200)
+FIFA_RANKING_2026: dict[str, int] = {
+    # Rang FIFA (approximatif juin 2026)
+    "Argentina":        1,
+    "France":           2,
+    "England":          3,
+    "Brazil":           4,
+    "Spain":            5,
+    "Belgium":          6,
+    "Portugal":         7,
+    "Netherlands":      8,
+    "Germany":          9,
+    "Morocco":         10,
+    "Colombia":        11,
+    "Uruguay":         12,
+    "USA":             13,
+    "Japan":           14,
+    "Senegal":         15,
+    "Mexico":          16,
+    "Croatia":         17,
+    "Denmark":         18,
+    "Switzerland":     19,
+    "Ecuador":         20,
+    "Canada":          21,
+    "Austria":         22,
+    "Iran":            23,
+    "South Korea":     24,
+    "Turkey":          25,
+    "Norway":          26,
+    "Sweden":          27,
+    "Australia":       28,
+    "Ivory Coast":     29,
+    "Scotland":        30,
+    "Czech Republic":  31,
+    "Czechia":         31,
+    "Algeria":         32,
+    "Saudi Arabia":    33,
+    "Serbia":          34,
+    "Ghana":           35,
+    "Egypt":           36,
+    "South Africa":    37,
+    "Tunisia":         38,
+    "Paraguay":        39,
+    "Congo DR":        40,
+    "Panama":          41,
+    "Qatar":           42,
+    "Jordan":          43,
+    "Bosnia-Herz":     44,
+    "Bosnia Herzegovina": 44,
+    "Iraq":            45,
+    "New Zealand":     46,
+    "Uzbekistan":      47,
+    "Cape Verde":      48,
+    "Haiti":           49,
+    "Curaçao":         50,
+}
+
+
+def fifa_elo(team_name: str, n_teams: int = 50) -> float:
+    """Convertit le classement FIFA en ELO estimé."""
+    rank = FIFA_RANKING_2026.get(team_name)
+    if rank is None:
+        # Chercher par similarité partielle
+        for k, v in FIFA_RANKING_2026.items():
+            if k.lower() in team_name.lower() or team_name.lower() in k.lower():
+                rank = v
+                break
+    if rank is None:
+        return 1450.0  # équipe inconnue → milieu de tableau
+    # #1 → 1800, #50 → 1200
+    return 1800.0 - (rank - 1) * (600.0 / (n_teams - 1))
+
+
+# ─── Récupération du calendrier ESPN ──────────────────────────────────────────
+
+ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world/scoreboard"
+
+
+def fetch_group_matches(
+    start: date = date(2026, 6, 11),
+    end: date = date(2026, 6, 28),
+) -> list[dict]:
+    """Récupère tous les matchs de poule depuis ESPN."""
+    all_matches = []
+    d = start
+    while d <= end:
+        try:
+            r = httpx.get(ESPN_BASE, params={"dates": d.strftime("%Y%m%d")}, timeout=15)
+            events = r.json().get("events", [])
+            for e in events:
+                comp = e.get("competitions", [{}])[0]
+                teams = comp.get("competitors", [])
+                status = comp.get("status", {}).get("type", {})
+                home = next((t for t in teams if t.get("homeAway") == "home"), {})
+                away = next((t for t in teams if t.get("homeAway") == "away"), {})
+                h_name = home.get("team", {}).get("displayName", "?")
+                a_name = away.get("team", {}).get("displayName", "?")
+                h_short = home.get("team", {}).get("shortDisplayName", h_name)
+                a_short = away.get("team", {}).get("shortDisplayName", a_name)
+                h_score = home.get("score")
+                a_score = away.get("score")
+                state = status.get("name", "")
+                note = comp.get("notes", [{}])
+                group = note[0].get("headline", "") if note else ""
+                espn_id = e.get("id", "")
+
+                # Exclure les matchs à élimination directe (équipes indéfinies)
+                if "1A" in h_name or "2B" in h_name or "3RD" in h_name:
+                    continue
+
+                all_matches.append({
+                    "date": e.get("date", "")[:16],
+                    "home": h_name,
+                    "away": a_name,
+                    "home_short": h_short,
+                    "away_short": a_short,
+                    "home_score": int(h_score) if h_score is not None else None,
+                    "away_score": int(a_score) if a_score is not None else None,
+                    "status": state,
+                    "group": group,
+                    "espn_id": espn_id,
+                })
+        except Exception as e:
+            console.print(f"[yellow]⚠️  ESPN {d}: {e}[/yellow]")
+        d += timedelta(days=1)
+    return all_matches
+
+
+# ─── Profil minimal basé sur FIFA ranking (sans API) ──────────────────────────
+
+@dataclass
+class MinimalProfile:
+    """Profil minimal quand l'historique API n'est pas disponible."""
+    team_name: str
+    elo: float
+    avg_scored: float = 1.20
+    avg_conceded: float = 1.20
+    form: list[str] = None  # type: ignore
+
+    def __post_init__(self):
+        if self.form is None:
+            self.form = []
+        # Calibrer les buts selon le niveau ELO
+        # top team (elo≥1700): 1.6/0.7 | mid (1500): 1.2/1.2 | weak (1300): 0.85/1.65
+        ratio = max(0.0, min(1.0, (self.elo - 1300) / 500))
+        self.avg_scored = round(0.85 + ratio * 0.75, 3)
+        self.avg_conceded = round(1.65 - ratio * 0.95, 3)
+
+
+# ─── Prédiction par match ──────────────────────────────────────────────────────
+
+def predict_match(
+    home_name: str,
+    away_name: str,
+    national_profiles: dict,
+) -> dict:
+    """
+    Prédit un match avec le meilleur profil disponible.
+    Priorité : profil API complet > profil FIFA ranking minimal.
+    """
+    from betx.data.national_team_features import (
+        NationalTeamFeatureSet,
+        NationalMatchPredictor,
+        INTL_AVG_GOALS_PER_TEAM,
+    )
+
+    home_api = national_profiles.get(home_name)
+    away_api = national_profiles.get(away_name)
+
+    predictor = NationalMatchPredictor()
+
+    # Construire les features selon disponibilité
+    if home_api and away_api:
+        from betx.data.national_team_features import build_features
+        feats = build_features(home_api, away_api, neutral=True, match_importance=1.8)
+        source = "API"
+    else:
+        # Fallback FIFA ranking
+        h_elo = fifa_elo(home_name) if not home_api else home_api.elo_estimate
+        a_elo = fifa_elo(away_name) if not away_api else away_api.elo_estimate
+        h_min = MinimalProfile(home_name, h_elo) if not home_api else None
+        a_min = MinimalProfile(away_name, a_elo) if not away_api else None
+
+        h_scored = home_api.weighted_lambda_scored(10) if home_api else (h_min.avg_scored if h_min else 1.2)
+        h_conceded = home_api.weighted_lambda_conceded(10) if home_api else (h_min.avg_conceded if h_min else 1.2)
+        a_scored = away_api.weighted_lambda_scored(10) if away_api else (a_min.avg_scored if a_min else 1.2)
+        a_conceded = away_api.weighted_lambda_conceded(10) if away_api else (a_min.avg_conceded if a_min else 1.2)
+
+        h_form = home_api.form_score(5) if home_api else 0.0
+        a_form = away_api.form_score(5) if away_api else 0.0
+
+        feats = NationalTeamFeatureSet(
+            home_team=home_name,
+            away_team=away_name,
+            home_elo=h_elo,
+            away_elo=a_elo,
+            home_form_5=h_form,
+            away_form_5=a_form,
+            home_form_10=home_api.form_score(10) if home_api else 0.0,
+            away_form_10=away_api.form_score(10) if away_api else 0.0,
+            home_official_form=home_api.form_score(10, official_only=True) if home_api else 0.0,
+            away_official_form=away_api.form_score(10, official_only=True) if away_api else 0.0,
+            home_friendly_form=0.0,
+            away_friendly_form=0.0,
+            home_goals_for_10=h_scored,
+            away_goals_for_10=a_scored,
+            home_goals_against_10=h_conceded,
+            away_goals_against_10=a_conceded,
+            home_goals_for_5=h_scored,
+            away_goals_for_5=a_scored,
+            h2h_count=0,
+            h2h_bias=0.0,
+            neutral_ground=True,
+            match_importance=1.8,
+            home_sample_size=len(home_api.recent_matches) if home_api else 0,
+            away_sample_size=len(away_api.recent_matches) if away_api else 0,
+        )
+        source = "FIFA" if not home_api and not away_api else "MIXED"
+
+    probs = predictor.predict(feats, use_monte_carlo=True)
+    top3 = sorted(probs.exact_scores.items(), key=lambda x: x[1], reverse=True)[:3]
+
+    return {
+        "p_home": probs.p_home_win,
+        "p_draw": probs.p_draw,
+        "p_away": probs.p_away_win,
+        "lambda_home": probs.lambda_home,
+        "lambda_away": probs.lambda_away,
+        "top_scores": top3,
+        "p_over_25": probs.p_over_25,
+        "p_btts": probs.p_btts,
+        "source": source,
+    }
+
+
+# ─── Chargement des profils (cache d'abord, API si nécessaire) ────────────────
+
+def load_profiles(teams: list[str], fetch: bool = False) -> dict:
+    """
+    Charge les profils depuis le cache, optionnellement enrichit via API.
+
+    Sans --fetch : 100% offline, n'utilise que le cache existant.
+    Avec --fetch : appels API pour les équipes manquantes (max ~75 req).
+    """
+    from betx.data.national_team_collector import NationalTeamCollector
+
+    collector = NationalTeamCollector()
+    profiles = {}
+
+    for team in sorted(set(teams)):
+        key = team.lower().strip()
+
+        # Vérifier si l'équipe est en cache (team_id + fixtures)
+        team_id_entry = collector._cache.get("team_ids", {}).get(key, {})
+        team_id = team_id_entry.get("id")
+        in_fixture_cache = team_id and str(team_id) in collector._cache.get("fixtures", {})
+
+        if in_fixture_cache:
+            # Charger depuis le cache (0 requête API)
+            profile = collector.get_profile(team)
+            if profile and profile.recent_matches:
+                profiles[team] = profile
+        elif fetch:
+            # Enrichissement API
+            console.print(f"  📡 Chargement API : {team}...")
+            profile = collector.get_profile(team)
+            if profile and profile.recent_matches:
+                profiles[team] = profile
+                console.print(
+                    f"     ✅ {len(profile.recent_matches)} matchs | ELO~{profile.elo_estimate:.0f}"
+                )
+            else:
+                console.print(f"     ⚠️  Introuvable → fallback FIFA ranking")
+        # Si pas en cache et pas --fetch : silencieux, sera géré via FIFA ranking
+
+    n_api = len(profiles)
+    n_total = len(set(teams))
+    n_fifa = n_total - n_api
+    console.print(
+        f"\n  📊 [green]{n_api}[/green] équipes avec historique API | "
+        f"[yellow]{n_fifa}[/yellow] via classement FIFA\n"
+    )
+    return profiles
+
+
+# ─── Affichage ────────────────────────────────────────────────────────────────
+
+def display_predictions(matches: list[dict], profiles: dict, filter_date: str | None = None):
+    """Affiche les prédictions pour tous les matchs de poule."""
+    # Filtrer si demandé
+    if filter_date:
+        matches = [m for m in matches if m["date"].startswith(filter_date)]
+
+    # Grouper par jour
+    by_day: dict[str, list] = {}
+    for m in matches:
+        day = m["date"][:10]
+        by_day.setdefault(day, []).append(m)
+
+    total_matches = len(matches)
+    console.print(Panel(
+        f"[bold cyan]betX – Prédictions Coupe du Monde 2026[/bold cyan]\n"
+        f"{total_matches} matchs de poule | "
+        f"Modèle : Poisson + Dixon-Coles + Monte Carlo 10k\n"
+        f"Sources : {'API-Football (historique 2022-2024) + FIFA Ranking (fallback)'}",
+        title="🌍 World Cup 2026 – Phase de groupes",
+        border_style="cyan",
+    ))
+
+    for day, day_matches in sorted(by_day.items()):
+        console.print(f"\n[bold yellow]📅 {day}[/bold yellow]")
+
+        table = Table(
+            show_header=True, header_style="bold magenta",
+            show_lines=True, expand=True,
+        )
+        table.add_column("Match", width=32)
+        table.add_column("Score favori", justify="center", width=12)
+        table.add_column("Top 3 scores", width=30)
+        table.add_column("P(1)", justify="right", width=7)
+        table.add_column("P(X)", justify="right", width=7)
+        table.add_column("P(2)", justify="right", width=7)
+        table.add_column("O2.5", justify="right", width=7)
+        table.add_column("BTTS", justify="right", width=7)
+        table.add_column("λh/λa", justify="center", width=9)
+        table.add_column("Src", justify="center", width=5)
+
+        for m in sorted(day_matches, key=lambda x: x["date"]):
+            home = m["home"]
+            away = m["away"]
+            status = m["status"]
+
+            # Résultat réel si disponible
+            if status == "STATUS_FINAL" and m["home_score"] is not None:
+                result_str = f"[bold green]{m['home_score']}-{m['away_score']}[/bold green] ✅"
+                table.add_row(
+                    f"[bold]{m['home_short']}[/bold] vs {m['away_short']}",
+                    result_str,
+                    "[dim]match terminé[/dim]", "", "", "", "", "", "", "real",
+                )
+                continue
+
+            try:
+                pred = predict_match(home, away, profiles)
+            except Exception as e:
+                table.add_row(
+                    f"{m['home_short']} vs {m['away_short']}",
+                    "[red]erreur[/red]", str(e)[:28], "", "", "", "", "", "", "ERR",
+                )
+                continue
+
+            # Score le plus probable
+            best_score, best_prob = pred["top_scores"][0]
+            h_goals, a_goals = best_score.split("-")
+            if int(h_goals) > int(a_goals):
+                winner_col = "green"
+            elif int(h_goals) < int(a_goals):
+                winner_col = "red"
+            else:
+                winner_col = "yellow"
+            score_cell = f"[bold {winner_col}]{best_score}[/bold {winner_col}] ({best_prob*100:.0f}%)"
+
+            # Top 3 scores
+            top3_str = "  ".join(f"{sc} {p*100:.0f}%" for sc, p in pred["top_scores"][:3])
+
+            # Favori
+            ph, px, pa = pred["p_home"], pred["p_draw"], pred["p_away"]
+            if ph > pa:
+                ph_str = f"[bold green]{ph:.0%}[/bold green]"
+                pa_str = f"{pa:.0%}"
+            elif pa > ph:
+                ph_str = f"{ph:.0%}"
+                pa_str = f"[bold red]{pa:.0%}[/bold red]"
+            else:
+                ph_str = f"{ph:.0%}"
+                pa_str = f"{pa:.0%}"
+
+            src_color = {"API": "green", "MIXED": "yellow", "FIFA": "dim"}.get(pred["source"], "white")
+            time_str = m["date"][11:16] + "Z"
+
+            table.add_row(
+                f"[bold]{m['home_short']}[/bold] vs {m['away_short']}\n[dim]{time_str}[/dim]",
+                score_cell,
+                top3_str,
+                ph_str,
+                f"{px:.0%}",
+                pa_str,
+                f"{pred['p_over_25']:.0%}",
+                f"{pred['p_btts']:.0%}",
+                f"{pred['lambda_home']:.2f}/{pred['lambda_away']:.2f}",
+                f"[{src_color}]{pred['source']}[/{src_color}]",
+            )
+
+        console.print(table)
+
+    console.print(
+        "\n[dim]Légende : Src = source des données | "
+        "[green]API[/green] = historique réel 2022-2024 | "
+        "[yellow]MIXED[/yellow] = une équipe historique | "
+        "FIFA = classement FIFA uniquement[/dim]\n"
+    )
+
+
+# ─── Export JSON ──────────────────────────────────────────────────────────────
+
+def export_predictions(matches: list[dict], profiles: dict, filter_date: str | None = None) -> dict:
+    """
+    Calcule toutes les prédictions et les exporte en JSON.
+    Retourne le dictionnaire exporté.
+    """
+    if filter_date:
+        matches = [m for m in matches if m["date"].startswith(filter_date)]
+
+    records = []
+    for m in sorted(matches, key=lambda x: x["date"]):
+        try:
+            pred = predict_match(m["home"], m["away"], profiles)
+        except Exception:
+            pred = {}
+
+        top3 = pred.get("top_scores", [])
+        records.append({
+            "date": m["date"],
+            "home": m["home"],
+            "away": m["away"],
+            "home_short": m["home_short"],
+            "away_short": m["away_short"],
+            "status": m["status"],
+            "home_score": m["home_score"],
+            "away_score": m["away_score"],
+            "prediction": {
+                "p_home": round(pred.get("p_home", 0), 4),
+                "p_draw": round(pred.get("p_draw", 0), 4),
+                "p_away": round(pred.get("p_away", 0), 4),
+                "lambda_home": round(pred.get("lambda_home", 0), 3),
+                "lambda_away": round(pred.get("lambda_away", 0), 3),
+                "p_over_25": round(pred.get("p_over_25", 0), 4),
+                "p_btts": round(pred.get("p_btts", 0), 4),
+                "top_scores": [{"score": sc, "prob": round(p, 4)} for sc, p in top3],
+                "most_likely": top3[0][0] if top3 else "1-0",
+                "source": pred.get("source", "FIFA"),
+            } if pred else {},
+        })
+
+    data = {
+        "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
+        "total_matches": len(records),
+        "matches": records,
+    }
+    WC_JSON_FILE.parent.mkdir(parents=True, exist_ok=True)
+    WC_JSON_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+    console.print(f"\n💾 Prédictions exportées → [cyan]{WC_JSON_FILE}[/cyan]")
+    return data
+
+
+# ─── Telegram ─────────────────────────────────────────────────────────────────
+
+_TG_API = "https://api.telegram.org/bot{token}/{method}"
+_TG_MAX = 4096
+
+
+def _tg_send(token: str, chat_id: str, text: str) -> bool:
+    """Envoie un message Telegram (découpe si nécessaire)."""
+    chunks = []
+    if len(text) <= _TG_MAX:
+        chunks = [text]
+    else:
+        current = ""
+        for line in text.split("\n"):
+            if len(current) + len(line) + 1 > _TG_MAX - 100:
+                chunks.append(current)
+                current = line
+            else:
+                current += ("\n" if current else "") + line
+        if current:
+            chunks.append(current)
+
+    ok = True
+    for chunk in chunks:
+        try:
+            r = httpx.post(
+                _TG_API.format(token=token, method="sendMessage"),
+                json={"chat_id": chat_id, "text": chunk,
+                      "parse_mode": "HTML", "disable_web_page_preview": True},
+                timeout=30,
+            )
+            if r.status_code != 200:
+                console.print(f"  [red]❌ Telegram: {r.json().get('description', r.text)}[/red]")
+                ok = False
+        except Exception as e:
+            console.print(f"  [red]❌ Telegram: {e}[/red]")
+            ok = False
+        time.sleep(0.3)
+    return ok
+
+
+def build_wc_telegram(data: dict, filter_date: str | None = None) -> str:
+    """Construit le message Telegram pour les prédictions CdM du jour.
+
+    Inclut les matchs jusqu'à 06:00 UTC du lendemain (matchs "de nuit"
+    qui sont en soirée heure européenne mais tombent le lendemain en UTC).
+    """
+    today_str = filter_date or date.today().isoformat()
+    # Lendemain pour couvrir les matchs 00:00–06:00 UTC (soirée européenne)
+    tomorrow_str = (date.fromisoformat(today_str) + timedelta(days=1)).isoformat()
+
+    today_matches = [
+        m for m in data["matches"]
+        if m.get("prediction") and (
+            m["date"].startswith(today_str)
+            or (m["date"].startswith(tomorrow_str) and m["date"][11:13] < "06")
+        )
+    ]
+
+    if not today_matches:
+        return ""
+
+    icon_result = {"STATUS_FINAL": "✅", "STATUS_IN_PROGRESS": "🔴"}
+
+    lines = [
+        "🌍 <b>Coupe du Monde 2026 – Prédictions du jour</b>",
+        f"📅 {today_str} │ Modèle : Poisson + Dixon-Coles + MC",
+        "",
+        "━" * 28,
+    ]
+
+    for m in today_matches:
+        pred = m["prediction"]
+        top3 = pred.get("top_scores", [])
+        ph = pred.get("p_home", 0)
+        px = pred.get("p_draw", 0)
+        pa = pred.get("p_away", 0)
+        lh = pred.get("lambda_home", 0)
+        la = pred.get("lambda_away", 0)
+        src = pred.get("source", "FIFA")
+        time_str = m["date"][11:16] + "Z"
+        state = m.get("status", "")
+        icon = icon_result.get(state, "🕐")
+        src_tag = "📡" if src == "API" else ("🔀" if src == "MIXED" else "📊")
+
+        # Favori
+        if ph > pa + 0.05:
+            fav = f"<b>{m['home_short']}</b> favori"
+        elif pa > ph + 0.05:
+            fav = f"<b>{m['away_short']}</b> favori"
+        else:
+            fav = "match équilibré"
+
+        # Score réel si terminé
+        result_line = ""
+        if state == "STATUS_FINAL" and m.get("home_score") is not None:
+            result_line = f"\n  ✅ Résultat : <b>{m['home_score']}-{m['away_score']}</b>"
+
+        scores_str = "  ".join(
+            f"{s['score']} ({s['prob']*100:.0f}%)" for s in top3[:3]
+        )
+
+        lines += [
+            "",
+            f"{icon} {src_tag} <b>{m['home_short']} vs {m['away_short']}</b> — {time_str}",
+            f"  🎯 {scores_str}",
+            f"  λ {lh:.2f}–{la:.2f} │ {ph:.0%} / {px:.0%} / {pa:.0%}",
+            f"  📌 {fav}" + result_line,
+        ]
+
+    lines += [
+        "",
+        "━" * 28,
+        "",
+        f'📊 <a href="http://213.199.41.168">Dashboard Live</a>',
+        "<i>Src: 📡API-Football | 🔀Mixte | 📊FIFA ranking</i>",
+    ]
+    return "\n".join(lines)
+
+
+def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
+    """Envoie les prédictions CdM via Telegram (DM + channel)."""
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    dm_id = os.getenv("TELEGRAM_CHAT_ID", "")
+    channel_id = os.getenv("TELEGRAM_CHANNEL_ID", "")
+
+    if not token:
+        console.print("[yellow]⚠️  TELEGRAM_BOT_TOKEN manquant — envoi ignoré[/yellow]")
+        return False
+
+    msg = build_wc_telegram(data, filter_date)
+    if not msg:
+        console.print("[yellow]⚠️  Aucun match aujourd'hui à envoyer[/yellow]")
+        return False
+
+    targets = [(dm_id, "DM"), (channel_id, "Channel")]
+    ok = True
+    for cid, label in targets:
+        if not cid:
+            continue
+        if _tg_send(token, cid, msg):
+            console.print(f"  ✅ Telegram {label} envoyé")
+        else:
+            ok = False
+    return ok
+
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+def main():
+    parser = argparse.ArgumentParser(description="Prédictions CdM 2026 – phase de groupes")
+    parser.add_argument("--fetch", action="store_true",
+                        help="Enrichir le cache API (max ~75 req)")
+    parser.add_argument("--date", type=str, default=None,
+                        help="Filtrer sur une date YYYY-MM-DD")
+    parser.add_argument("--notify", action="store_true",
+                        help="Envoyer les prédictions du jour sur Telegram")
+    args = parser.parse_args()
+
+    today = args.date or date.today().isoformat()
+
+    console.print("\n[bold cyan]📡 Chargement du calendrier ESPN...[/bold cyan]")
+
+    if args.date:
+        d = date.fromisoformat(args.date)
+        matches = fetch_group_matches(d, d)
+    else:
+        matches = fetch_group_matches(date(2026, 6, 11), date(2026, 6, 28))
+
+    console.print(f"  {len(matches)} matchs de poule trouvés\n")
+
+    teams = list({m["home"] for m in matches} | {m["away"] for m in matches})
+
+    console.print("[bold cyan]📊 Chargement des profils équipes...[/bold cyan]")
+    profiles = load_profiles(teams, fetch=args.fetch)
+
+    # Export JSON (toujours)
+    data = export_predictions(matches, profiles, filter_date=args.date)
+
+    # Affichage console
+    display_predictions(matches, profiles, filter_date=args.date)
+
+    # Telegram si demandé
+    if args.notify:
+        console.print("\n[bold cyan]📨 Envoi Telegram...[/bold cyan]")
+        send_wc_telegram(data, filter_date=today)
+
+
+if __name__ == "__main__":
+    main()

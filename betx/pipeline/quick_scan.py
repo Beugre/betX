@@ -48,6 +48,9 @@ _match_contexts: dict = {}
 # {event_key: dict avec lambdas, probas, edge, etc.}
 _match_analysis: dict[str, dict] = {}
 
+# Profils équipes nationales (CdM) — {team_name: NationalTeamProfile}
+_national_profiles: dict = {}
+
 
 # ═══════════════════════════════════════════════════════════════════════
 # Parsed Event : structure interne pour le pipeline
@@ -312,6 +315,7 @@ def predict_football(
     de la saison ESPN + ELO dérivé du goal difference.
     Mode dégradé : estimation depuis le consensus bookmaker.
     """
+    global _match_analysis
     model = FootballModel()
     c = ev.consensus
 
@@ -399,6 +403,7 @@ def predict_football(
             "odds_away": ev.odds_away,
             "is_euro": is_euro,
             "enriched": True,
+            "exact_scores": pred.exact_scores,
         }
 
         return {
@@ -412,9 +417,84 @@ def predict_football(
         }
     else:
         # ══ MODE DÉGRADÉ ══
-        avg_goals = 2.7
-        home_goals = avg_goals / 2 * math.exp(strength_ratio * 0.3) + 0.15
-        away_goals = avg_goals / 2 * math.exp(-strength_ratio * 0.3)
+        is_international = getattr(ev, "espn_slug", "") == "fifa.world"
+
+        if is_international:
+            home_profile = _national_profiles.get(ev.home_team)
+            away_profile = _national_profiles.get(ev.away_team)
+
+            if home_profile and away_profile:
+                # ── MODE NATIONAL ENRICHI (pipeline features → Poisson → MC) ──
+                from betx.data.national_team_features import (
+                    predict_national_match,
+                )
+                feats, probs = predict_national_match(
+                    home_profile, away_profile,
+                    neutral=True,
+                    match_importance=1.8,
+                    use_monte_carlo=True,
+                )
+
+                event_key = f"{ev.home_team}_{ev.away_team}"
+                h2h_stats = home_profile.h2h_stats()
+                _match_analysis[event_key] = {
+                    "home_name": ev.home_team,
+                    "away_name": ev.away_team,
+                    "home_scored": feats.home_goals_for_10,
+                    "home_conceded": feats.home_goals_against_10,
+                    "away_scored": feats.away_goals_for_10,
+                    "away_conceded": feats.away_goals_against_10,
+                    "home_elo": feats.home_elo,
+                    "away_elo": feats.away_elo,
+                    "home_form": home_profile.competitive_form or home_profile.recent_form,
+                    "away_form": away_profile.competitive_form or away_profile.recent_form,
+                    "home_matches_count": feats.home_sample_size,
+                    "away_matches_count": feats.away_sample_size,
+                    "h2h_count": h2h_stats["count"],
+                    "h2h_home_score": h2h_stats["bias"],
+                    "home_comp_breakdown": home_profile.competition_breakdown(),
+                    "away_comp_breakdown": away_profile.competition_breakdown(),
+                    "avg_home": feats.home_goals_for_10,
+                    "avg_away": feats.away_goals_for_10,
+                    "lambda_home": probs.lambda_home,
+                    "lambda_away": probs.lambda_away,
+                    "p_home": probs.p_home_win,
+                    "p_draw": probs.p_draw,
+                    "p_away": probs.p_away_win,
+                    "p_over_25": probs.p_over_25,
+                    "p_btts": probs.p_btts,
+                    "odds_home": ev.odds_home,
+                    "odds_draw": ev.odds_draw,
+                    "odds_away": ev.odds_away,
+                    "is_euro": False,
+                    "enriched": True,
+                    "national_enriched": True,
+                    "exact_scores": probs.exact_scores,
+                    "features": feats.to_dict(),
+                }
+
+                return {
+                    "home": probs.p_home_win,
+                    "draw": probs.p_draw,
+                    "away": probs.p_away_win,
+                    "over_2.5": probs.p_over_25,
+                    "over_1.5": probs.p_over_15,
+                    "over_3.5": probs.p_over_35,
+                    "btts": probs.p_btts,
+                }
+
+            # Fallback si pas de profils : shrinkage des cotes bookmaker
+            avg_goals = 2.4
+            compressed_ratio = strength_ratio * 0.50
+            home_goals = avg_goals / 2 * math.exp(compressed_ratio * 0.3) + 0.05
+            away_goals = avg_goals / 2 * math.exp(-compressed_ratio * 0.3) + 0.05
+            home_advantage_override = 0.0
+        else:
+            avg_goals = 2.7
+            compressed_ratio = strength_ratio
+            home_goals = avg_goals / 2 * math.exp(compressed_ratio * 0.3) + 0.15
+            away_goals = avg_goals / 2 * math.exp(-compressed_ratio * 0.3)
+            home_advantage_override = None
 
         home_stats = TeamStats(
             name=ev.home_team,
@@ -422,8 +502,8 @@ def predict_football(
             avg_goals_conceded=away_goals,
             xg_for=home_goals,
             xg_against=away_goals,
-            elo=1500 + strength_ratio * 150,
-            home_elo=1500 + strength_ratio * 150 + 50,
+            elo=1500 + compressed_ratio * 150,
+            home_elo=1500 + compressed_ratio * 150 + 50,
         )
         away_stats = TeamStats(
             name=ev.away_team,
@@ -431,15 +511,48 @@ def predict_football(
             avg_goals_conceded=home_goals,
             xg_for=away_goals,
             xg_against=home_goals,
-            elo=1500 - strength_ratio * 150,
-            away_elo=1500 - strength_ratio * 150,
+            elo=1500 - compressed_ratio * 150,
+            away_elo=1500 - compressed_ratio * 150,
         )
 
+        if home_advantage_override is not None:
+            model.cfg.home_advantage = home_advantage_override
+
         pred = model.predict(home_stats, away_stats)
-        CALIB = 0.92
+        # Calibration plus forte en international (résultats plus imprévisibles)
+        CALIB = 0.80 if is_international else 0.92
 
         def calibrate(p: float) -> float:
             return 0.5 + (p - 0.5) * CALIB
+
+        event_key = f"{ev.home_team}_{ev.away_team}"
+        _match_analysis[event_key] = {
+            "home_name": ev.home_team,
+            "away_name": ev.away_team,
+            "home_scored": home_goals,
+            "home_conceded": away_goals,
+            "away_scored": away_goals,
+            "away_conceded": home_goals,
+            "home_elo": home_stats.elo,
+            "away_elo": away_stats.elo,
+            "home_form": [],
+            "away_form": [],
+            "avg_home": avg_goals / 2,
+            "avg_away": avg_goals / 2,
+            "lambda_home": pred.lambda_home,
+            "lambda_away": pred.lambda_away,
+            "p_home": calibrate(pred.p_home),
+            "p_draw": calibrate(pred.p_draw),
+            "p_away": calibrate(pred.p_away),
+            "p_over_25": pred.p_over_25,
+            "p_btts": pred.p_btts,
+            "odds_home": ev.odds_home,
+            "odds_draw": ev.odds_draw,
+            "odds_away": ev.odds_away,
+            "is_euro": False,
+            "enriched": False,
+            "exact_scores": pred.exact_scores,
+        }
 
         return {
             "home": calibrate(pred.p_home),
@@ -463,9 +576,6 @@ def scan_event(
     enriched_stats: dict[str, dict[str, TeamStats]] | None = None,
 ) -> list[ValueBet]:
     """Scanne un événement pour trouver des value bets."""
-    if not ev.has_odds:
-        return []
-
     event_key = f"{ev.home_team}_{ev.away_team}"
     real_stats = enriched_stats.get(event_key) if enriched_stats else None
 
@@ -479,7 +589,10 @@ def scan_event(
             preds = predict_football(ev, real_stats=None)
         else:
             log.error(f"Prédiction échouée pour {event_key}: {exc}")
-            return []
+            preds = {}
+
+    if not ev.has_odds:
+        return []
 
     value_bets: list[ValueBet] = []
 
@@ -715,8 +828,37 @@ def quick_scan(
         )
 
     # 2b. Récupérer le contexte avancé (H2H, forme, classement, pression)
-    global _match_contexts
+    global _match_contexts, _national_profiles
     _match_contexts = {}
+    _national_profiles = {}
+
+    # 2c. Enrichissement équipes nationales (Coupe du Monde)
+    wc_events = [ev for ev in all_events if ev.espn_slug == "fifa.world"]
+    if wc_events:
+        from betx.data.national_team_collector import NationalTeamCollector
+        collector = NationalTeamCollector()
+        console.print(
+            "[bold cyan]🌍 Chargement historique équipes nationales...[/bold cyan]\n"
+        )
+        for ev in wc_events:
+            event_key = f"{ev.home_team}_{ev.away_team}"
+            for team_name, opponent in [
+                (ev.home_team, ev.away_team),
+                (ev.away_team, ev.home_team),
+            ]:
+                if team_name not in _national_profiles:
+                    profile = collector.get_profile(team_name, opponent_name=opponent)
+                    if profile:
+                        _national_profiles[team_name] = profile
+                        n = len(profile.recent_matches)
+                        comp = len([m for m in profile.recent_matches if m.is_competitive])
+                        console.print(
+                            f"  ✅ {team_name}: {n} matchs "
+                            f"({comp} compétitifs) | ELO~{profile.elo_estimate:.0f}"
+                        )
+                    else:
+                        console.print(f"  ⚠️  {team_name}: profil introuvable")
+        console.print()
 
     console.print(
         "[bold cyan]🔍 Contexte avancé (H2H, classement, forme)...[/bold cyan]\n"
@@ -792,6 +934,67 @@ def quick_scan(
             ev, value_engine, match_id=i, enriched_stats=enriched_stats,
         )
         all_value_bets.extend(vbs)
+
+    # 3b. Afficher les prédictions de score pour tous les matchs
+    console.print(
+        "\n[bold cyan]🎯 Prédictions de score (Poisson + Dixon-Coles)[/bold cyan]\n"
+    )
+    for ev in all_events:
+        event_key = f"{ev.home_team}_{ev.away_team}"
+        analysis = _match_analysis.get(event_key)
+        if not analysis:
+            continue
+        exact_scores = analysis.get("exact_scores", {})
+        if not exact_scores:
+            continue
+        top3 = sorted(exact_scores.items(), key=lambda x: x[1], reverse=True)[:3]
+        lam_h = analysis.get("lambda_home", 0)
+        lam_a = analysis.get("lambda_away", 0)
+        national_tag = " [bold green](stats réelles 2022-2024)[/bold green]" if analysis.get("national_enriched") else ""
+        enriched_tag = "" if analysis.get("enriched") else " [dim](estimation cotes)[/dim]"
+        scores_str = "  ".join(
+            f"[bold]{sc}[/bold] ({p * 100:.1f}%)" for sc, p in top3
+        )
+        console.print(
+            f"  {ev.sport_label}: [bold]{ev.home_team}[/bold] vs "
+            f"[bold]{ev.away_team}[/bold]{national_tag}{enriched_tag}"
+        )
+        console.print(
+            f"     🎯 {scores_str}  │  λ {lam_h:.2f}–{lam_a:.2f}"
+        )
+        # Afficher le détail historique pour les équipes nationales
+        if analysis.get("national_enriched"):
+            h_form = analysis.get("home_form", [])
+            a_form = analysis.get("away_form", [])
+            form_icons = {"W": "✅", "D": "🟡", "L": "❌"}
+            h_form_str = " ".join(form_icons.get(r, "?") for r in h_form)
+            a_form_str = " ".join(form_icons.get(r, "?") for r in a_form)
+            h_scored = analysis.get("home_scored", 0)
+            h_conced = analysis.get("home_conceded", 0)
+            a_scored = analysis.get("away_scored", 0)
+            a_conced = analysis.get("away_conceded", 0)
+            h_elo = analysis.get("home_elo", 1500)
+            a_elo = analysis.get("away_elo", 1500)
+            h_n = analysis.get("home_matches_count", 0)
+            a_n = analysis.get("away_matches_count", 0)
+            h2h_n = analysis.get("h2h_count", 0)
+            h2h_s = analysis.get("h2h_home_score", 0.0)
+            console.print(
+                f"     📊 {ev.home_team} ({h_n}m): "
+                f"{h_scored:.2f} buts | {h_conced:.2f} enc | ELO~{h_elo:.0f} | {h_form_str}"
+            )
+            console.print(
+                f"     📊 {ev.away_team} ({a_n}m): "
+                f"{a_scored:.2f} buts | {a_conced:.2f} enc | ELO~{a_elo:.0f} | {a_form_str}"
+            )
+            if h2h_n > 0:
+                h2h_adv = ev.home_team if h2h_s > 0.1 else (ev.away_team if h2h_s < -0.1 else "équilibré")
+                console.print(
+                    f"     🤝 H2H ({h2h_n} matchs): avantage [bold]{h2h_adv}[/bold] (score {h2h_s:+.2f})"
+                )
+            else:
+                console.print("     🤝 H2H : aucun affrontement dans la base")
+        console.print()
 
     # 4. Déduplier : UN SEUL pari par match (meilleur edge)
     best_per_match: dict[str, ValueBet] = {}

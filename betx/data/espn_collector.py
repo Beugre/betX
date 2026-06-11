@@ -761,6 +761,7 @@ ESPN_MAIN_LEAGUES: list[str] = ["eng.1", "esp.1", "ita.1", "ger.1", "fra.1"]
 ESPN_FIXTURE_LEAGUES: list[str] = [
     "eng.1", "esp.1", "ita.1", "ger.1", "fra.1",
     "uefa.champions", "uefa.europa",
+    "fifa.world",
 ]
 
 ESPN_LEAGUE_LABELS: dict[str, str] = {
@@ -773,6 +774,7 @@ ESPN_LEAGUE_LABELS: dict[str, str] = {
     "por.1": "⚽ Primeira Liga",
     "uefa.champions": "🏆 Champions League",
     "uefa.europa": "🟠 Europa League",
+    "fifa.world": "🌍 Coupe du Monde",
 }
 
 
@@ -901,7 +903,7 @@ def fetch_today_fixtures() -> list[ESPNFixture]:
             )
 
             # Parser les cotes depuis le scoreboard
-            odds_list = comp.get("odds", [])
+            odds_list = [x for x in comp.get("odds", []) if x]
             if odds_list:
                 o = odds_list[0]
                 fix.bookmaker = o.get("provider", {}).get("name", "DraftKings")

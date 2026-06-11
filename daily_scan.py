@@ -630,12 +630,28 @@ def get_chat_id() -> str | None:
 
 # ─── CLI ──────────────────────────────────────────────────────────────────
 
+def run_external_refresh() -> dict:
+    """Lance le pipeline external: scrape + grade + compute_scores."""
+    from betx.external.service import ExternalBenchmarkService
+
+    print(f"\n🔄 {datetime.now().strftime('%d/%m/%Y %H:%M')} – External predictions refresh...\n")
+    svc = ExternalBenchmarkService()
+    result = svc.run_full_refresh(history_days=3)
+    print(f"  Scraped: {result['scraped']}")
+    print(f"  Graded:  {result['graded']}")
+    print(f"  Scores:  {result['scores_generated']}")
+    print(f"  Recos:   {result['recommendations_count']}")
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description="betX Daily Scan")
     parser.add_argument("--notify", action="store_true",
                         help="Envoyer le récap via Telegram")
     parser.add_argument("--resend", action="store_true",
                         help="Renvoyer le dernier scan (pas de nouvel appel API)")
+    parser.add_argument("--external", action="store_true",
+                        help="Refresh des prédictions externes (scrape + grade + scores)")
     parser.add_argument("--chat-id", type=str, default=None,
                         help="Chat ID Telegram (override .env)")
     parser.add_argument("--get-chat-id", action="store_true",
@@ -667,6 +683,12 @@ def main():
         print("\n✅ Resend terminé.")
         return
 
+    # Mode external refresh
+    if args.external:
+        run_external_refresh()
+        print("\n✅ External refresh terminé.")
+        return
+
     # Mode normal : nouveau scan
     data = run_and_export()
 
@@ -676,6 +698,27 @@ def main():
             print("\n⏭️  0 événements scannés. Telegram non envoyé.")
         else:
             send_telegram(data, chat_id=args.chat_id)
+
+    # ── Prédictions Coupe du Monde (auto pendant la CdM 2026) ──
+    from datetime import date as _date
+    _wc_start = _date(2026, 6, 11)
+    _wc_end   = _date(2026, 6, 28)  # fin phase de groupes
+    if _wc_start <= _date.today() <= _wc_end:
+        print("\n🌍 Mise à jour prédictions Coupe du Monde...")
+        try:
+            from predict_wc_groups import (
+                fetch_group_matches, load_profiles, export_predictions,
+                send_wc_telegram,
+            )
+            wc_matches = fetch_group_matches(_wc_start, _wc_end)
+            wc_teams = list({m["home"] for m in wc_matches} | {m["away"] for m in wc_matches})
+            wc_profiles = load_profiles(wc_teams, fetch=False)
+            wc_data = export_predictions(wc_matches, wc_profiles)
+            if args.notify:
+                send_wc_telegram(wc_data)
+                print("  ✅ Telegram CdM envoyé")
+        except Exception as e:
+            print(f"  ⚠️  CdM update failed: {e}")
 
     print("\n✅ Scan quotidien terminé.")
 

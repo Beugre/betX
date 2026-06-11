@@ -73,7 +73,7 @@ class ValueConfig:
 @dataclass
 class FootballModelConfig:
     """Configuration du modèle football."""
-    leagues: list[int] = field(default_factory=lambda: [39, 140, 135, 78, 61, 2])
+    leagues: list[int] = field(default_factory=lambda: [1, 39, 140, 135, 78, 61, 2])
     elo_k_factor: float = 32.0
     home_advantage: float = 0.25
     xg_weight: float = 0.3

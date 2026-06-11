@@ -1,0 +1,2561 @@
+{
+  "generated_at": "11/06/2026 14:31",
+  "total_matches": 73,
+  "matches": [
+    {
+      "date": "2026-06-11T19:00",
+      "home": "Mexico",
+      "away": "South Africa",
+      "home_short": "Mexico",
+      "away_short": "South Africa",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3227,
+        "p_draw": 0.383,
+        "p_away": 0.2943,
+        "lambda_home": 0.757,
+        "lambda_away": 0.711,
+        "p_over_25": 0.1818,
+        "p_btts": 0.2788,
+        "top_scores": [
+          {
+            "score": "0-0",
+            "prob": 0.2322
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1723
+          },
+          {
+            "score": "0-1",
+            "prob": 0.157
+          }
+        ],
+        "most_likely": "0-0",
+        "source": "API"
+      }
+    },
+    {
+      "date": "2026-06-12T02:00",
+      "home": "South Korea",
+      "away": "Czechia",
+      "home_short": "South Korea",
+      "away_short": "Czechia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6857,
+        "p_draw": 0.1674,
+        "p_away": 0.1469,
+        "lambda_home": 2.534,
+        "lambda_away": 1.088,
+        "p_over_25": 0.7017,
+        "p_btts": 0.6153,
+        "top_scores": [
+          {
+            "score": "2-1",
+            "prob": 0.0987
+          },
+          {
+            "score": "2-0",
+            "prob": 0.0839
+          },
+          {
+            "score": "3-1",
+            "prob": 0.08
+          }
+        ],
+        "most_likely": "2-1",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-12T19:00",
+      "home": "Canada",
+      "away": "Bosnia-Herzegovina",
+      "home_short": "Canada",
+      "away_short": "Bosnia-Herz",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5877,
+        "p_draw": 0.2385,
+        "p_away": 0.1738,
+        "lambda_home": 1.762,
+        "lambda_away": 0.834,
+        "p_over_25": 0.4836,
+        "p_btts": 0.4758,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1276
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1132
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1116
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-13T01:00",
+      "home": "United States",
+      "away": "Paraguay",
+      "home_short": "USA",
+      "away_short": "Paraguay",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4785,
+        "p_draw": 0.2609,
+        "p_away": 0.2606,
+        "lambda_home": 1.491,
+        "lambda_away": 1.0,
+        "p_over_25": 0.4512,
+        "p_btts": 0.4884,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1256
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1212
+          },
+          {
+            "score": "2-0",
+            "prob": 0.0946
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-13T19:00",
+      "home": "Qatar",
+      "away": "Switzerland",
+      "home_short": "Qatar",
+      "away_short": "Switzerland",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1652,
+        "p_draw": 0.2243,
+        "p_away": 0.6105,
+        "lambda_home": 0.808,
+        "lambda_away": 1.806,
+        "p_over_25": 0.4908,
+        "p_btts": 0.469,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1258
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1223
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1057
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-13T22:00",
+      "home": "Brazil",
+      "away": "Morocco",
+      "home_short": "Brazil",
+      "away_short": "Morocco",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4322,
+        "p_draw": 0.2895,
+        "p_away": 0.2783,
+        "lambda_home": 1.208,
+        "lambda_away": 0.903,
+        "p_over_25": 0.3585,
+        "p_btts": 0.4213,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1468
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1314
+          },
+          {
+            "score": "0-0",
+            "prob": 0.1161
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-14T01:00",
+      "home": "Haiti",
+      "away": "Scotland",
+      "home_short": "Haiti",
+      "away_short": "Scotland",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2336,
+        "p_draw": 0.2611,
+        "p_away": 0.5053,
+        "lambda_home": 0.957,
+        "lambda_away": 1.533,
+        "p_over_25": 0.4554,
+        "p_btts": 0.4876,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1257
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1246
+          },
+          {
+            "score": "0-2",
+            "prob": 0.0976
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-14T04:00",
+      "home": "Australia",
+      "away": "Türkiye",
+      "home_short": "Australia",
+      "away_short": "Türkiye",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3808,
+        "p_draw": 0.2729,
+        "p_away": 0.3463,
+        "lambda_home": 1.234,
+        "lambda_away": 1.173,
+        "p_over_25": 0.4271,
+        "p_btts": 0.4855,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1321
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1128
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1074
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-14T17:00",
+      "home": "Germany",
+      "away": "Curaçao",
+      "home_short": "Germany",
+      "away_short": "Curaçao",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6964,
+        "p_draw": 0.1953,
+        "p_away": 0.1083,
+        "lambda_home": 2.061,
+        "lambda_away": 0.672,
+        "p_over_25": 0.5187,
+        "p_btts": 0.4358,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1355
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1326
+          },
+          {
+            "score": "2-1",
+            "prob": 0.0949
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-14T20:00",
+      "home": "Netherlands",
+      "away": "Japan",
+      "home_short": "Netherlands",
+      "away_short": "Japan",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4307,
+        "p_draw": 0.284,
+        "p_away": 0.2853,
+        "lambda_home": 1.269,
+        "lambda_away": 0.959,
+        "p_over_25": 0.39,
+        "p_btts": 0.4468,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1302
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1286
+          },
+          {
+            "score": "0-0",
+            "prob": 0.1098
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-14T23:00",
+      "home": "Ivory Coast",
+      "away": "Ecuador",
+      "home_short": "Ivory Coast",
+      "away_short": "Ecuador",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2592,
+        "p_draw": 0.2591,
+        "p_away": 0.4817,
+        "lambda_home": 1.008,
+        "lambda_away": 1.476,
+        "p_over_25": 0.4554,
+        "p_btts": 0.493,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1236
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1192
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0957
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-15T02:00",
+      "home": "Sweden",
+      "away": "Tunisia",
+      "home_short": "Sweden",
+      "away_short": "Tunisia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4965,
+        "p_draw": 0.2562,
+        "p_away": 0.2473,
+        "lambda_home": 1.531,
+        "lambda_away": 0.979,
+        "p_over_25": 0.4619,
+        "p_btts": 0.4907,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.122
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1208
+          },
+          {
+            "score": "2-0",
+            "prob": 0.095
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-15T16:00",
+      "home": "Spain",
+      "away": "Cape Verde",
+      "home_short": "Spain",
+      "away_short": "Cape Verde",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.7294,
+        "p_draw": 0.1783,
+        "p_away": 0.0923,
+        "lambda_home": 2.161,
+        "lambda_away": 0.618,
+        "p_over_25": 0.5242,
+        "p_btts": 0.4121,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1448
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1348
+          },
+          {
+            "score": "3-0",
+            "prob": 0.1033
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-15T19:00",
+      "home": "Belgium",
+      "away": "Egypt",
+      "home_short": "Belgium",
+      "away_short": "Egypt",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.676,
+        "p_draw": 0.2029,
+        "p_away": 0.1211,
+        "lambda_home": 1.965,
+        "lambda_away": 0.688,
+        "p_over_25": 0.4976,
+        "p_btts": 0.4339,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1399
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1316
+          },
+          {
+            "score": "2-1",
+            "prob": 0.0957
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-15T22:00",
+      "home": "Saudi Arabia",
+      "away": "Uruguay",
+      "home_short": "Saudi Arabia",
+      "away_short": "Uruguay",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1711,
+        "p_draw": 0.2379,
+        "p_away": 0.591,
+        "lambda_home": 0.817,
+        "lambda_away": 1.743,
+        "p_over_25": 0.4731,
+        "p_btts": 0.46,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1321
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1154
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1094
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-16T01:00",
+      "home": "Iran",
+      "away": "New Zealand",
+      "home_short": "Iran",
+      "away_short": "New Zealand",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5704,
+        "p_draw": 0.2334,
+        "p_away": 0.1962,
+        "lambda_home": 1.712,
+        "lambda_away": 0.861,
+        "p_over_25": 0.4729,
+        "p_btts": 0.4754,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.126
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1151
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1121
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-16T19:00",
+      "home": "France",
+      "away": "Senegal",
+      "home_short": "France",
+      "away_short": "Senegal",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5088,
+        "p_draw": 0.2723,
+        "p_away": 0.2189,
+        "lambda_home": 1.413,
+        "lambda_away": 0.801,
+        "p_over_25": 0.3882,
+        "p_btts": 0.4223,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1508
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1234
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1069
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-16T22:00",
+      "home": "Iraq",
+      "away": "Norway",
+      "home_short": "Iraq",
+      "away_short": "Norway",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2091,
+        "p_draw": 0.2411,
+        "p_away": 0.5498,
+        "lambda_home": 0.903,
+        "lambda_away": 1.633,
+        "p_over_25": 0.4662,
+        "p_btts": 0.4805,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1278
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1176
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1054
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-17T01:00",
+      "home": "Argentina",
+      "away": "Algeria",
+      "home_short": "Argentina",
+      "away_short": "Algeria",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4407,
+        "p_draw": 0.4219,
+        "p_away": 0.1374,
+        "lambda_home": 0.772,
+        "lambda_away": 0.3,
+        "p_over_25": 0.0902,
+        "p_btts": 0.1421,
+        "top_scores": [
+          {
+            "score": "0-0",
+            "prob": 0.3318
+          },
+          {
+            "score": "1-0",
+            "prob": 0.2684
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1063
+          }
+        ],
+        "most_likely": "0-0",
+        "source": "API"
+      }
+    },
+    {
+      "date": "2026-06-17T04:00",
+      "home": "Austria",
+      "away": "Jordan",
+      "home_short": "Austria",
+      "away_short": "Jordan",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.58,
+        "p_draw": 0.235,
+        "p_away": 0.185,
+        "lambda_home": 1.737,
+        "lambda_away": 0.848,
+        "p_over_25": 0.4821,
+        "p_btts": 0.4766,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1299
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1105
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1079
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-17T17:00",
+      "home": "Portugal",
+      "away": "Congo DR",
+      "home_short": "Portugal",
+      "away_short": "Congo DR",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6983,
+        "p_draw": 0.1913,
+        "p_away": 0.1104,
+        "lambda_home": 2.058,
+        "lambda_away": 0.664,
+        "p_over_25": 0.5135,
+        "p_btts": 0.43,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.142
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1305
+          },
+          {
+            "score": "3-0",
+            "prob": 0.0942
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-17T20:00",
+      "home": "England",
+      "away": "Croatia",
+      "home_short": "England",
+      "away_short": "Croatia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.522,
+        "p_draw": 0.2651,
+        "p_away": 0.2129,
+        "lambda_home": 1.458,
+        "lambda_away": 0.807,
+        "p_over_25": 0.3998,
+        "p_btts": 0.4307,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1496
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1202
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1088
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-17T23:00",
+      "home": "Ghana",
+      "away": "Panama",
+      "home_short": "Ghana",
+      "away_short": "Panama",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4413,
+        "p_draw": 0.2694,
+        "p_away": 0.2893,
+        "lambda_home": 1.371,
+        "lambda_away": 1.052,
+        "p_over_25": 0.4361,
+        "p_btts": 0.4876,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1298
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1196
+          },
+          {
+            "score": "0-1",
+            "prob": 0.0914
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-18T02:00",
+      "home": "Uzbekistan",
+      "away": "Colombia",
+      "home_short": "Uzbekistan",
+      "away_short": "Colombia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1224,
+        "p_draw": 0.1943,
+        "p_away": 0.6833,
+        "lambda_home": 0.7,
+        "lambda_away": 2.004,
+        "p_over_25": 0.5128,
+        "p_btts": 0.4401,
+        "top_scores": [
+          {
+            "score": "0-2",
+            "prob": 0.1345
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1297
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0993
+          }
+        ],
+        "most_likely": "0-2",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-18T16:00",
+      "home": "Czechia",
+      "away": "South Africa",
+      "home_short": "Czechia",
+      "away_short": "South Africa",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.0934,
+        "p_draw": 0.1865,
+        "p_away": 0.7201,
+        "lambda_home": 0.552,
+        "lambda_away": 1.985,
+        "p_over_25": 0.4669,
+        "p_btts": 0.3657,
+        "top_scores": [
+          {
+            "score": "0-2",
+            "prob": 0.1602
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1536
+          },
+          {
+            "score": "0-3",
+            "prob": 0.1019
+          }
+        ],
+        "most_likely": "0-2",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-18T19:00",
+      "home": "Switzerland",
+      "away": "Bosnia-Herzegovina",
+      "home_short": "Switzerland",
+      "away_short": "Bosnia-Herz",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6067,
+        "p_draw": 0.2304,
+        "p_away": 0.1629,
+        "lambda_home": 1.811,
+        "lambda_away": 0.807,
+        "p_over_25": 0.4874,
+        "p_btts": 0.4701,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1298
+          },
+          {
+            "score": "2-0",
+            "prob": 0.117
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1078
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-18T22:00",
+      "home": "Canada",
+      "away": "Qatar",
+      "home_short": "Canada",
+      "away_short": "Qatar",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5877,
+        "p_draw": 0.2385,
+        "p_away": 0.1738,
+        "lambda_home": 1.762,
+        "lambda_away": 0.834,
+        "p_over_25": 0.4836,
+        "p_btts": 0.4758,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1276
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1132
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1116
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-19T01:00",
+      "home": "Mexico",
+      "away": "South Korea",
+      "home_short": "Mexico",
+      "away_short": "South Korea",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5733,
+        "p_draw": 0.2474,
+        "p_away": 0.1793,
+        "lambda_home": 1.677,
+        "lambda_away": 0.803,
+        "p_over_25": 0.4485,
+        "p_btts": 0.4542,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1354
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1184
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1168
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "API"
+      }
+    },
+    {
+      "date": "2026-06-19T19:00",
+      "home": "United States",
+      "away": "Australia",
+      "home_short": "USA",
+      "away_short": "Australia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3514,
+        "p_draw": 0.275,
+        "p_away": 0.3736,
+        "lambda_home": 1.173,
+        "lambda_away": 1.233,
+        "p_over_25": 0.4302,
+        "p_btts": 0.4883,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1333
+          },
+          {
+            "score": "0-1",
+            "prob": 0.111
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1078
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-19T22:00",
+      "home": "Scotland",
+      "away": "Morocco",
+      "home_short": "Scotland",
+      "away_short": "Morocco",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1781,
+        "p_draw": 0.2391,
+        "p_away": 0.5828,
+        "lambda_home": 0.817,
+        "lambda_away": 1.705,
+        "p_over_25": 0.4655,
+        "p_btts": 0.4581,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1303
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1174
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1128
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-20T00:30",
+      "home": "Brazil",
+      "away": "Haiti",
+      "home_short": "Brazil",
+      "away_short": "Haiti",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.7386,
+        "p_draw": 0.1711,
+        "p_away": 0.0903,
+        "lambda_home": 2.185,
+        "lambda_away": 0.605,
+        "p_over_25": 0.536,
+        "p_btts": 0.4094,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1417
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1354
+          },
+          {
+            "score": "3-0",
+            "prob": 0.1043
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-20T03:00",
+      "home": "Türkiye",
+      "away": "Paraguay",
+      "home_short": "Türkiye",
+      "away_short": "Paraguay",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4785,
+        "p_draw": 0.2609,
+        "p_away": 0.2606,
+        "lambda_home": 1.491,
+        "lambda_away": 1.0,
+        "p_over_25": 0.4512,
+        "p_btts": 0.4884,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1256
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1212
+          },
+          {
+            "score": "2-0",
+            "prob": 0.0946
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-20T17:00",
+      "home": "Netherlands",
+      "away": "Sweden",
+      "home_short": "Netherlands",
+      "away_short": "Sweden",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5669,
+        "p_draw": 0.2456,
+        "p_away": 0.1875,
+        "lambda_home": 1.664,
+        "lambda_away": 0.812,
+        "p_over_25": 0.4498,
+        "p_btts": 0.4545,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1362
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1162
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1154
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-20T20:00",
+      "home": "Germany",
+      "away": "Ivory Coast",
+      "home_short": "Germany",
+      "away_short": "Ivory Coast",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5822,
+        "p_draw": 0.2322,
+        "p_away": 0.1856,
+        "lambda_home": 1.701,
+        "lambda_away": 0.81,
+        "p_over_25": 0.4655,
+        "p_btts": 0.4587,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1363
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1123
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1098
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-21T00:00",
+      "home": "Ecuador",
+      "away": "Curaçao",
+      "home_short": "Ecuador",
+      "away_short": "Curaçao",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5981,
+        "p_draw": 0.2296,
+        "p_away": 0.1723,
+        "lambda_home": 1.787,
+        "lambda_away": 0.821,
+        "p_over_25": 0.4873,
+        "p_btts": 0.4727,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1293
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1135
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1084
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-21T04:00",
+      "home": "Tunisia",
+      "away": "Japan",
+      "home_short": "Tunisia",
+      "away_short": "Japan",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1555,
+        "p_draw": 0.2234,
+        "p_away": 0.6211,
+        "lambda_home": 0.788,
+        "lambda_away": 1.831,
+        "p_over_25": 0.4929,
+        "p_btts": 0.4585,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1314
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1177
+          },
+          {
+            "score": "1-1",
+            "prob": 0.104
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-21T16:00",
+      "home": "Spain",
+      "away": "Saudi Arabia",
+      "home_short": "Spain",
+      "away_short": "Saudi Arabia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6521,
+        "p_draw": 0.2183,
+        "p_away": 0.1296,
+        "lambda_home": 1.9,
+        "lambda_away": 0.701,
+        "p_over_25": 0.4853,
+        "p_btts": 0.4379,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1384
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1286
+          },
+          {
+            "score": "1-1",
+            "prob": 0.0993
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-21T19:00",
+      "home": "Belgium",
+      "away": "Iran",
+      "home_short": "Belgium",
+      "away_short": "Iran",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5536,
+        "p_draw": 0.2545,
+        "p_away": 0.1919,
+        "lambda_home": 1.587,
+        "lambda_away": 0.814,
+        "p_over_25": 0.4356,
+        "p_btts": 0.4472,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1413
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1147
+          },
+          {
+            "score": "2-0",
+            "prob": 0.112
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-21T22:00",
+      "home": "Uruguay",
+      "away": "Cape Verde",
+      "home_short": "Uruguay",
+      "away_short": "Cape Verde",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6734,
+        "p_draw": 0.1975,
+        "p_away": 0.1291,
+        "lambda_home": 1.986,
+        "lambda_away": 0.713,
+        "p_over_25": 0.5114,
+        "p_btts": 0.4459,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1365
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1259
+          },
+          {
+            "score": "2-1",
+            "prob": 0.0982
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-22T01:00",
+      "home": "New Zealand",
+      "away": "Egypt",
+      "home_short": "New Zealand",
+      "away_short": "Egypt",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2849,
+        "p_draw": 0.2672,
+        "p_away": 0.4479,
+        "lambda_home": 1.038,
+        "lambda_away": 1.384,
+        "p_over_25": 0.4349,
+        "p_btts": 0.4816,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1271
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1212
+          },
+          {
+            "score": "1-0",
+            "prob": 0.0928
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-22T17:00",
+      "home": "Argentina",
+      "away": "Austria",
+      "home_short": "Argentina",
+      "away_short": "Austria",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.8174,
+        "p_draw": 0.1442,
+        "p_away": 0.0384,
+        "lambda_home": 2.229,
+        "lambda_away": 0.3,
+        "p_over_25": 0.4567,
+        "p_btts": 0.2324,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.2053
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1765
+          },
+          {
+            "score": "3-0",
+            "prob": 0.1425
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-22T21:00",
+      "home": "France",
+      "away": "Iraq",
+      "home_short": "France",
+      "away_short": "Iraq",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.7487,
+        "p_draw": 0.1728,
+        "p_away": 0.0785,
+        "lambda_home": 2.235,
+        "lambda_away": 0.578,
+        "p_over_25": 0.5314,
+        "p_btts": 0.3975,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1514
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1312
+          },
+          {
+            "score": "3-0",
+            "prob": 0.1089
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-23T00:00",
+      "home": "Norway",
+      "away": "Senegal",
+      "home_short": "Norway",
+      "away_short": "Senegal",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2386,
+        "p_draw": 0.2637,
+        "p_away": 0.4977,
+        "lambda_home": 0.957,
+        "lambda_away": 1.5,
+        "p_over_25": 0.4495,
+        "p_btts": 0.4847,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1281
+          },
+          {
+            "score": "1-1",
+            "prob": 0.123
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0967
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-23T03:00",
+      "home": "Jordan",
+      "away": "Algeria",
+      "home_short": "Jordan",
+      "away_short": "Algeria",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.0386,
+        "p_draw": 0.1223,
+        "p_away": 0.8391,
+        "lambda_home": 0.394,
+        "lambda_away": 2.525,
+        "p_over_25": 0.5566,
+        "p_btts": 0.2924,
+        "top_scores": [
+          {
+            "score": "0-2",
+            "prob": 0.1748
+          },
+          {
+            "score": "0-3",
+            "prob": 0.1424
+          },
+          {
+            "score": "0-1",
+            "prob": 0.135
+          }
+        ],
+        "most_likely": "0-2",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-23T17:00",
+      "home": "Portugal",
+      "away": "Uzbekistan",
+      "home_short": "Portugal",
+      "away_short": "Uzbekistan",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.7116,
+        "p_draw": 0.1841,
+        "p_away": 0.1043,
+        "lambda_home": 2.111,
+        "lambda_away": 0.646,
+        "p_over_25": 0.5197,
+        "p_btts": 0.4217,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1431
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1325
+          },
+          {
+            "score": "3-0",
+            "prob": 0.0966
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-23T20:00",
+      "home": "England",
+      "away": "Ghana",
+      "home_short": "England",
+      "away_short": "Ghana",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6865,
+        "p_draw": 0.2006,
+        "p_away": 0.1129,
+        "lambda_home": 2.003,
+        "lambda_away": 0.651,
+        "p_over_25": 0.4924,
+        "p_btts": 0.4187,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1424
+          },
+          {
+            "score": "1-0",
+            "prob": 0.136
+          },
+          {
+            "score": "1-1",
+            "prob": 0.0973
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-23T23:00",
+      "home": "Panama",
+      "away": "Croatia",
+      "home_short": "Panama",
+      "away_short": "Croatia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1553,
+        "p_draw": 0.2227,
+        "p_away": 0.622,
+        "lambda_home": 0.792,
+        "lambda_away": 1.835,
+        "p_over_25": 0.492,
+        "p_btts": 0.4605,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1299
+          },
+          {
+            "score": "0-2",
+            "prob": 0.12
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1045
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-24T02:00",
+      "home": "Colombia",
+      "away": "Congo DR",
+      "home_short": "Colombia",
+      "away_short": "Congo DR",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6675,
+        "p_draw": 0.1991,
+        "p_away": 0.1334,
+        "lambda_home": 1.96,
+        "lambda_away": 0.721,
+        "p_over_25": 0.5054,
+        "p_btts": 0.4466,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1347
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1296
+          },
+          {
+            "score": "2-1",
+            "prob": 0.097
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-24T19:00",
+      "home": "Bosnia-Herzegovina",
+      "away": "Qatar",
+      "home_short": "Bosnia-Herz",
+      "away_short": "Qatar",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3561,
+        "p_draw": 0.275,
+        "p_away": 0.3689,
+        "lambda_home": 1.154,
+        "lambda_away": 1.184,
+        "p_over_25": 0.4142,
+        "p_btts": 0.4742,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1311
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1146
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1138
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-24T19:00",
+      "home": "Switzerland",
+      "away": "Canada",
+      "home_short": "Switzerland",
+      "away_short": "Canada",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3886,
+        "p_draw": 0.2685,
+        "p_away": 0.3429,
+        "lambda_home": 1.244,
+        "lambda_away": 1.14,
+        "p_over_25": 0.4247,
+        "p_btts": 0.4801,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1266
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1149
+          },
+          {
+            "score": "0-1",
+            "prob": 0.108
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-24T22:00",
+      "home": "Morocco",
+      "away": "Haiti",
+      "home_short": "Morocco",
+      "away_short": "Haiti",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6845,
+        "p_draw": 0.1989,
+        "p_away": 0.1166,
+        "lambda_home": 2.036,
+        "lambda_away": 0.686,
+        "p_over_25": 0.5133,
+        "p_btts": 0.438,
+        "top_scores": [
+          {
+            "score": "2-0",
+            "prob": 0.1343
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1316
+          },
+          {
+            "score": "1-1",
+            "prob": 0.0942
+          }
+        ],
+        "most_likely": "2-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-24T22:00",
+      "home": "Scotland",
+      "away": "Brazil",
+      "home_short": "Scotland",
+      "away_short": "Brazil",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.14,
+        "p_draw": 0.2235,
+        "p_away": 0.6365,
+        "lambda_home": 0.712,
+        "lambda_away": 1.826,
+        "p_over_25": 0.4723,
+        "p_btts": 0.4329,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1388
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1277
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1036
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-25T01:00",
+      "home": "Czechia",
+      "away": "Mexico",
+      "home_short": "Czechia",
+      "away_short": "Mexico",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.085,
+        "p_draw": 0.2118,
+        "p_away": 0.7032,
+        "lambda_home": 0.445,
+        "lambda_away": 1.787,
+        "p_over_25": 0.3861,
+        "p_btts": 0.2957,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1847
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1765
+          },
+          {
+            "score": "0-0",
+            "prob": 0.1097
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-25T01:00",
+      "home": "South Africa",
+      "away": "South Korea",
+      "home_short": "South Africa",
+      "away_short": "South Korea",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5884,
+        "p_draw": 0.2176,
+        "p_away": 0.194,
+        "lambda_home": 1.863,
+        "lambda_away": 0.948,
+        "p_over_25": 0.5339,
+        "p_btts": 0.5162,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.111
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1067
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1017
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "API"
+      }
+    },
+    {
+      "date": "2026-06-25T20:00",
+      "home": "Curaçao",
+      "away": "Ivory Coast",
+      "home_short": "Curaçao",
+      "away_short": "Ivory Coast",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2277,
+        "p_draw": 0.2578,
+        "p_away": 0.5145,
+        "lambda_home": 0.943,
+        "lambda_away": 1.559,
+        "p_over_25": 0.4595,
+        "p_btts": 0.4875,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1254
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1225
+          },
+          {
+            "score": "0-2",
+            "prob": 0.099
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-25T20:00",
+      "home": "Ecuador",
+      "away": "Germany",
+      "home_short": "Ecuador",
+      "away_short": "Germany",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2393,
+        "p_draw": 0.2643,
+        "p_away": 0.4964,
+        "lambda_home": 0.907,
+        "lambda_away": 1.445,
+        "p_over_25": 0.4144,
+        "p_btts": 0.4577,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1349
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1307
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1013
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-25T23:00",
+      "home": "Japan",
+      "away": "Sweden",
+      "home_short": "Japan",
+      "away_short": "Sweden",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5171,
+        "p_draw": 0.2488,
+        "p_away": 0.2341,
+        "lambda_home": 1.549,
+        "lambda_away": 0.923,
+        "p_over_25": 0.4517,
+        "p_btts": 0.4716,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1286
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1164
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1032
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-25T23:00",
+      "home": "Tunisia",
+      "away": "Netherlands",
+      "home_short": "Tunisia",
+      "away_short": "Netherlands",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1197,
+        "p_draw": 0.2041,
+        "p_away": 0.6762,
+        "lambda_home": 0.699,
+        "lambda_away": 1.97,
+        "p_over_25": 0.5025,
+        "p_btts": 0.4372,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1348
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1332
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0967
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-26T02:00",
+      "home": "Paraguay",
+      "away": "Australia",
+      "home_short": "Paraguay",
+      "away_short": "Australia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3506,
+        "p_draw": 0.2675,
+        "p_away": 0.3819,
+        "lambda_home": 1.174,
+        "lambda_away": 1.244,
+        "p_over_25": 0.4404,
+        "p_btts": 0.4936,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.125
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1113
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1099
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-26T02:00",
+      "home": "Türkiye",
+      "away": "United States",
+      "home_short": "Türkiye",
+      "away_short": "USA",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3671,
+        "p_draw": 0.2681,
+        "p_away": 0.3648,
+        "lambda_home": 1.223,
+        "lambda_away": 1.223,
+        "p_over_25": 0.4454,
+        "p_btts": 0.4942,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1283
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1063
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1063
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-26T19:00",
+      "home": "Norway",
+      "away": "France",
+      "home_short": "Norway",
+      "away_short": "France",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.1461,
+        "p_draw": 0.2375,
+        "p_away": 0.6164,
+        "lambda_home": 0.711,
+        "lambda_away": 1.745,
+        "p_over_25": 0.448,
+        "p_btts": 0.4239,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1419
+          },
+          {
+            "score": "0-2",
+            "prob": 0.1267
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1106
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-26T19:00",
+      "home": "Senegal",
+      "away": "Iraq",
+      "home_short": "Senegal",
+      "away_short": "Iraq",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.6417,
+        "p_draw": 0.2144,
+        "p_away": 0.1439,
+        "lambda_home": 1.912,
+        "lambda_away": 0.753,
+        "p_over_25": 0.4952,
+        "p_btts": 0.457,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1309
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1261
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1026
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T00:00",
+      "home": "Cape Verde",
+      "away": "Saudi Arabia",
+      "home_short": "Cape Verde",
+      "away_short": "Saudi Arabia",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2561,
+        "p_draw": 0.2647,
+        "p_away": 0.4792,
+        "lambda_home": 0.997,
+        "lambda_away": 1.459,
+        "p_over_25": 0.4455,
+        "p_btts": 0.4886,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1258
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1229
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0939
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T00:00",
+      "home": "Uruguay",
+      "away": "Spain",
+      "home_short": "Uruguay",
+      "away_short": "Spain",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2687,
+        "p_draw": 0.2868,
+        "p_away": 0.4445,
+        "lambda_home": 0.904,
+        "lambda_away": 1.265,
+        "p_over_25": 0.3719,
+        "p_btts": 0.4337,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1416
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1323
+          },
+          {
+            "score": "0-0",
+            "prob": 0.1127
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T03:00",
+      "home": "Egypt",
+      "away": "Iran",
+      "home_short": "Egypt",
+      "away_short": "Iran",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2255,
+        "p_draw": 0.2546,
+        "p_away": 0.5199,
+        "lambda_home": 0.953,
+        "lambda_away": 1.575,
+        "p_over_25": 0.4678,
+        "p_btts": 0.4941,
+        "top_scores": [
+          {
+            "score": "0-1",
+            "prob": 0.1232
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1186
+          },
+          {
+            "score": "1-2",
+            "prob": 0.0988
+          }
+        ],
+        "most_likely": "0-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T03:00",
+      "home": "New Zealand",
+      "away": "Belgium",
+      "home_short": "New Zealand",
+      "away_short": "Belgium",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.0979,
+        "p_draw": 0.1804,
+        "p_away": 0.7217,
+        "lambda_home": 0.632,
+        "lambda_away": 2.129,
+        "p_over_25": 0.5256,
+        "p_btts": 0.415,
+        "top_scores": [
+          {
+            "score": "0-2",
+            "prob": 0.1431
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1281
+          },
+          {
+            "score": "0-3",
+            "prob": 0.1051
+          }
+        ],
+        "most_likely": "0-2",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T21:00",
+      "home": "Croatia",
+      "away": "Ghana",
+      "home_short": "Croatia",
+      "away_short": "Ghana",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.5636,
+        "p_draw": 0.2381,
+        "p_away": 0.1983,
+        "lambda_home": 1.691,
+        "lambda_away": 0.872,
+        "p_over_25": 0.4739,
+        "p_btts": 0.4784,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1251
+          },
+          {
+            "score": "1-1",
+            "prob": 0.1151
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1109
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T21:00",
+      "home": "Panama",
+      "away": "England",
+      "home_short": "Panama",
+      "away_short": "England",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.0861,
+        "p_draw": 0.1752,
+        "p_away": 0.7387,
+        "lambda_home": 0.599,
+        "lambda_away": 2.178,
+        "p_over_25": 0.5299,
+        "p_btts": 0.4061,
+        "top_scores": [
+          {
+            "score": "0-2",
+            "prob": 0.1464
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1314
+          },
+          {
+            "score": "0-3",
+            "prob": 0.1044
+          }
+        ],
+        "most_likely": "0-2",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T23:30",
+      "home": "Colombia",
+      "away": "Portugal",
+      "home_short": "Colombia",
+      "away_short": "Portugal",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.2998,
+        "p_draw": 0.2946,
+        "p_away": 0.4056,
+        "lambda_home": 0.977,
+        "lambda_away": 1.182,
+        "p_over_25": 0.3677,
+        "p_btts": 0.4356,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1366
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1346
+          },
+          {
+            "score": "0-0",
+            "prob": 0.1147
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-27T23:30",
+      "home": "Congo DR",
+      "away": "Uzbekistan",
+      "home_short": "Congo DR",
+      "away_short": "Uzbekistan",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.4062,
+        "p_draw": 0.2677,
+        "p_away": 0.3261,
+        "lambda_home": 1.274,
+        "lambda_away": 1.098,
+        "p_over_25": 0.43,
+        "p_btts": 0.4804,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1222
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1192
+          },
+          {
+            "score": "0-1",
+            "prob": 0.105
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    },
+    {
+      "date": "2026-06-28T02:00",
+      "home": "Algeria",
+      "away": "Austria",
+      "home_short": "Algeria",
+      "away_short": "Austria",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.704,
+        "p_draw": 0.2039,
+        "p_away": 0.0921,
+        "lambda_home": 1.835,
+        "lambda_away": 0.469,
+        "p_over_25": 0.4064,
+        "p_btts": 0.3158,
+        "top_scores": [
+          {
+            "score": "1-0",
+            "prob": 0.1831
+          },
+          {
+            "score": "2-0",
+            "prob": 0.1667
+          },
+          {
+            "score": "3-0",
+            "prob": 0.1023
+          }
+        ],
+        "most_likely": "1-0",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-28T02:00",
+      "home": "Jordan",
+      "away": "Argentina",
+      "home_short": "Jordan",
+      "away_short": "Argentina",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.0163,
+        "p_draw": 0.074,
+        "p_away": 0.9097,
+        "lambda_home": 0.3,
+        "lambda_away": 3.08,
+        "p_over_25": 0.6559,
+        "p_btts": 0.2402,
+        "top_scores": [
+          {
+            "score": "0-3",
+            "prob": 0.1665
+          },
+          {
+            "score": "0-2",
+            "prob": 0.165
+          },
+          {
+            "score": "0-4",
+            "prob": 0.1326
+          }
+        ],
+        "most_likely": "0-3",
+        "source": "MIXED"
+      }
+    },
+    {
+      "date": "2026-06-28T19:00",
+      "home": "Group A 2nd Place",
+      "away": "Group B 2nd Place",
+      "home_short": "2A",
+      "away_short": "2B",
+      "status": "STATUS_SCHEDULED",
+      "home_score": 0,
+      "away_score": 0,
+      "prediction": {
+        "p_home": 0.3671,
+        "p_draw": 0.2681,
+        "p_away": 0.3648,
+        "lambda_home": 1.223,
+        "lambda_away": 1.223,
+        "p_over_25": 0.4454,
+        "p_btts": 0.4942,
+        "top_scores": [
+          {
+            "score": "1-1",
+            "prob": 0.1283
+          },
+          {
+            "score": "1-0",
+            "prob": 0.1063
+          },
+          {
+            "score": "0-1",
+            "prob": 0.1063
+          }
+        ],
+        "most_likely": "1-1",
+        "source": "FIFA"
+      }
+    }
+  ]
+}
