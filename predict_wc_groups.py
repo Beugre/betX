@@ -1039,34 +1039,36 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 bk_x = round(1/ox/total_impl, 3)
                 bk_a = round(1/oa/total_impl, 3)
                 bk_line = f"  📊 Marché : {bk_h:.0%} / {bk_x:.0%} / {bk_a:.0%}  <i>(DraftKings, marge déduite)</i>"
-                # Edge 1X2
-                edges = [
-                    _edge_display(ph, oh),
-                    _edge_display(px, ox),
-                    _edge_display(pa, oa),
-                ]
+                # Pronostic = résultat le plus probable selon le modèle
+                likely = max([("home", ph, m["home_short"]), ("draw", px, "Nul"), ("away", pa, m["away_short"])],
+                             key=lambda x: x[1])
+                pronostic_line = f"  📈 Pronostic modèle : <b>{likely[2]}</b> ({likely[1]:.0%})"
+                # Value bet = sélection avec le meilleur edge (si > 5%)
                 best_edge = max(
                     [(ph, oh, m["home_short"]), (px, ox, "Nul"), (pa, oa, m["away_short"])],
                     key=lambda x: (x[0] - 1/x[1]) if x[1] > 1 else -99
                 )
                 e_best = best_edge[0] - 1/best_edge[1] if best_edge[1] > 1 else 0
-                rec_line = ""
                 if e_best >= 0.05:
-                    rec_line = f"  💎 Recommandation : <b>{best_edge[2]}</b> — {_edge_display(best_edge[0], best_edge[1])}"
+                    vb_label = best_edge[2]
+                    vb_note = " ⚠️ <i>(value ≠ favori)</i>" if vb_label != likely[2] else ""
+                    value_line = f"  💎 Value bet : <b>{vb_label}</b>{vb_note} — {_edge_display(best_edge[0], best_edge[1])}"
                 elif e_best > 0:
-                    rec_line = f"  ⚪ Pas de value significatif (edge max {e_best*100:+.1f}%)"
+                    value_line = f"  ⚪ Pas de value significatif (edge max {e_best*100:+.1f}%)"
                 else:
-                    rec_line = f"  🔴 Bookmaker plus optimiste que le modèle"
+                    value_line = f"  🔴 Marché plus favorable que le modèle"
             else:
                 bk_line = "  📊 Cotes ESPN non disponibles <i>(matchs à venir)</i>"
-                rec_line = ""
+                pronostic_line = ""
+                value_line = ""
 
             lines2 += [
                 f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>  │  {result_line}",
                 f"  <i>{_narrative(m, pred)}</i>",
                 f"  🔢 Modèle : 1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
                 bk_line,
-                rec_line if rec_line else None,
+                pronostic_line if pronostic_line else None,
+                value_line if value_line else None,
                 f"  ⚽ Score prédit : <b>{score}</b> ({prob_score*100:.0f}%)"
                 f"  │  λ {lh:.2f}–{la:.2f}",
                 f"  📈 O1.5 {pred.get('p_over_15',0):.0%}"
