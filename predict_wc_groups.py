@@ -800,24 +800,79 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
     value_bets.sort(key=lambda x: x["edge"], reverse=True)
 
+    def _reliability(vb: dict, pred: dict | None = None) -> str:
+        """
+        Indicateur de fiabilité basé sur les λ et la certitude de la prédiction.
+        Ne tient pas compte de la qualité des données (à améliorer avec historique).
+
+        Haute  : λ diff > 1.0 ET prob > 65%  → modèle très tranché
+        Moyenne: λ diff > 0.5 OU prob > 55%
+        Faible : sinon (match équilibré / λ proches)
+        """
+        if pred is None:
+            return ""
+        lh = pred.get("lambda_home", 0)
+        la = pred.get("lambda_away", 0)
+        lam_diff = abs(lh - la)
+        max_prob = max(pred.get("p_home", 0), pred.get("p_draw", 0), pred.get("p_away", 0))
+        if lam_diff > 1.0 and max_prob >= 0.65:
+            return "🧠 Fiabilité : <b>Haute</b>  (λ diff {:.2f}, P max {:.0%})".format(lam_diff, max_prob)
+        if lam_diff > 0.5 or max_prob >= 0.55:
+            return "🧠 Fiabilité : Moyenne  (λ diff {:.2f}, P max {:.0%})".format(lam_diff, max_prob)
+        return "🧠 Fiabilité : <i>Faible — match très ouvert</i>  (λ diff {:.2f})".format(lam_diff)
+
+    # Construire un index des prédictions par match pour la fiabilité
+    _pred_by_match: dict[str, dict] = {}
+    for m in all_day_matches:
+        k = f"{m['home']}_{m['away']}"
+        if m.get("prediction"):
+            _pred_by_match[k] = m["prediction"]
+
     if value_bets:
+        # Séparer value bets O/U + BTTS (robustes) vs 1X2 (à surveiller)
+        vb_robust = [vb for vb in value_bets if vb.get("market") in ("O/U", "BTTS")]
+        vb_1x2 = [vb for vb in value_bets if vb.get("market") == "1X2"]
+
         lines1 = [f"🎯 <b>betX CdM – Value Bets</b>", ""]
-        for vb in value_bets:
-            badge = _conf_badge(vb["edge"])
-            mkt_tag = f" [{vb['market']}]" if vb.get("market", "1X2") != "1X2" else ""
-            odds_tag = "@~" if vb.get("market") in ("O/U", "BTTS") else "@"
-            kelly = _kelly_stake(vb["model_p"], vb["odds"])
-            kelly_str = f"   💰 Kelly 25% : <b>{kelly:.1f}% bankroll</b>" if kelly > 0 else ""
-            lines1 += [
-                f"{badge} {_flag(vb['label'].split()[0] if vb['label'] else '')} <b>{vb['label']}</b>{mkt_tag} {odds_tag}{vb['odds']:.2f}{vb['day_tag']}",
-                f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: {vb['implied_p']:.0%}",
-                f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>  │  EV: <b>{vb.get('ev', 0)*100:+.0f}%</b>",
-                kelly_str if kelly_str else None,
-                f"   🕐 {vb['time']}",
-                "",
-            ]
-            # Filtrer les None
-            lines1 = [l for l in lines1 if l is not None]
+
+        def _add_vb_block(vb_list: list, section_title: str | None = None):
+            nonlocal lines1
+            if not vb_list:
+                return
+            if section_title:
+                lines1.append(f"<b>{section_title}</b>")
+            for vb in vb_list:
+                badge = _conf_badge(vb["edge"])
+                mkt_tag = f" [{vb['market']}]" if vb.get("market", "1X2") != "1X2" else ""
+                odds_tag = "@~" if vb.get("market") in ("O/U", "BTTS") else "@"
+                kelly = _kelly_stake(vb["model_p"], vb["odds"])
+                kelly_str = f"   💰 Kelly 25% : <b>{kelly:.1f}% bankroll</b>" if kelly > 0 else None
+                # Fiabilité (depuis le contexte du match)
+                mk = f"{vb['home']}_{vb['away']}"
+                rel = _reliability(vb, _pred_by_match.get(mk))
+                rel_str = f"   {rel}" if rel else None
+                lines1 += [
+                    f"{badge} {_flag(vb['label'].split()[0] if vb['label'] else '')} <b>{vb['label']}</b>{mkt_tag} {odds_tag}{vb['odds']:.2f}{vb['day_tag']}",
+                    f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: <b>{vb['implied_p']:.0%}</b>  │  🎰 Cote: {vb['odds']:.2f}",
+                    f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>  │  EV: <b>{vb.get('ev', 0)*100:+.0f}%</b>",
+                    kelly_str,
+                    rel_str,
+                    f"   🕐 {vb['time']}",
+                    "",
+                ]
+                # Filtrer les None
+                while None in lines1:
+                    lines1.remove(None)
+
+        _add_vb_block(vb_robust)
+
+        if vb_1x2:
+            lines1.append("<b>⚠️ À surveiller (1X2 — écarts inhabituels)</b>")
+            lines1.append("<i>Ces edges sont exceptionnellement grands.</i>")
+            lines1.append("<i>Valider sur 100+ paris avant d'augmenter les mises.</i>")
+            lines1.append("")
+            _add_vb_block(vb_1x2)
+
         lines1 += [
             "━" * 28,
             "<i>★★★★★ Edge >20% | ★★★★ >15% | ★★★ >10% | ★★ >5%</i>",
