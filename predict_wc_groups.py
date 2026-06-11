@@ -764,9 +764,42 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             f'📊 <a href="http://213.199.41.168">Dashboard complet</a>'
         )
 
-    # ── MSG 2 : Prédictions concises ─────────────────────────────────────
+    # ── MSG 2 : Prédictions avec comparaison modèle vs marché ────────────
 
-    lines2 = ["📊 <b>Prédictions du modèle</b>", ""]
+    # Charger les cotes ESPN du scan du jour (disponibles pour matchs d'aujourd'hui)
+    _bets_odds: dict[str, dict] = {}
+    try:
+        import json as _json
+        _daily = _json.loads(Path("data/daily_bets.json").read_text())
+        for b in _daily.get("bets", []):
+            k = f"{b['home_team']}_{b['away_team']}"
+            if k not in _bets_odds:
+                _bets_odds[k] = {}
+            _bets_odds[k][b["selection"]] = b.get("odds", 0)
+        # Récupérer aussi toutes les cotes depuis l'analyse
+        for b in _daily.get("bets", []):
+            k = f"{b['home_team']}_{b['away_team']}"
+            a = b.get("analysis", {})
+            _bets_odds[k]["_odds_home"] = a.get("odds_home", 0)
+            _bets_odds[k]["_odds_draw"] = a.get("odds_draw", 0)
+            _bets_odds[k]["_odds_away"] = a.get("odds_away", 0)
+    except Exception:
+        pass
+
+    lines2 = ["📊 <b>Prédictions betX – Modèle vs Marché</b>", ""]
+
+    def _ev(model_p: float, odds: float) -> float:
+        """EV = modèle × (cote - 1) - (1 - modèle)"""
+        return model_p * (odds - 1) - (1 - model_p)
+
+    def _edge_display(model_p: float, odds: float) -> str:
+        if not odds or odds <= 1.0:
+            return ""
+        impl = 1.0 / odds
+        e = model_p - impl
+        ev = _ev(model_p, odds)
+        sign = "🟢" if e >= 0.05 else ("🟡" if e > 0 else "🔴")
+        return f"{sign} Edge: <b>{e*100:+.1f}%</b>  │  EV: <b>{ev*100:+.1f}%</b>  @{odds:.2f}"
 
     def _section(matches: list[dict], label: str):
         nonlocal lines2
@@ -783,33 +816,76 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             prob_score = top1.get("prob", 0)
             state = m.get("status", "")
             time_str = m["date"][11:16] + "Z"
+            lh = pred.get("lambda_home", 0)
+            la = pred.get("lambda_away", 0)
 
             # Résultat si disponible
             if state == "STATUS_FINAL" and m.get("home_score") is not None:
                 actual = f"{m['home_score']}-{m['away_score']}"
                 correct = " 🎯" if actual == score else ""
-                result = f"  ✅ {actual}{correct}"
+                result_line = f"✅ Résultat : <b>{actual}</b>{correct}"
             else:
-                result = f"  🕐 {time_str}"
+                result_line = f"🕐 {time_str}"
+
+            # Cotes ESPN (match du jour si disponible)
+            k = f"{m['home']}_{m['away']}"
+            bk = _bets_odds.get(k, {})
+            oh = m.get("odds_home") or bk.get("_odds_home") or 0
+            ox = m.get("odds_draw") or bk.get("_odds_draw") or 0
+            oa = m.get("odds_away") or bk.get("_odds_away") or 0
+
+            # Probabilités implicites bookmaker (normalisées si les 3 cotes dispo)
+            has_odds = oh > 1 and ox > 1 and oa > 1
+            if has_odds:
+                total_impl = 1/oh + 1/ox + 1/oa
+                bk_h = round(1/oh/total_impl, 3)
+                bk_x = round(1/ox/total_impl, 3)
+                bk_a = round(1/oa/total_impl, 3)
+                bk_line = f"  📊 Marché : {bk_h:.0%} / {bk_x:.0%} / {bk_a:.0%}  <i>(DraftKings, marge déduite)</i>"
+                # Edge 1X2
+                edges = [
+                    _edge_display(ph, oh),
+                    _edge_display(px, ox),
+                    _edge_display(pa, oa),
+                ]
+                best_edge = max(
+                    [(ph, oh, m["home_short"]), (px, ox, "Nul"), (pa, oa, m["away_short"])],
+                    key=lambda x: (x[0] - 1/x[1]) if x[1] > 1 else -99
+                )
+                e_best = best_edge[0] - 1/best_edge[1] if best_edge[1] > 1 else 0
+                rec_line = ""
+                if e_best >= 0.05:
+                    rec_line = f"  💎 Recommandation : <b>{best_edge[2]}</b> — {_edge_display(best_edge[0], best_edge[1])}"
+                elif e_best > 0:
+                    rec_line = f"  ⚪ Pas de value significatif (edge max {e_best*100:+.1f}%)"
+                else:
+                    rec_line = f"  🔴 Bookmaker plus optimiste que le modèle"
+            else:
+                bk_line = "  📊 Cotes ESPN non disponibles <i>(matchs à venir)</i>"
+                rec_line = ""
 
             lines2 += [
-                f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>{result}",
-                f"  1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
-                f"  ⚽ Score : <b>{score}</b> ({prob_score*100:.0f}%)"
-                f"  │  λ {pred.get('lambda_home', 0):.2f}–{pred.get('lambda_away', 0):.2f}",
+                f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>  │  {result_line}",
+                f"  🔢 Modèle : 1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
+                bk_line,
+                rec_line if rec_line else None,
+                f"  ⚽ Score prédit : <b>{score}</b> ({prob_score*100:.0f}%)"
+                f"  │  λ {lh:.2f}–{la:.2f}",
                 f"  📈 O1.5 {pred.get('p_over_15',0):.0%}"
-                f"  │ O2.5 <b>{pred.get('p_over_25',0):.0%}</b>"
+                f"  │ <b>O2.5 {pred.get('p_over_25',0):.0%}</b>"
                 f"  │ O3.5 {pred.get('p_over_35',0):.0%}",
                 f"  🔀 BTTS <b>{pred.get('p_btts',0):.0%}</b>"
                 f"  │ CS dom {pred.get('p_cs_home',0):.0%}"
                 f"  │ CS ext {pred.get('p_cs_away',0):.0%}",
                 "",
             ]
+            # Filtrer les None
+            lines2 = [l for l in lines2 if l is not None]
 
     _section(sorted(today_matches, key=lambda x: x["date"]), "📅 Aujourd'hui")
     _section(sorted(tomorrow_matches, key=lambda x: x["date"]), "📅 Demain")
 
-    lines2.append(f'<i>Modèle : Poisson + Dixon-Coles + MC 10k</i>')
+    lines2.append(f'<i>Modèle : Poisson + Dixon-Coles + MC 10k | Edge = modèle − marché</i>')
     msg2 = "\n".join(lines2)
 
     # ── MSG 3 : Combiné conditionnel ─────────────────────────────────────
