@@ -284,6 +284,10 @@ def predict_match(
     probs = predictor.predict(feats, use_monte_carlo=True)
     top3 = sorted(probs.exact_scores.items(), key=lambda x: x[1], reverse=True)[:3]
 
+    # P(Clean Sheet) = P(équipe adverse marque 0 buts)
+    p_cs_home = sum(v for k, v in probs.exact_scores.items() if k.split("-")[1] == "0")
+    p_cs_away = sum(v for k, v in probs.exact_scores.items() if k.split("-")[0] == "0")
+
     return {
         "p_home": probs.p_home_win,
         "p_draw": probs.p_draw,
@@ -291,8 +295,14 @@ def predict_match(
         "lambda_home": probs.lambda_home,
         "lambda_away": probs.lambda_away,
         "top_scores": top3,
+        "p_over_15": probs.p_over_15,
         "p_over_25": probs.p_over_25,
+        "p_over_35": probs.p_over_35,
+        "p_under_25": probs.p_under_25,
         "p_btts": probs.p_btts,
+        "p_btts_no": probs.p_btts_no,
+        "p_cs_home": round(p_cs_home, 4),
+        "p_cs_away": round(p_cs_away, 4),
         "source": source,
     }
 
@@ -498,8 +508,14 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                 "p_away": round(pred.get("p_away", 0), 4),
                 "lambda_home": round(pred.get("lambda_home", 0), 3),
                 "lambda_away": round(pred.get("lambda_away", 0), 3),
+                "p_over_15": round(pred.get("p_over_15", 0), 4),
                 "p_over_25": round(pred.get("p_over_25", 0), 4),
+                "p_over_35": round(pred.get("p_over_35", 0), 4),
+                "p_under_25": round(pred.get("p_under_25", 0), 4),
                 "p_btts": round(pred.get("p_btts", 0), 4),
+                "p_btts_no": round(pred.get("p_btts_no", 0), 4),
+                "p_cs_home": round(pred.get("p_cs_home", 0), 4),
+                "p_cs_away": round(pred.get("p_cs_away", 0), 4),
                 "top_scores": [{"score": sc, "prob": round(p, 4)} for sc, p in top3],
                 "most_likely": top3[0][0] if top3 else "1-0",
                 "source": pred.get("source", "FIFA"),
@@ -655,16 +671,22 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         ph = pred.get("p_home", 0)
         px = pred.get("p_draw", 0)
         pa = pred.get("p_away", 0)
+        p_o25 = pred.get("p_over_25", 0)
+        p_u25 = pred.get("p_under_25", 0)
+        p_btts = pred.get("p_btts", 0)
+        p_btts_no = pred.get("p_btts_no", 0)
         oh = m.get("odds_home")
         ox = m.get("odds_draw")
         oa = m.get("odds_away")
         time_str = m["date"][11:16] + "Z"
         is_tmrw = _is_tomorrow(m)
         day_tag = " [demain]" if is_tmrw else ""
+        match_label = f"{m['home_short']}-{m['away_short']}"
 
+        # Marchés 1X2
         for sel, prob, odds, label in [
             ("home", ph, oh, m["home_short"]),
-            ("draw", px, ox, f"Nul {m['home_short']}-{m['away_short']}"),
+            ("draw", px, ox, f"Nul {match_label}"),
             ("away", pa, oa, m["away_short"]),
         ]:
             if not odds or odds <= 1.0:
@@ -677,6 +699,41 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                     "edge": e, "time": time_str, "day_tag": day_tag,
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
+                    "market": "1X2",
+                })
+
+        # Marchés Over/Under (cotes ESPN si disponibles, sinon cote standard ~1.90)
+        # ESPN expose peu les O/U sur CdM → on utilise 1.90 comme proxy marché
+        STD_OU = 1.90
+        for sel, prob, label in [
+            ("over_25", p_o25, f"Over 2.5 {match_label}"),
+            ("under_25", p_u25, f"Under 2.5 {match_label}"),
+        ]:
+            e = _edge(prob, STD_OU)
+            if e and e >= 0.07:  # seuil légèrement plus haut (proxy cote)
+                value_bets.append({
+                    "label": label, "sel": sel, "odds": STD_OU,
+                    "model_p": prob, "implied_p": _implied(STD_OU),
+                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "home": m["home"], "away": m["away"],
+                    "home_short": m["home_short"], "away_short": m["away_short"],
+                    "market": "O/U",
+                })
+
+        # Marché BTTS
+        for sel, prob, label in [
+            ("btts_yes", p_btts, f"BTTS Oui {match_label}"),
+            ("btts_no", p_btts_no, f"BTTS Non {match_label}"),
+        ]:
+            e = _edge(prob, STD_OU)
+            if e and e >= 0.07:
+                value_bets.append({
+                    "label": label, "sel": sel, "odds": STD_OU,
+                    "model_p": prob, "implied_p": _implied(STD_OU),
+                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "home": m["home"], "away": m["away"],
+                    "home_short": m["home_short"], "away_short": m["away_short"],
+                    "market": "BTTS",
                 })
 
     value_bets.sort(key=lambda x: x["edge"], reverse=True)
@@ -685,8 +742,10 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
         lines1 = [f"🎯 <b>betX CdM – Value Bets</b>", ""]
         for vb in value_bets:
             badge = _conf_badge(vb["edge"])
+            mkt_tag = f" [{vb['market']}]" if vb.get("market", "1X2") != "1X2" else ""
+            odds_tag = "@~" if vb.get("market") in ("O/U", "BTTS") else "@"
             lines1 += [
-                f"{badge} {_flag(vb['label'])} <b>{vb['label']}</b> @{vb['odds']:.2f}{vb['day_tag']}",
+                f"{badge} {_flag(vb['label'].split()[0] if vb['label'] else '')} <b>{vb['label']}</b>{mkt_tag} {odds_tag}{vb['odds']:.2f}{vb['day_tag']}",
                 f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: {vb['implied_p']:.0%}",
                 f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>",
                 f"   🕐 {vb['time']}",
@@ -734,9 +793,16 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 result = f"  🕐 {time_str}"
 
             lines2 += [
-                f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>",
+                f"{_flag(m['home'])} <b>{m['home_short']}</b> vs {_flag(m['away'])} <b>{m['away_short']}</b>{result}",
                 f"  1️⃣ {ph:.0%}  🤝 {px:.0%}  2️⃣ {pa:.0%}",
-                f"  ⚽ Score : <b>{score}</b> ({prob_score*100:.0f}%){result}",
+                f"  ⚽ Score : <b>{score}</b> ({prob_score*100:.0f}%)"
+                f"  │  λ {pred.get('lambda_home', 0):.2f}–{pred.get('lambda_away', 0):.2f}",
+                f"  📈 O1.5 {pred.get('p_over_15',0):.0%}"
+                f"  │ O2.5 <b>{pred.get('p_over_25',0):.0%}</b>"
+                f"  │ O3.5 {pred.get('p_over_35',0):.0%}",
+                f"  🔀 BTTS <b>{pred.get('p_btts',0):.0%}</b>"
+                f"  │ CS dom {pred.get('p_cs_home',0):.0%}"
+                f"  │ CS ext {pred.get('p_cs_away',0):.0%}",
                 "",
             ]
 
