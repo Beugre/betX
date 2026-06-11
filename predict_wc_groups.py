@@ -755,7 +755,8 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 value_bets.append({
                     "label": label, "sel": sel, "odds": odds,
                     "model_p": prob, "implied_p": _implied(odds),
-                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "edge": e, "ev": round(prob * (odds - 1) - (1 - prob), 4),
+                    "time": time_str, "day_tag": day_tag,
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
                     "market": "1X2",
@@ -773,7 +774,8 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 value_bets.append({
                     "label": label, "sel": sel, "odds": STD_OU,
                     "model_p": prob, "implied_p": _implied(STD_OU),
-                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "edge": e, "ev": round(prob * (STD_OU - 1) - (1 - prob), 4),
+                    "time": time_str, "day_tag": day_tag,
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
                     "market": "O/U",
@@ -789,7 +791,8 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 value_bets.append({
                     "label": label, "sel": sel, "odds": STD_OU,
                     "model_p": prob, "implied_p": _implied(STD_OU),
-                    "edge": e, "time": time_str, "day_tag": day_tag,
+                    "edge": e, "ev": round(prob * (STD_OU - 1) - (1 - prob), 4),
+                    "time": time_str, "day_tag": day_tag,
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
                     "market": "BTTS",
