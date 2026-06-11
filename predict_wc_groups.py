@@ -787,7 +787,11 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
 
 
 def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
-    """Envoie les prédictions CdM via Telegram — un message par match."""
+    """Envoie les prédictions CdM via Telegram — un message par match.
+
+    Anti-doublon : skip si déjà envoyé dans les 4 dernières heures
+    (évite les doublons entre cron 08h et 15h UTC).
+    """
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
     dm_id = os.getenv("TELEGRAM_CHAT_ID", "")
     channel_id = os.getenv("TELEGRAM_CHANNEL_ID", "")
@@ -796,16 +800,41 @@ def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
         console.print("[yellow]⚠️  TELEGRAM_BOT_TOKEN manquant — envoi ignoré[/yellow]")
         return False
 
+    # Anti-doublon : lock file avec timestamp
+    lock_file = Path("data/cache/wc_tg_sent.txt")
+    today_str = filter_date or date.today().isoformat()
+    if lock_file.exists():
+        try:
+            last_sent = lock_file.read_text().strip()
+            # Skip si même date ET moins de 4h d'écart
+            if last_sent.startswith(today_str):
+                last_ts = float(last_sent.split("|")[1]) if "|" in last_sent else 0
+                if time.time() - last_ts < 4 * 3600:
+                    console.print(
+                        f"[yellow]⏭️  CdM Telegram déjà envoyé récemment (skip)[/yellow]"
+                    )
+                    return True
+        except Exception:
+            pass
+
     messages = build_wc_telegram(data, filter_date)
     if not messages:
         console.print("[yellow]⚠️  Aucun match à envoyer[/yellow]")
         return False
 
-    targets = [(dm_id, "DM"), (channel_id, "Channel")]
+    # Envoyer uniquement au channel (pas de DM en doublon)
+    # Le channel est le point de diffusion principal
+    # Le DM reçoit quand même si channel_id est vide
+    if channel_id:
+        targets = [(channel_id, "Channel")]
+    elif dm_id:
+        targets = [(dm_id, "DM")]
+    else:
+        console.print("[yellow]⚠️  Aucun destinataire Telegram.[/yellow]")
+        return False
+
     ok = True
     for cid, label in targets:
-        if not cid:
-            continue
         sent = 0
         for msg in messages:
             if msg.strip():
@@ -814,6 +843,11 @@ def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
         console.print(f"  ✅ Telegram {label} : {sent} messages envoyés")
         if sent == 0:
             ok = False
+
+    # Marquer comme envoyé
+    if ok:
+        lock_file.parent.mkdir(parents=True, exist_ok=True)
+        lock_file.write_text(f"{today_str}|{time.time():.0f}")
     return ok
 
 
