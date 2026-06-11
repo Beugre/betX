@@ -530,6 +530,50 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
     WC_JSON_FILE.parent.mkdir(parents=True, exist_ok=True)
     WC_JSON_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2))
     console.print(f"\n💾 Prédictions exportées → [cyan]{WC_JSON_FILE}[/cyan]")
+
+    # ── Suivi automatique des prédictions ──
+    try:
+        from betx.analytics.prediction_tracker import PredictionTracker
+        tracker = PredictionTracker()
+
+        # 1. Résoudre les matchs terminés
+        resolved_count = 0
+        for rec in records:
+            if rec.get("status") == "STATUS_FINAL" and rec.get("home_score") is not None:
+                n = tracker.resolve_match(
+                    rec["home"], rec["away"],
+                    int(rec["home_score"]), int(rec["away_score"])
+                )
+                resolved_count += n
+
+        # 2. Enregistrer les nouvelles prédictions (matchs non encore terminés)
+        new_count = 0
+        for rec in records:
+            if rec.get("status") != "STATUS_FINAL" and rec.get("prediction"):
+                pred_dict = rec["prediction"]
+                match_odds = {
+                    "odds_home": rec.get("odds_home") or 0,
+                    "odds_draw": rec.get("odds_draw") or 0,
+                    "odds_away": rec.get("odds_away") or 0,
+                }
+                new_recs = tracker.record_from_prediction(
+                    match_date=rec["date"][:10],
+                    home=rec["home"],
+                    away=rec["away"],
+                    prediction=pred_dict,
+                    match_odds=match_odds,
+                    source=pred_dict.get("source", "FIFA"),
+                )
+                new_count += len(new_recs)
+
+        if resolved_count:
+            console.print(f"  ✅ {resolved_count} prédictions résolues")
+        if new_count:
+            console.print(f"  📝 {new_count} nouvelles prédictions enregistrées")
+
+    except Exception as e:
+        console.print(f"  [yellow]⚠️  Tracker: {e}[/yellow]")
+
     return data
 
 
@@ -1003,7 +1047,16 @@ def main():
                         help="Filtrer sur une date YYYY-MM-DD")
     parser.add_argument("--notify", action="store_true",
                         help="Envoyer les prédictions du jour sur Telegram")
+    parser.add_argument("--report", action="store_true",
+                        help="Afficher le rapport de performance (ROI, Brier Score)")
     args = parser.parse_args()
+
+    # Mode rapport uniquement
+    if args.report:
+        from betx.analytics.prediction_tracker import PredictionTracker
+        tracker = PredictionTracker()
+        print(tracker.display_report())
+        return
 
     today = args.date or date.today().isoformat()
 
