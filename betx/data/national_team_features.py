@@ -267,36 +267,77 @@ def build_features(
     """
     h = home_profile
     a = away_profile
-
     h2h_stats = h.h2h_stats()
 
-    def _blended_elo(profile: "NationalTeamProfile") -> float:
-        """ELO blend : 60% FIFA + 40% calculé. Protège contre les biais d'adversaires."""
+    # ── Étape 1 : ELO réel (eloratings.net) ──────────────────────────────
+    def _best_elo(profile: "NationalTeamProfile") -> float:
+        """
+        Priorité :
+          1. ELO officiel eloratings.net (source la plus fiable)
+          2. Blend 60% FIFA + 40% calculé (fallback si pas dans eloratings)
+        """
+        from betx.data.elo_loader import get_elo as _get_elo
+        official = _get_elo(profile.team_name)
+        if official is not None:
+            # Blend léger avec l'ELO calculé pour ne pas ignorer la forme récente
+            computed = profile.elo_estimate
+            return round(0.80 * official + 0.20 * computed, 1)
+        # Fallback FIFA
         computed = profile.elo_estimate
         fifa = _fifa_elo(profile.team_name)
         if fifa is not None:
             return round(0.60 * fifa + 0.40 * computed, 1)
         return computed
 
-    def _blended_lambda(profile: "NationalTeamProfile", is_atk: bool) -> float:
+    # ── Étape 2 : λ pondérés par force adversaire ─────────────────────────
+    def _opponent_weighted_lambda(profile: "NationalTeamProfile", is_atk: bool) -> float:
         """
-        λ blend : 50% FIFA attendu + 50% données.
-        Normalise les λ gonflés par des victoires vs adversaires faibles.
+        Calcule les λ en pondérant chaque but par la force de l'adversaire.
+
+        w_adversaire = (ELO_adv / 1750)^0.5
+        → Victoire 3-0 vs Zimbabwe (ELO 1400) : poids 0.89
+        → Victoire 1-0 vs Argentina (ELO 2100) : poids 1.10
+
+        Empêche les λ gonflés par des victoires faciles en AFCON/qualifs.
         """
-        if is_atk:
-            data_val = (profile.weighted_lambda_scored(10, official_only=True)
-                        or profile.weighted_lambda_scored(10))
-        else:
-            data_val = (profile.weighted_lambda_conceded(10, official_only=True)
-                        or profile.weighted_lambda_conceded(10))
+        from betx.data.elo_loader import get_elo as _get_elo
+        from betx.data.national_team_collector import MATCH_TYPE_WEIGHTS
+        REF_ELO = 1750.0
+
+        matches = [m for m in profile.recent_matches if m.is_competitive][:10]
+        if not matches:
+            matches = profile.recent_matches[:10]
+        if not matches:
+            return 1.20
+
+        total_w = 0.0
+        total_goals = 0.0
+        for rank, m in enumerate(matches):
+            # Poids récence × compétition (déjà existant)
+            w_comp = profile._composite_weight(rank, m.competition_id)
+            # Poids force adversaire
+            opp_name = m.opponent
+            opp_elo = _get_elo(opp_name)
+            if opp_elo is None:
+                opp_elo = REF_ELO  # adversaire inconnu = niveau moyen
+            w_opp = (opp_elo / REF_ELO) ** 0.5
+            w_total = w_comp * w_opp
+
+            goals = m.goals_scored if is_atk else m.goals_conceded
+            total_goals += goals * w_total
+            total_w += w_total
+
+        raw = total_goals / total_w if total_w > 0 else 1.20
+
+        # Blend 50% données pondérées + 50% FIFA attendu (ancrage)
         fifa_vals = _fifa_expected_lambda(profile.team_name)
         if fifa_vals is not None:
             fifa_val = fifa_vals[0] if is_atk else fifa_vals[1]
-            return round(0.50 * fifa_val + 0.50 * data_val, 3)
-        return data_val
+            return round(0.50 * fifa_val + 0.50 * raw, 3)
+        return round(raw, 3)
 
-    h_elo = _blended_elo(h)
-    a_elo = _blended_elo(a)
+    h_elo = _best_elo(h)
+    a_elo = _best_elo(a)
 
     feats = NationalTeamFeatureSet(
         home_team=h.team_name,
@@ -316,13 +357,13 @@ def build_features(
         home_friendly_form=_friendly_form(h),
         away_friendly_form=_friendly_form(a),
 
-        # Buts pondérés (blending data + FIFA attendu)
-        home_goals_for_10=_blended_lambda(h, is_atk=True),
-        away_goals_for_10=_blended_lambda(a, is_atk=True),
-        home_goals_against_10=_blended_lambda(h, is_atk=False),
-        away_goals_against_10=_blended_lambda(a, is_atk=False),
-        home_goals_for_5=_blended_lambda(h, is_atk=True),
-        away_goals_for_5=_blended_lambda(a, is_atk=True),
+        # Buts pondérés par force adversaire (étapes 1+2 combinées)
+        home_goals_for_10=_opponent_weighted_lambda(h, is_atk=True),
+        away_goals_for_10=_opponent_weighted_lambda(a, is_atk=True),
+        home_goals_against_10=_opponent_weighted_lambda(h, is_atk=False),
+        away_goals_against_10=_opponent_weighted_lambda(a, is_atk=False),
+        home_goals_for_5=_opponent_weighted_lambda(h, is_atk=True),
+        away_goals_for_5=_opponent_weighted_lambda(a, is_atk=True),
 
         # H2H
         h2h_count=h2h_stats["count"],
