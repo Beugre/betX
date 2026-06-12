@@ -379,6 +379,13 @@ with tab_wc:
         m for m in matches_all if m["date"].startswith(selected_date)
     ]
 
+    # Index tracker par match pour récupérer les prédictions historiques exactes
+    tracker_by_match: dict[str, dict] = {}
+    for r in tracker_records:
+        k = f"{r.get('home','')}_{r.get('away','')}_{r.get('match_date','')}"
+        if r.get("market") == "1X2" and r.get("result"):
+            tracker_by_match[k] = r
+
     wc_rows = []
     for m in matches:
         pred = m.get("prediction", {})
@@ -395,16 +402,29 @@ with tab_wc:
         pa = pred.get("p_away", 0)
 
         # Vérifier la réussite de la prédiction
+        # Priorité : données du tracker (prédiction historique) > recalcul actuel
         perf = ""
         if is_done and m.get("home_score") is not None:
             actual = f"{m['home_score']}-{m['away_score']}"
-            if best.get("score") == actual:
-                perf = "🎯 Score exact"
-            else:
+            tk = tracker_by_match.get(f"{m['home']}_{m['away']}_{m['date'][:10]}")
+            if tk:
+                # Utiliser la prédiction stockée dans le tracker (pas le recalcul)
+                tracked_sel = tk.get("selection", "")
                 hg, ag = int(m["home_score"]), int(m["away_score"])
-                likely = max([("home", ph), ("draw", px), ("away", pa)], key=lambda x: x[1])[0]
-                ok = (likely == "home" and hg > ag) or (likely == "away" and ag > hg) or (likely == "draw" and hg == ag)
-                perf = "✅ Bon sens" if ok else "❌ Raté"
+                correct_sel = "home" if hg > ag else ("away" if ag > hg else "draw")
+                if tracked_sel == correct_sel:
+                    perf = "✅ Bon sens"
+                else:
+                    perf = "❌ Raté"
+            else:
+                # Fallback : utiliser les probabilités actuelles
+                if best.get("score") == actual:
+                    perf = "🎯 Score exact"
+                else:
+                    hg, ag = int(m["home_score"]), int(m["away_score"])
+                    likely = max([("home", ph), ("draw", px), ("away", pa)], key=lambda x: x[1])[0]
+                    ok = (likely == "home" and hg > ag) or (likely == "away" and ag > hg) or (likely == "draw" and hg == ag)
+                    perf = "✅ Bon sens" if ok else "❌ Raté"
 
         # Over/Under réel
         ou_real = ""
