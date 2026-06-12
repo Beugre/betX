@@ -320,8 +320,10 @@ def build_features(
             opp_name = m.opponent
             opp_elo = _get_elo(opp_name)
             if opp_elo is None:
-                opp_elo = REF_ELO  # adversaire inconnu = niveau moyen
-            w_opp = (opp_elo / REF_ELO) ** 0.5
+                # Adversaire inconnu = probablement une petite équipe régionale
+                # 1500 plutôt que 1750 pour éviter de surestimer leur impact
+                opp_elo = 1500.0
+            w_opp = (opp_elo / REF_ELO) ** 0.7
             # CdM = terrain neutre : décote légère des matchs joués à domicile
             # (l'avantage domicile historique ne s'applique pas en sol américain)
             w_location = 0.85 if m.is_home else 1.0
@@ -459,7 +461,7 @@ class NationalMatchPredictor:
         # car les données sont rares et les adversaires hétérogènes.
         # Multiplicateur 0.45 (vs 0.20 avant) pour donner plus de poids au ranking.
         elo_factor = 10 ** (elo_diff / 800.0)
-        elo_factor = max(0.75, min(1.35, elo_factor))
+        elo_factor = max(0.55, min(1.55, elo_factor))  # élargi pour gros écarts
         lambda_home *= (1 + (elo_factor - 1) * 0.45)
         lambda_away *= (1 + (1.0 / max(elo_factor, 0.01) - 1) * 0.45)
 

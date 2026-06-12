@@ -122,13 +122,13 @@ MATCH_TYPE_WEIGHTS: dict[int, float] = {
     32:  1.4,   # WC Qualifiers UEFA
     34:  1.4,   # WC Qualifiers CONMEBOL
     26:  1.3,   # WC Qualifiers AFC
-    36:  1.1,   # AFCON Qualifiers (adversaires très variés)
+    36:  1.0,   # AFCON Qualifiers (adversaires très variés)
     8:   1.3,   # UEFA Nations League
-    22:  1.3,   # CONCACAF Gold Cup
+    22:  1.2,   # CONCACAF Gold Cup
     4:   1.3,   # Euro
-    536: 1.2,   # CONCACAF Nations League
-    859: 0.8,   # COSAFA Cup (adversaires faibles, impact réduit)
-    10:  0.6,   # Friendlies
+    536: 1.0,   # CONCACAF Nations League (niveau moyen)
+    859: 0.5,   # COSAFA Cup (adversaires très faibles)
+    10:  0.5,   # Friendlies (variable, souvent adversaires faibles)
 }
 
 # Saisons accessibles en plan Free
