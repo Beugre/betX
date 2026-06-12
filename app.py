@@ -434,6 +434,43 @@ with tab_wc:
             real_over = total > 2
             ou_real = ("✅" if pred_over == real_over else "❌") + f" {'O' if real_over else 'U'}2.5 ({total})"
 
+        # ── Calcul Edge depuis les cotes disponibles (auto ou saisie manuelle) ──
+        oh = m.get("odds_home") or 0
+        ox = m.get("odds_draw") or 0
+        oa = m.get("odds_away") or 0
+        o_over = m.get("odds_over_25") or 0
+        o_under = m.get("odds_under_25") or 0
+        bkm = m.get("odds_bookmaker", "")
+
+        def _edge_str(model_p, odds):
+            if not odds or odds <= 1.0:
+                return "—"
+            impl = 1.0 / odds
+            e = model_p - impl
+            icon = "🟢" if e >= 0.05 else ("🟡" if e > 0 else "🔴")
+            return f"{icon} {e*100:+.0f}pts @{odds:.2f}"
+
+        # Edge 1X2 : meilleur edge parmi les 3 issues
+        edge_1x2 = "—"
+        if oh > 1 and ox > 1 and oa > 1:
+            best_e = max(
+                [(ph, oh, "1"), (px, ox, "X"), (pa, oa, "2")],
+                key=lambda x: x[0] - 1/x[1]
+            )
+            e_val = best_e[0] - 1/best_e[1]
+            icon = "🟢" if e_val >= 0.05 else ("🟡" if e_val > 0 else "🔴")
+            edge_1x2 = f"{icon} {best_e[2]} {e_val*100:+.0f}pts @{best_e[1]:.2f}"
+
+        # Edge O/U
+        p_o25 = pred.get("p_over_25", 0)
+        p_u25 = pred.get("p_under_25", p_o25 and (1 - p_o25))
+        if p_o25 >= 0.5:
+            edge_ou = _edge_str(p_o25, o_over) if o_over > 1 else _edge_str(p_o25, 1.90)
+            edge_ou = edge_ou.replace("@1.90", "@~1.90")
+        else:
+            edge_ou = _edge_str(p_u25, o_under) if o_under > 1 else _edge_str(p_u25, 1.90)
+            edge_ou = edge_ou.replace("@1.90", "@~1.90")
+
         wc_rows.append({
             "📅": m["date"][:10],
             "🕐": heure,
@@ -444,6 +481,9 @@ with tab_wc:
             "λ": f"{pred.get('lambda_home',0):.2f}–{pred.get('lambda_away',0):.2f}",
             "O2.5": f"{pred.get('p_over_25',0):.0%}",
             "BTTS": f"{pred.get('p_btts',0):.0%}",
+            "Edge 1X2": edge_1x2,
+            "Edge O/U": edge_ou,
+            "Bkm": bkm[:8] if bkm else "—",
             "1X2 ✓": perf,
             "O/U ✓": ou_real,
             "Src": pred.get("source", "?"),
@@ -451,8 +491,11 @@ with tab_wc:
 
     if wc_rows:
         wc_df = pd.DataFrame(wc_rows)
+        display_cols = ["📅", "🕐", "Match", "Score réel", "Score prédit",
+                        "P(1/X/2)", "λ", "O2.5", "BTTS",
+                        "Edge 1X2", "Edge O/U", "Bkm", "1X2 ✓", "O/U ✓", "Src"]
         st.dataframe(
-            wc_df,
+            wc_df[display_cols],
             use_container_width=True,
             height=min(len(wc_df) * 42 + 60, 900),
             hide_index=True,
