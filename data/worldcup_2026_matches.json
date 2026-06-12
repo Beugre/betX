@@ -2597,7 +2597,7 @@
     {
       "team": "South Korea",
       "dataset_team_name": "South Korea",
-      "match_count": 31,
+      "match_count": 30,
       "matches": [
         {
           "date": "2026-06-12",
@@ -2614,23 +2614,6 @@
           "tournament": "FIFA World Cup",
           "city": "",
           "country": "United States",
-          "neutral": true
-        },
-        {
-          "date": "2026-06-11",
-          "team": "South Korea",
-          "opponent": "Czech Republic",
-          "is_home": true,
-          "home_team": "South Korea",
-          "away_team": "Czech Republic",
-          "home_score": 2,
-          "away_score": 1,
-          "team_score": 2,
-          "opponent_score": 1,
-          "result": "W",
-          "tournament": "FIFA World Cup",
-          "city": "Zapopan",
-          "country": "Mexico",
           "neutral": true
         },
         {

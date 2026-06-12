@@ -31,6 +31,7 @@ ESPN_TO_MARTJ42: dict[str, str] = {
     "South Africa":         "South Africa",
     "South Korea":          "South Korea",
     "Czechia":              "Czech Republic",  # martj42 utilise "Czech Republic"
+    "Czech Republic":       "Czech Republic",
     "Bosnia-Herzegovina":   "Bosnia and Herzegovina",
     "Bosnia-Herz":          "Bosnia and Herzegovina",
     "Ivory Coast":          "Ivory Coast",
@@ -129,11 +130,21 @@ def update_dataset(matches: list[dict]) -> int:
 
             entry = teams_index[team_martj42]
             existing_keys = {
-                (mx["date"], mx["home_team"], mx["away_team"])
+                (mx["date"], mx["home_score"], mx["away_score"],
+                 mx.get("is_home", True))
                 for mx in entry["matches"]
             }
 
-            if (match_date, m["home"], m["away"]) in existing_keys:
+            # Déduplication robuste : même score à ±1 jour (gère les décalages UTC)
+            from datetime import date as _date
+            match_d = _date.fromisoformat(match_date)
+            score_key = (team_score, opp_score)
+            is_dup = any(
+                abs((_date.fromisoformat(mx["date"]) - match_d).days) <= 1
+                and (mx["team_score"], mx["opponent_score"]) == score_key
+                for mx in entry["matches"]
+            )
+            if is_dup:
                 continue  # déjà présent
 
             opp = away_espn if is_home else home_espn
