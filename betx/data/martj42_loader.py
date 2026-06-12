@@ -25,11 +25,6 @@ TOURNAMENT_MAP = {
     # ── Qualifications (avant les tournois finals) ─────────────────────
     "FIFA World Cup qualification":     29,
     "World Cup qualification":          29,
-    "CONCACAF World Cup qualification": 31,
-    "UEFA World Cup qualification":     32,
-    "CONMEBOL World Cup qualification": 34,
-    "CAF World Cup qualification":      29,
-    "AFC World Cup qualification":      30,
     "UEFA Euro qualification":          32,
     "AFCON qualification":              36,
     "Africa Cup of Nations qualification": 36,
