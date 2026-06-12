@@ -28,16 +28,18 @@ CACHE_TTL = 2 * 3600  # 2h
 # Bookmakers préférés (ordre de priorité — Pinnacle = le plus efficient)
 PREFERRED_BOOKMAKERS = ["pinnacle", "betclic_fr", "winamax_fr", "unibet_fr", "marathonbet"]
 
-# Normalisation noms The Odds API → ESPN
+# Normalisation noms The Odds API → noms ESPN (sens : ce que l'Odds API envoie → ce qu'ESPN envoie)
 TEAM_NAME_MAP_ODDS: dict[str, str] = {
-    "Bosnia & Herzegovina": "Bosnia-Herzegovina",
-    "United States": "USA",
-    "South Korea": "South Korea",
-    "DR Congo": "Congo DR",
-    "Ivory Coast": "Ivory Coast",
-    "Cape Verde": "Cape Verde",
-    "Iran": "Iran",
-    "Türkiye": "Türkiye",
+    "USA":                      "United States",
+    "Turkey":                   "Türkiye",
+    "Bosnia & Herzegovina":     "Bosnia-Herzegovina",
+    "Bosnia-Herzegovina":       "Bosnia-Herzegovina",
+    "DR Congo":                 "Congo DR",
+    "Congo DR":                 "Congo DR",
+    "Cote d'Ivoire":            "Ivory Coast",
+    "Cape Verde Islands":       "Cape Verde",
+    "Korea Republic":           "South Korea",
+    "Czech Republic":           "Czechia",
 }
 
 
