@@ -98,11 +98,12 @@ COMPETITION_IDS = {
 
 # IDs compétitions compétitives par confédération (hors amicaux)
 CONFEDERATION_COMP_IDS: dict[str, set[int]] = {
-    "africa":   {6, 29, 36, 859, 21},
-    "concacaf": {9, 22, 31, 536},
-    "conmebol": {9, 34},
-    "uefa":     {4, 8, 32},
-    "afc":      {7, 26, 29, 30, 656},  # 7=Asian Cup, 26/30=WC Qual Asia, 29=WC Qual générique, 656=Arab Cup
+    # comp_id=1 = FIFA World Cup (tournoi final) → valide pour TOUTES les confédérations
+    "africa":   {1, 6, 29, 36, 859, 21},
+    "concacaf": {1, 9, 22, 31, 536},
+    "conmebol": {1, 9, 34},
+    "uefa":     {1, 4, 8, 32},
+    "afc":      {1, 7, 26, 29, 30, 656},
 }
 
 # Toutes les compétitions compétitives (union)
@@ -116,8 +117,11 @@ MATCH_TYPE_WEIGHTS: dict[int, float] = {
     7:   1.5,   # Asian Cup
     9:   1.6,   # Copa America
     21:  1.5,   # Confederations Cup
+    1:   1.8,   # FIFA World Cup (tournoi final — même poids que WC)
     29:  1.2,   # WC Qualifiers (générique: Africa/Asia)
     30:  1.3,   # WC Qualifiers Asia
+    31:  1.4,   # WC Qualifiers CONCACAF
+    34:  1.4,   # WC Qualifiers CONMEBOL
     656: 1.3,   # Arab Cup (compétition officielle AFC/WAFF)
     31:  1.4,   # WC Qualifiers CONCACAF
     32:  1.4,   # WC Qualifiers UEFA

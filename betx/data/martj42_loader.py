@@ -19,22 +19,37 @@ log = logging.getLogger("betx.data.martj42_loader")
 DATASET_FILE = Path("data/worldcup_2026_matches.json")
 CACHE_FILE = Path("data/cache/national_teams.json")
 
+# IMPORTANT : les clés plus spécifiques ("qualification") DOIVENT précéder
+# les clés génériques ("FIFA World Cup") car le matching est sous-chaîne.
 TOURNAMENT_MAP = {
+    # ── Qualifications (avant les tournois finals) ─────────────────────
+    "FIFA World Cup qualification":     29,
+    "World Cup qualification":          29,
+    "CONCACAF World Cup qualification": 31,
+    "UEFA World Cup qualification":     32,
+    "CONMEBOL World Cup qualification": 34,
+    "CAF World Cup qualification":      29,
+    "AFC World Cup qualification":      30,
+    "UEFA Euro qualification":          32,
+    "AFCON qualification":              36,
+    "Africa Cup of Nations qualification": 36,
+    "African Cup of Nations qualification": 36,
+    # ── Tournois finals ────────────────────────────────────────────────
     "FIFA World Cup":                   1,
     "World Cup":                        1,
     "UEFA Nations League":              8,
     "CONCACAF Nations League":          536,
     "Copa America":                     9,
     "African Cup of Nations":           6,
+    "Africa Cup of Nations":            6,
     "AFC Asian Cup":                    7,
-    "Friendly":                         10,
     "Gold Cup":                         22,
     "CONCACAF Gold Cup":                22,
     "UEFA Euro":                        4,
-    "Africa Cup of Nations":            6,
     "Arab Cup":                         656,
     "WAFF Championship":                656,
     "Gulf Cup":                         656,
+    "Friendly":                         10,
 }
 
 
