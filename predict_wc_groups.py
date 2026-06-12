@@ -691,10 +691,20 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                 "conf_score": round(pred.get("conf_score", 0), 3),
             } if pred else {},
         }
-        # Réinjecter les cotes saisies manuellement (non écrasées par le cron)
+        # Réinjecter les cotes — priorité : cotes du match ESPN (auto) > saisie manuelle
         saved = existing_odds.get(f"{m['home']}|{m['away']}")
-        if saved:
-            rec.update(saved)
+        auto_odds = {
+            "odds_home":      m.get("odds_home"),
+            "odds_draw":      m.get("odds_draw"),
+            "odds_away":      m.get("odds_away"),
+            "odds_over_25":   m.get("odds_over_25"),
+            "odds_under_25":  m.get("odds_under_25"),
+            "odds_bookmaker": m.get("odds_bookmaker", ""),
+        }
+        # Utiliser les cotes auto si disponibles, sinon les cotes manuelles sauvegardées
+        odds_to_use = auto_odds if auto_odds.get("odds_home") else (saved or {})
+        if odds_to_use:
+            rec.update(odds_to_use)
         records.append(rec)
 
     data = {
