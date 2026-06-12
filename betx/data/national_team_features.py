@@ -314,6 +314,7 @@ def build_features(
         total_goals = 0.0
         for rank, m in enumerate(matches):
             # Poids récence × compétition (déjà existant)
+            # Poids récence × compétition (sans date — force adversaire est le correctif)
             w_comp = profile._composite_weight(rank, m.competition_id)
             # Poids force adversaire
             opp_name = m.opponent

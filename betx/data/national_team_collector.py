@@ -191,14 +191,27 @@ class NationalTeamProfile:
     # ── Poids composites ─────────────────────────────────────────────────
 
     @staticmethod
-    def _composite_weight(rank: int, competition_id: int) -> float:
+    def _composite_weight(rank: int, competition_id: int,
+                          match_date: str | None = None) -> float:
         """
         Poids composite : récence × type de compétition.
 
-        w = exp(-0.07 * rank) * match_type_weight
-        rank=0 = plus récent, rank=19 = le plus ancien.
+        Si match_date fourni (YYYY-MM-DD) : récence = exp(-0.023 × Δjours)
+          → 30j : 0.50 | 90j : 0.12 | 180j : 0.015
+        Sinon (fallback) : récence = exp(-0.07 × rank)
+
+        Formule complète : w = w_recency × w_type
         """
-        w_recency = math.exp(-0.07 * rank)
+        if match_date:
+            try:
+                from datetime import date as _date
+                d = _date.fromisoformat(match_date)
+                delta_days = (_date.today() - d).days
+                w_recency = math.exp(-0.023 * max(delta_days, 0))
+            except Exception:
+                w_recency = math.exp(-0.07 * rank)
+        else:
+            w_recency = math.exp(-0.07 * rank)
         w_type = MATCH_TYPE_WEIGHTS.get(competition_id, 1.0)
         return w_recency * w_type
 
@@ -229,7 +242,7 @@ class NationalTeamProfile:
         total_w = 0.0
         total_pts = 0.0
         for rank, m in enumerate(matches):
-            w = self._composite_weight(rank, m.competition_id)
+            w = self._composite_weight(rank, m.competition_id, m.date)
             total_pts += result_map[m.result] * w
             total_w += w
         return total_pts / total_w if total_w > 0 else 0.0
@@ -249,6 +262,7 @@ class NationalTeamProfile:
         total_w = 0.0
         total_goals = 0.0
         for rank, m in enumerate(matches):
+            # λ buts : poids comp uniquement (force adversaire gère le biais)
             w = self._composite_weight(rank, m.competition_id)
             total_goals += m.goals_scored * w
             total_w += w
@@ -267,6 +281,7 @@ class NationalTeamProfile:
         total_w = 0.0
         total_goals = 0.0
         for rank, m in enumerate(matches):
+            # λ buts : poids comp uniquement (force adversaire gère le biais)
             w = self._composite_weight(rank, m.competition_id)
             total_goals += m.goals_conceded * w
             total_w += w
@@ -306,7 +321,7 @@ class NationalTeamProfile:
         total_w = 0.0
         total_pts = 0.0
         for rank, m in enumerate(matches):
-            w = self._composite_weight(rank, m.competition_id)
+            w = self._composite_weight(rank, m.competition_id, m.date)
             total_pts += pts_map[m.result] * w
             total_w += w * 1.0  # max pts par match = 1.0
         ratio = total_pts / total_w if total_w > 0 else 0.5
@@ -324,7 +339,7 @@ class NationalTeamProfile:
         total_w = 0.0
         total_pts = 0.0
         for rank, m in enumerate(self.h2h_matches):
-            w = self._composite_weight(rank, m.competition_id)
+            w = self._composite_weight(rank, m.competition_id, m.date)
             total_pts += result_map[m.result] * w
             total_w += w
         return total_pts / total_w if total_w > 0 else 0.0
