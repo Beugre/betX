@@ -1134,6 +1134,64 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
     return messages
 
 
+def build_performance_telegram() -> str | None:
+    """
+    Construit un message de performance (historique de réussite) depuis prediction_log.json.
+    Retourne None si pas assez de données résolues.
+    """
+    log_file = Path("data/prediction_log.json")
+    if not log_file.exists():
+        return None
+
+    try:
+        records = json.loads(log_file.read_text())
+    except Exception:
+        return None
+
+    resolved = [r for r in records if r.get("result")]
+    if not resolved:
+        return None
+
+    def _stats(recs, market=None):
+        r = [x for x in recs if market is None or x.get("market") == market]
+        if not r:
+            return None
+        wins = sum(1 for x in r if x["result"] == "win")
+        roi = sum((x["market_odds"] if x["result"] == "win" else 0) for x in r) / len(r) - 1
+        return {"n": len(r), "wins": wins, "wr": wins / len(r), "roi": roi}
+
+    all_s  = _stats(resolved)
+    ou_s   = _stats(resolved, "O/U")
+    btts_s = _stats(resolved, "BTTS")
+    x12_s  = _stats(resolved, "1X2")
+
+    brier = sum(
+        (r["model_prob"] - (1 if r["result"] == "win" else 0)) ** 2
+        for r in resolved
+    ) / len(resolved)
+
+    def _fmt(s, label):
+        if not s:
+            return f"  {label}: —"
+        roi_icon = "🟢" if s["roi"] > 0 else "🔴"
+        return (f"  {label}: {s['wins']}/{s['n']} ({s['wr']:.0%}) │ "
+                f"ROI {roi_icon} {s['roi']*100:+.1f}%")
+
+    lines = [
+        "📊 <b>betX CdM – Historique modèle</b>",
+        f"<i>{len(resolved)} prédictions résolues │ Brier Score: {brier:.3f}</i>",
+        "",
+        _fmt(all_s,  "📋 Global"),
+        _fmt(ou_s,   "📈 O/U 2.5"),
+        _fmt(btts_s, "🔀 BTTS"),
+        _fmt(x12_s,  "1️⃣  1X2"),
+        "",
+        "<i>Brier Score: 0=parfait | 0.25=aléatoire</i>",
+        f'📊 <a href="http://213.199.41.168">Dashboard complet</a>',
+    ]
+    return "\n".join(lines)
+
+
 def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
     """Envoie les prédictions CdM via Telegram — un message par match.
 
@@ -1184,8 +1242,11 @@ def send_wc_telegram(data: dict, filter_date: str | None = None) -> bool:
     ok = True
     for cid, label in targets:
         sent = 0
-        for msg in messages:
-            if msg.strip():
+        # MSG performance (si données disponibles)
+        perf_msg = build_performance_telegram()
+        msgs_to_send = ([perf_msg] if perf_msg else []) + messages
+        for msg in msgs_to_send:
+            if msg and msg.strip():
                 if _tg_send(token, cid, msg):
                     sent += 1
         console.print(f"  ✅ Telegram {label} : {sent} messages envoyés")
