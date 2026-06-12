@@ -140,9 +140,6 @@ tab_vb, tab_wc = st.tabs(["🎯 Value Bets", "🌍 Coupe du Monde 2026"])
 with tab_vb:
  col1, col2, col3 = st.columns(3)
 
-with tab_vb:
- col1, col2, col3 = st.columns(3)
-
  # ─── Charger ou scanner ─────────────────────────────────────────────────
  data = load_bets_data()
  if st.button("🔄 Nouveau Scan", type="primary"):
@@ -461,6 +458,103 @@ with tab_wc:
             )
     else:
         st.info("Aucun match pour cette journée.")
+
+    # ── Bloc B : Saisie manuelle des cotes ───────────────────────────────
+    st.divider()
+    with st.expander("✏️ Saisir des cotes manuellement (Betclic / autre)", expanded=False):
+        st.caption("Pour corriger ou enrichir les cotes d'un match spécifique.")
+        matches_sans_cotes = [
+            m for m in (wc_data.get("matches", []) if wc_data else [])
+            if not m.get("odds_home") and m.get("status") not in ("STATUS_FINAL", "STATUS_FULL_TIME")
+        ]
+        match_labels = [f"{m['home_short']} vs {m['away_short']} ({m['date'][:10]})" for m in matches_sans_cotes[:20]]
+        if match_labels:
+            sel_match = st.selectbox("Match", match_labels, key="manual_match")
+            idx = match_labels.index(sel_match)
+            m_sel = matches_sans_cotes[idx]
+            mc1, mc2, mc3 = st.columns(3)
+            with mc1:
+                o_home = st.number_input(f"Cote {m_sel['home_short']} (1)", min_value=1.0, value=2.0, step=0.01, key="oh")
+            with mc2:
+                o_draw = st.number_input("Cote Nul (X)", min_value=1.0, value=3.0, step=0.01, key="ox")
+            with mc3:
+                o_away = st.number_input(f"Cote {m_sel['away_short']} (2)", min_value=1.0, value=3.5, step=0.01, key="oa")
+            oc1, oc2 = st.columns(2)
+            with oc1:
+                o_over = st.number_input("Cote Over 2.5", min_value=1.0, value=1.90, step=0.01, key="oo")
+            with oc2:
+                o_under = st.number_input("Cote Under 2.5", min_value=1.0, value=1.90, step=0.01, key="ou")
+            bookmaker_name = st.text_input("Bookmaker", value="Betclic", key="bkm")
+
+            if st.button("💾 Appliquer ces cotes", type="primary"):
+                # Mettre à jour wc_predictions.json
+                if wc_data:
+                    for m in wc_data["matches"]:
+                        if m["home"] == m_sel["home"] and m["away"] == m_sel["away"]:
+                            m["odds_home"] = o_home
+                            m["odds_draw"] = o_draw
+                            m["odds_away"] = o_away
+                            m["odds_over_25"] = o_over
+                            m["odds_under_25"] = o_under
+                            m["odds_bookmaker"] = bookmaker_name
+                    WC_FILE.write_text(json.dumps(wc_data, ensure_ascii=False, indent=2))
+                    st.success(f"✅ Cotes enregistrées pour {m_sel['home_short']} vs {m_sel['away_short']}")
+                    st.rerun()
+        else:
+            st.success("✅ Tous les matchs à venir ont des cotes disponibles.")
+
+    # ── Bloc C : Graphe ROI ───────────────────────────────────────────────
+    if resolved:
+        st.divider()
+        st.subheader("📈 Évolution du ROI dans le temps")
+
+        # Trier par date et calculer le ROI cumulé
+        sorted_resolved = sorted(resolved, key=lambda x: x.get("match_date", ""))
+        roi_data = {"date": [], "ROI cumulé (%)": [], "Marché": []}
+        cumul_by_mkt: dict[str, dict] = {"Tous": {"staked": 0, "returned": 0}}
+        for mkt in ("O/U", "BTTS", "1X2"):
+            cumul_by_mkt[mkt] = {"staked": 0, "returned": 0}
+
+        for r in sorted_resolved:
+            mkt = r.get("market", "?")
+            odds = r.get("market_odds", 0)
+            won = r["result"] == "win"
+            ret = odds if won else 0
+
+            for label in ("Tous", mkt):
+                if label not in cumul_by_mkt:
+                    cumul_by_mkt[label] = {"staked": 0, "returned": 0}
+                cumul_by_mkt[label]["staked"] += 1
+                cumul_by_mkt[label]["returned"] += ret
+
+            roi_pct = (cumul_by_mkt["Tous"]["returned"] - cumul_by_mkt["Tous"]["staked"]) / cumul_by_mkt["Tous"]["staked"] * 100
+            roi_data["date"].append(r.get("match_date", "?"))
+            roi_data["ROI cumulé (%)"].append(round(roi_pct, 1))
+            roi_data["Marché"].append(mkt)
+
+        roi_df = pd.DataFrame(roi_data)
+        if len(roi_df) >= 2:
+            import numpy as np
+            # Ligne zéro de référence
+            chart_df = roi_df[["date", "ROI cumulé (%)"]].copy()
+            chart_df = chart_df.drop_duplicates(subset="date", keep="last")
+            st.line_chart(chart_df.set_index("date"), color="#00cc44")
+            st.caption("ROI cumulé simulé (mise 1€ par pari, cotes bookmaker réelles)")
+
+        # Stats détaillées par marché
+        st.subheader("📊 ROI par marché")
+        roi_mkt_rows = []
+        for mkt_label, d in cumul_by_mkt.items():
+            if d["staked"] == 0:
+                continue
+            roi_v = (d["returned"] - d["staked"]) / d["staked"] * 100
+            roi_mkt_rows.append({
+                "Marché": mkt_label,
+                "Paris": d["staked"],
+                "Retour total": f"{d['returned']:.2f}€",
+                "ROI": f"{'🟢' if roi_v > 0 else '🔴'} {roi_v:+.1f}%",
+            })
+        st.dataframe(pd.DataFrame(roi_mkt_rows), use_container_width=True, hide_index=True)
 
 st.divider()
 st.caption("betX © 2026 – Données : ESPN + API-Football + FIFA Ranking")
