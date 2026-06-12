@@ -405,7 +405,7 @@ def display_predictions(matches: list[dict], profiles: dict, filter_date: str | 
             status = m["status"]
 
             # Résultat réel si disponible
-            if status == "STATUS_FINAL" and m["home_score"] is not None:
+            if status in ("STATUS_FINAL", "STATUS_FULL_TIME") and m["home_score"] is not None:
                 result_str = f"[bold green]{m['home_score']}-{m['away_score']}[/bold green] ✅"
                 table.add_row(
                     f"[bold]{m['home_short']}[/bold] vs {m['away_short']}",
@@ -539,7 +539,7 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
         # 1. Résoudre les matchs terminés
         resolved_count = 0
         for rec in records:
-            if rec.get("status") == "STATUS_FINAL" and rec.get("home_score") is not None:
+            if rec.get("status") in ("STATUS_FINAL", "STATUS_FULL_TIME") and rec.get("home_score") is not None:
                 n = tracker.resolve_match(
                     rec["home"], rec["away"],
                     int(rec["home_score"]), int(rec["away_score"])
@@ -549,7 +549,7 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
         # 2. Enregistrer les nouvelles prédictions (matchs non encore terminés)
         new_count = 0
         for rec in records:
-            if rec.get("status") != "STATUS_FINAL" and rec.get("prediction"):
+            if rec.get("status") not in ("STATUS_FINAL", "STATUS_FULL_TIME") and rec.get("prediction"):
                 pred_dict = rec["prediction"]
                 match_odds = {
                     "odds_home": rec.get("odds_home") or 0,
@@ -1017,7 +1017,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
             la = pred.get("lambda_away", 0)
 
             # Résultat si disponible
-            if state == "STATUS_FINAL" and m.get("home_score") is not None:
+            if state in ("STATUS_FINAL", "STATUS_FULL_TIME") and m.get("home_score") is not None:
                 actual = f"{m['home_score']}-{m['away_score']}"
                 correct = " 🎯" if actual == score else ""
                 result_line = f"✅ Résultat : <b>{actual}</b>{correct}"
