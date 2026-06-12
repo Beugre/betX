@@ -352,6 +352,15 @@ def load_profiles(teams: list[str], fetch: bool = False) -> dict:
     except Exception as e:
         console.print(f"  [yellow]⚠️  martj42: {e}[/yellow]")
 
+    # Mettre à jour le dataset avec les résultats CdM récents (ESPN)
+    try:
+        from betx.data.update_wc_dataset import run as _update_wc
+        n_new = _update_wc()
+        if n_new:
+            console.print(f"  ⚽ Dataset CdM mis à jour : +{n_new} résultats")
+    except Exception as e:
+        console.print(f"  [yellow]⚠️  update_wc: {e}[/yellow]")
+
     collector = NationalTeamCollector()
     profiles = {}
 

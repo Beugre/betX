@@ -2597,8 +2597,25 @@
     {
       "team": "South Korea",
       "dataset_team_name": "South Korea",
-      "match_count": 30,
+      "match_count": 31,
       "matches": [
+        {
+          "date": "2026-06-12",
+          "team": "South Korea",
+          "opponent": "Czech Republic",
+          "is_home": true,
+          "home_team": "South Korea",
+          "away_team": "Czechia",
+          "home_score": 2,
+          "away_score": 1,
+          "team_score": 2,
+          "opponent_score": 1,
+          "result": "W",
+          "tournament": "FIFA World Cup",
+          "city": "",
+          "country": "United States",
+          "neutral": true
+        },
         {
           "date": "2026-06-11",
           "team": "South Korea",
@@ -24820,6 +24837,30 @@
           "result": "L",
           "tournament": "Gold Cup",
           "city": "Glendale",
+          "country": "United States",
+          "neutral": true
+        }
+      ]
+    },
+    {
+      "team": "Czech Republic",
+      "dataset_team_name": "Czech Republic",
+      "match_count": 1,
+      "matches": [
+        {
+          "date": "2026-06-12",
+          "team": "Czech Republic",
+          "opponent": "South Korea",
+          "is_home": false,
+          "home_team": "South Korea",
+          "away_team": "Czechia",
+          "home_score": 2,
+          "away_score": 1,
+          "team_score": 1,
+          "opponent_score": 2,
+          "result": "L",
+          "tournament": "FIFA World Cup",
+          "city": "",
           "country": "United States",
           "neutral": true
         }
