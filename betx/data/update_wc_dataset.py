@@ -30,8 +30,8 @@ ESPN_TO_MARTJ42: dict[str, str] = {
     "Canada":               "Canada",
     "South Africa":         "South Africa",
     "South Korea":          "South Korea",
-    "Czechia":              "Czech Republic",  # martj42 utilise "Czech Republic"
-    "Czech Republic":       "Czech Republic",
+    "Czechia":              "Czechia",           # martj42 utilise "Czechia"
+    "Czech Republic":       "Czechia",
     "Bosnia-Herzegovina":   "Bosnia and Herzegovina",
     "Bosnia-Herz":          "Bosnia and Herzegovina",
     "Ivory Coast":          "Ivory Coast",

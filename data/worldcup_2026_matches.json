@@ -24824,30 +24824,6 @@
           "neutral": true
         }
       ]
-    },
-    {
-      "team": "Czech Republic",
-      "dataset_team_name": "Czech Republic",
-      "match_count": 1,
-      "matches": [
-        {
-          "date": "2026-06-12",
-          "team": "Czech Republic",
-          "opponent": "South Korea",
-          "is_home": false,
-          "home_team": "South Korea",
-          "away_team": "Czechia",
-          "home_score": 2,
-          "away_score": 1,
-          "team_score": 1,
-          "opponent_score": 2,
-          "result": "L",
-          "tournament": "FIFA World Cup",
-          "city": "",
-          "country": "United States",
-          "neutral": true
-        }
-      ]
     }
   ]
 }
