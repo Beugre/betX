@@ -35,6 +35,7 @@ st.set_page_config(
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_FILE = PROJECT_ROOT / "data" / "daily_bets.json"
 WC_FILE = PROJECT_ROOT / "data" / "wc_predictions.json"
+TRACKER_FILE = PROJECT_ROOT / "data" / "prediction_log.json"
 
 
 # ─── Fonctions utilitaires ───────────────────────────────────────────────
@@ -220,9 +221,9 @@ with tab_vb:
 # ─── Onglet Coupe du Monde ────────────────────────────────────────────────
 
 with tab_wc:
-    st.subheader("🌍 Coupe du Monde 2026 – Prédictions phase de groupes")
+    st.subheader("🌍 Coupe du Monde 2026")
 
-    # Charger les données
+    # ── Charger les données ──────────────────────────────────────────────
     wc_data = None
     if WC_FILE.exists():
         try:
@@ -230,37 +231,157 @@ with tab_wc:
         except Exception:
             pass
 
+    tracker_records = []
+    if TRACKER_FILE.exists():
+        try:
+            tracker_records = json.loads(TRACKER_FILE.read_text())
+        except Exception:
+            pass
+
     col_wc1, col_wc2 = st.columns([3, 1])
     with col_wc1:
         if wc_data:
-            st.caption(f"Dernière mise à jour : {wc_data.get('generated_at', 'N/A')} │ {wc_data.get('total_matches', 0)} matchs")
+            st.caption(f"Prédictions : {wc_data.get('generated_at', 'N/A')} │ {wc_data.get('total_matches', 0)} matchs")
         else:
-            st.warning("⚠️ Pas encore de prédictions CdM. Lance `python predict_wc_groups.py`")
+            st.warning("⚠️ Lance `python predict_wc_groups.py` pour générer les prédictions.")
     with col_wc2:
-        if st.button("🔄 Actualiser CdM", type="secondary"):
-            with st.spinner("Calcul des prédictions..."):
-                import subprocess, sys
-                subprocess.run([sys.executable, "predict_wc_groups.py"], capture_output=True)
+        if st.button("🔄 Actualiser", type="secondary"):
+            with st.spinner("Calcul..."):
+                import subprocess as _sp
+                _sp.run([sys.executable, "predict_wc_groups.py"], capture_output=True)
             if WC_FILE.exists():
                 wc_data = json.loads(WC_FILE.read_text())
-                st.success("✅ Prédictions mises à jour")
                 st.rerun()
 
+    # ── KPIs historique ──────────────────────────────────────────────────
+    resolved = [r for r in tracker_records if r.get("result")]
+    if resolved:
+        st.subheader("📊 Historique de réussite")
+
+        # Calculer les stats par marché
+        def _market_stats(records, market=None, min_edge=0.0):
+            r = [x for x in records
+                 if x.get("result")
+                 and (market is None or x.get("market") == market)
+                 and x.get("edge", 0) >= min_edge]
+            if not r:
+                return None
+            wins = sum(1 for x in r if x["result"] == "win")
+            return {
+                "n": len(r),
+                "wins": wins,
+                "win_rate": wins / len(r),
+                "roi": sum((x["market_odds"] if x["result"] == "win" else 0) for x in r) / len(r) - 1,
+                "avg_edge": sum(x.get("edge", 0) for x in r) / len(r),
+            }
+
+        all_stats = _market_stats(resolved)
+        ou_stats  = _market_stats(resolved, "O/U")
+        btts_stats = _market_stats(resolved, "BTTS")
+        x12_stats  = _market_stats(resolved, "1X2")
+
+        # Brier score
+        brier = sum(
+            (r["model_prob"] - (1 if r["result"] == "win" else 0)) ** 2
+            for r in resolved
+        ) / len(resolved)
+
+        # KPI row global
+        kpi_cols = st.columns(4)
+        with kpi_cols[0]:
+            wr = all_stats["win_rate"] if all_stats else 0
+            st.metric("🎯 Win rate global", f"{wr:.0%}",
+                      help=f"{all_stats['wins']}/{all_stats['n']} paris gagnés" if all_stats else "")
+        with kpi_cols[1]:
+            roi = all_stats["roi"] if all_stats else 0
+            st.metric("💰 ROI simulé", f"{roi*100:+.1f}%",
+                      delta=f"{roi*100:+.1f}%",
+                      delta_color="normal")
+        with kpi_cols[2]:
+            st.metric("📐 Brier Score", f"{brier:.3f}",
+                      help="0 = parfait | 0.25 = aléatoire")
+        with kpi_cols[3]:
+            st.metric("📋 Paris résolus", f"{len(resolved)}")
+
+        st.divider()
+
+        # Tableau par marché
+        mkt_rows = []
+        for mkt_name, stats in [("Tous", all_stats), ("O/U 2.5", ou_stats),
+                                  ("BTTS", btts_stats), ("1X2", x12_stats)]:
+            if not stats:
+                continue
+            roi_color = "🟢" if stats["roi"] > 0 else "🔴"
+            mkt_rows.append({
+                "Marché": mkt_name,
+                "Paris": stats["n"],
+                "Gagnés": stats["wins"],
+                "Win rate": f"{stats['win_rate']:.0%}",
+                "ROI simulé": f"{roi_color} {stats['roi']*100:+.1f}%",
+                "Edge moyen": f"{stats['avg_edge']*100:.1f} pts",
+            })
+        if mkt_rows:
+            st.dataframe(pd.DataFrame(mkt_rows), use_container_width=True, hide_index=True)
+
+        # ── Détail des paris résolus ──────────────────────────────────
+        st.subheader("📋 Détail des prédictions passées")
+
+        hist_rows = []
+        for r in sorted(resolved, key=lambda x: x.get("match_date", ""), reverse=True):
+            won = r["result"] == "win"
+            edge = r.get("edge", 0)
+            ev = r.get("ev", 0)
+            hist_rows.append({
+                "📅": r.get("match_date", "?"),
+                "Match": f"{r.get('home','?')} vs {r.get('away','?')}",
+                "Marché": r.get("market", "?"),
+                "Sélection": r.get("selection", "?"),
+                "P(modèle)": f"{r.get('model_prob',0):.0%}",
+                "Cote": f"{r.get('market_odds',0):.2f}",
+                "Edge": f"{edge*100:+.1f} pts",
+                "EV": f"{ev*100:+.1f}%",
+                "Résultat": r.get("actual_score", "?"),
+                "✓": "✅ Win" if won else "❌ Loss",
+                "_won": won,
+                "_edge": edge,
+            })
+
+        hist_df = pd.DataFrame(hist_rows)
+        cols_show = ["📅", "Match", "Marché", "Sélection", "P(modèle)",
+                     "Cote", "Edge", "EV", "Résultat", "✓"]
+
+        def _color_result(val):
+            if "Win" in str(val):
+                return "background-color: #1b5e20; color: white"
+            if "Loss" in str(val):
+                return "background-color: #b71c1c; color: white"
+            return ""
+
+        styled_hist = hist_df[cols_show].style.map(_color_result, subset=["✓"])
+        st.dataframe(styled_hist, use_container_width=True,
+                     height=min(len(hist_rows) * 40 + 50, 600), hide_index=True)
+
+        st.divider()
+    else:
+        st.info("Aucun résultat résolu pour l'instant. Les prédictions se résolvent automatiquement après chaque match.")
+
+    # ── Prédictions à venir ──────────────────────────────────────────────
     if not wc_data:
         st.stop()
 
-    matches = wc_data.get("matches", [])
+    st.subheader("🔮 Prédictions")
+    matches_all = wc_data.get("matches", [])
 
-    # Filtre date
-    all_dates = sorted({m["date"][:10] for m in matches})
+    all_dates = sorted({m["date"][:10] for m in matches_all})
     today_str = datetime.now().strftime("%Y-%m-%d")
     default_idx = next((i for i, d in enumerate(all_dates) if d >= today_str), 0)
-    selected_date = st.selectbox("📅 Journée", ["Toutes"] + all_dates, index=default_idx + 1 if all_dates else 0)
+    selected_date = st.selectbox("📅 Journée", ["Toutes"] + all_dates,
+                                  index=default_idx + 1 if all_dates else 0)
 
-    if selected_date != "Toutes":
-        matches = [m for m in matches if m["date"].startswith(selected_date)]
+    matches = matches_all if selected_date == "Toutes" else [
+        m for m in matches_all if m["date"].startswith(selected_date)
+    ]
 
-    # Construire le tableau
     wc_rows = []
     for m in matches:
         pred = m.get("prediction", {})
@@ -269,79 +390,77 @@ with tab_wc:
         top3 = pred.get("top_scores", [])
         best = top3[0] if top3 else {}
         status = m.get("status", "")
-        is_done = status == "STATUS_FINAL"
+        is_done = status in ("STATUS_FINAL", "STATUS_FULL_TIME")
+        h_fr = (int(m["date"][11:13]) + 2) % 24
+        heure = f"{h_fr:02d}h" if not is_done else "FT"
+        ph = pred.get("p_home", 0)
+        px = pred.get("p_draw", 0)
+        pa = pred.get("p_away", 0)
 
-        h_goals = int(m.get("home_score") or 0)
-        a_goals = int(m.get("away_score") or 0)
-
-        # Vérifier si la prédiction était correcte
-        correct = ""
-        if is_done and best:
-            actual = f"{h_goals}-{a_goals}"
+        # Vérifier la réussite de la prédiction
+        perf = ""
+        if is_done and m.get("home_score") is not None:
+            actual = f"{m['home_score']}-{m['away_score']}"
             if best.get("score") == actual:
-                correct = "🎯 exact"
-            elif (h_goals > a_goals and pred.get("p_home", 0) == max(pred["p_home"], pred["p_draw"], pred["p_away"])):
-                correct = "✅ bon sens"
-            elif (a_goals > h_goals and pred.get("p_away", 0) == max(pred["p_home"], pred["p_draw"], pred["p_away"])):
-                correct = "✅ bon sens"
-            elif h_goals == a_goals and pred.get("p_draw", 0) == max(pred["p_home"], pred["p_draw"], pred["p_away"]):
-                correct = "✅ bon sens"
+                perf = "🎯 Score exact"
+            else:
+                hg, ag = int(m["home_score"]), int(m["away_score"])
+                likely = max([("home", ph), ("draw", px), ("away", pa)], key=lambda x: x[1])[0]
+                ok = (likely == "home" and hg > ag) or (likely == "away" and ag > hg) or (likely == "draw" and hg == ag)
+                perf = "✅ Bon sens" if ok else "❌ Raté"
 
-        # Favori
-        ph, px, pa = pred.get("p_home", 0), pred.get("p_draw", 0), pred.get("p_away", 0)
-        if ph > pa + 0.05:
-            fav = f"⬆️ {m['home_short']}"
-        elif pa > ph + 0.05:
-            fav = f"⬇️ {m['away_short']}"
-        else:
-            fav = "↔️ Équilibré"
-
-        scores_str = " / ".join(
-            f"{s['score']} ({s['prob']*100:.0f}%)" for s in top3[:3]
-        ) if top3 else "-"
+        # Over/Under réel
+        ou_real = ""
+        if is_done and m.get("home_score") is not None:
+            total = int(m["home_score"]) + int(m["away_score"])
+            pred_over = pred.get("p_over_25", 0) >= 0.5
+            real_over = total > 2
+            ou_real = ("✅" if pred_over == real_over else "❌") + f" {'O' if real_over else 'U'}2.5 ({total})"
 
         wc_rows.append({
-            "📅 Date": m["date"][:10],
-            "🕐": m["date"][11:16] + "Z",
+            "📅": m["date"][:10],
+            "🕐": heure,
             "Match": f"{m['home_short']} vs {m['away_short']}",
-            "Résultat": f"{m['home_score']}-{m['away_score']}" if is_done else "—",
+            "Score réel": f"{m['home_score']}-{m['away_score']}" if is_done else "—",
             "Score prédit": best.get("score", "?") if top3 else "?",
-            "Top 3 scores": scores_str,
-            "P(1) / P(X) / P(2)": f"{ph:.0%} / {px:.0%} / {pa:.0%}",
-            "λ dom / ext": f"{pred.get('lambda_home',0):.2f} / {pred.get('lambda_away',0):.2f}",
+            "P(1/X/2)": f"{ph:.0%}/{px:.0%}/{pa:.0%}",
+            "λ": f"{pred.get('lambda_home',0):.2f}–{pred.get('lambda_away',0):.2f}",
             "O2.5": f"{pred.get('p_over_25',0):.0%}",
             "BTTS": f"{pred.get('p_btts',0):.0%}",
-            "Favori": fav,
-            "✓": correct,
+            "1X2 ✓": perf,
+            "O/U ✓": ou_real,
             "Src": pred.get("source", "?"),
-            "_ph": ph, "_pa": pa,
         })
 
-    if not wc_rows:
-        st.info("Aucun match pour cette journée.")
-    else:
+    if wc_rows:
         wc_df = pd.DataFrame(wc_rows)
-        display_wc_cols = ["📅 Date", "🕐", "Match", "Résultat", "Score prédit",
-                           "Top 3 scores", "P(1) / P(X) / P(2)", "λ dom / ext",
-                           "O2.5", "BTTS", "Favori", "✓", "Src"]
         st.dataframe(
-            wc_df[display_wc_cols],
+            wc_df,
             use_container_width=True,
-            height=min(len(wc_df) * 45 + 60, 900),
+            height=min(len(wc_df) * 42 + 60, 900),
+            hide_index=True,
             column_config={
-                "📅 Date": st.column_config.TextColumn(width="small"),
                 "Match": st.column_config.TextColumn(width="medium"),
-                "Top 3 scores": st.column_config.TextColumn(width="large"),
-                "P(1) / P(X) / P(2)": st.column_config.TextColumn(width="medium"),
+                "Score prédit": st.column_config.TextColumn(width="small"),
+                "P(1/X/2)": st.column_config.TextColumn(width="medium"),
+                "O2.5": st.column_config.TextColumn(width="small"),
+                "BTTS": st.column_config.TextColumn(width="small"),
             },
         )
-        # Stats rapides
-        n_api = sum(1 for r in wc_rows if r["Src"] == "API")
-        n_mixed = sum(1 for r in wc_rows if r["Src"] == "MIXED")
-        n_fifa = sum(1 for r in wc_rows if r["Src"] == "FIFA")
-        st.caption(
-            f"Sources : 📡 API historique ({n_api}) │ 🔀 Mixte ({n_mixed}) │ 📊 FIFA ranking ({n_fifa})"
-        )
+        done_rows = [r for r in wc_rows if r["Score réel"] != "—"]
+        if done_rows:
+            n_done = len(done_rows)
+            n_exact = sum(1 for r in done_rows if "🎯" in r["1X2 ✓"])
+            n_bon_sens = sum(1 for r in done_rows if "✅" in r["1X2 ✓"])
+            n_ou_ok = sum(1 for r in done_rows if "✅" in r["O/U ✓"])
+            st.caption(
+                f"Matchs joués : {n_done} │ "
+                f"Score exact : {n_exact}/{n_done} ({n_exact/n_done:.0%}) │ "
+                f"Bon sens 1X2 : {n_bon_sens}/{n_done} ({n_bon_sens/n_done:.0%}) │ "
+                f"O/U correct : {n_ou_ok}/{n_done} ({n_ou_ok/n_done:.0%})"
+            )
+    else:
+        st.info("Aucun match pour cette journée.")
 
 st.divider()
 st.caption("betX © 2026 – Données : ESPN + API-Football + FIFA Ranking")
