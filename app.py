@@ -379,12 +379,16 @@ with tab_wc:
         m for m in matches_all if m["date"].startswith(selected_date)
     ]
 
-    # Index tracker par match pour récupérer les prédictions historiques exactes
+    # Index tracker par match — toutes les prédictions historiques (pas seulement 1X2)
     tracker_by_match: dict[str, dict] = {}
+    tracker_scores: dict[str, str] = {}  # prédiction de score au moment du pari
     for r in tracker_records:
         k = f"{r.get('home','')}_{r.get('away','')}_{r.get('match_date','')}"
         if r.get("market") == "1X2" and r.get("result"):
             tracker_by_match[k] = r
+            # Score prédit stocké dans le tracker au moment de l'enregistrement
+            if r.get("predicted_score"):
+                tracker_scores[k] = r["predicted_score"]
 
     wc_rows = []
     for m in matches:
@@ -398,6 +402,11 @@ with tab_wc:
         h_fr = (int(m["date"][11:13]) + 2) % 24
         heure = f"{h_fr:02d}h" if not is_done else "FT"
         ph = pred.get("p_home", 0)
+
+        # Score prédit : utiliser la valeur historique du tracker si dispo
+        tk_key = f"{m['home']}_{m['away']}_{m['date'][:10]}"
+        historical_score = tracker_scores.get(tk_key)
+        display_score = historical_score if (historical_score and is_done) else (best.get("score", "?") if top3 else "?")
         px = pred.get("p_draw", 0)
         pa = pred.get("p_away", 0)
 
@@ -476,7 +485,7 @@ with tab_wc:
             "🕐": heure,
             "Match": f"{m['home_short']} vs {m['away_short']}",
             "Score réel": f"{m['home_score']}-{m['away_score']}" if is_done else "—",
-            "Score prédit": best.get("score", "?") if top3 else "?",
+            "Score prédit": display_score,
             "P(1/X/2)": f"{ph:.0%}/{px:.0%}/{pa:.0%}",
             "λ": f"{pred.get('lambda_home',0):.2f}–{pred.get('lambda_away',0):.2f}",
             "O2.5": f"{pred.get('p_over_25',0):.0%}",
