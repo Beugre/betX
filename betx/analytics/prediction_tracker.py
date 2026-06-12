@@ -173,20 +173,25 @@ class PredictionTracker:
             records.append(rec)
             self.record(rec)
 
-        # O/U et BTTS (cote proxy 1.90 si ESPN n'expose pas ces marchés)
+        # O/U et BTTS : enregistrer UNIQUEMENT le côté prédit (prob > 50%).
+        # Over et Under sont complémentaires — les enregistrer tous les deux
+        # garantirait mécaniquement un win et un loss, ce qui fausse les stats.
         STD_ODDS = 1.90
-        for sel, prob_key in [
-            ("over_25",  "p_over_25"),
-            ("under_25", "p_under_25"),
-            ("btts_yes", "p_btts"),
-            ("btts_no",  "p_btts_no"),
-        ]:
-            prob = prediction.get(prob_key, 0)
+        # O/U : garder Over si prob > 50%, Under sinon
+        p_over = prediction.get("p_over_25", 0)
+        p_under = prediction.get("p_under_25", 0)
+        ou_sel, ou_prob = ("over_25", p_over) if p_over >= p_under else ("under_25", p_under)
+
+        # BTTS : garder Yes si prob > 50%, No sinon
+        p_btts_yes = prediction.get("p_btts", 0)
+        p_btts_no  = prediction.get("p_btts_no", 0)
+        btts_sel, btts_prob = ("btts_yes", p_btts_yes) if p_btts_yes >= p_btts_no else ("btts_no", p_btts_no)
+
+        for sel, prob, mkt in [(ou_sel, ou_prob, "O/U"), (btts_sel, btts_prob, "BTTS")]:
             if prob <= 0:
                 continue
             impl = 1.0 / STD_ODDS
             ev = prob * (STD_ODDS - 1) - (1 - prob)
-            mkt = "O/U" if "25" in sel else "BTTS"
             rec = PredictionRecord(
                 id=f"{match_date}_{home}_{away}_{mkt}_{sel}",
                 match_date=match_date,
