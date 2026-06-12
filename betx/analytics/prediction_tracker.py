@@ -143,29 +143,45 @@ class PredictionTracker:
         top1 = (prediction.get("top_scores") or [{}])[0]
         pred_score = top1.get("score", "") if isinstance(top1, dict) else ""
 
-        # 1X2 : enregistrer UNIQUEMENT la sélection la plus probable (cotes disponibles).
-        # Enregistrer home+draw+away garantirait mécaniquement 2 losses pour 1 win.
-        # On prend le meilleur edge parmi les 3 issues avec cote disponible.
+        # 1X2 : enregistrer le PRONOSTIC du modèle (sélection la plus probable).
+        # Le tracker mesure la précision du modèle, pas la rentabilité value betting.
+        # Les value bets sont dans le MSG Telegram séparément.
         best_1x2 = None
         for sel, prob_key, odds_key in [
             ("home",  "p_home",  "odds_home"),
             ("draw",  "p_draw",  "odds_draw"),
             ("away",  "p_away",  "odds_away"),
         ]:
-            odds = match_odds.get(odds_key, 0)
-            if not odds or odds <= 1.0:
-                continue
             prob = prediction.get(prob_key, 0)
-            impl = 1.0 / odds
-            edge_val = prob - impl
-            ev = prob * (odds - 1) - (1 - prob)
+            odds = match_odds.get(odds_key, 0) or 0
+            impl = (1.0 / odds) if odds > 1.0 else 0.0
+            ev = prob * (odds - 1) - (1 - prob) if odds > 1.0 else 0.0
             candidate = {
                 "sel": sel, "prob": prob, "odds": odds,
-                "impl": impl, "edge": edge_val, "ev": ev,
+                "impl": impl, "edge": prob - impl, "ev": ev,
             }
-            # Critère : meilleur edge (priorité) puis meilleure probabilité
-            if best_1x2 is None or edge_val > best_1x2["edge"]:
+            # Critère : probabilité la plus haute (pronostic modèle)
+            if best_1x2 is None or prob > best_1x2["prob"]:
                 best_1x2 = candidate
+
+        if best_1x2:
+            rec = PredictionRecord(
+                id=f"{match_date}_{home}_{away}_1X2_{best_1x2['sel']}",
+                match_date=match_date,
+                home=home, away=away,
+                market="1X2", selection=best_1x2["sel"],
+                model_prob=round(best_1x2["prob"], 4),
+                market_odds=round(best_1x2["odds"], 2),
+                market_implied=round(best_1x2["impl"], 4),
+                edge=round(best_1x2["edge"], 4),
+                ev=round(best_1x2["ev"], 4),
+                source=source,
+                lambda_home=round(lh, 3),
+                lambda_away=round(la, 3),
+                predicted_score=pred_score,
+            )
+            records.append(rec)
+            self.record(rec)
 
         if best_1x2:
             rec = PredictionRecord(
