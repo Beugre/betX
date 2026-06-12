@@ -546,16 +546,24 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                 )
                 resolved_count += n
 
-        # 2. Enregistrer les nouvelles prédictions (matchs non encore terminés)
+        # 2. Enregistrer les nouvelles prédictions + mettre à jour les cotes disponibles
         new_count = 0
+        updated_count = 0
         for rec in records:
-            if rec.get("status") not in ("STATUS_FINAL", "STATUS_FULL_TIME") and rec.get("prediction"):
-                pred_dict = rec["prediction"]
-                match_odds = {
-                    "odds_home": rec.get("odds_home") or 0,
-                    "odds_draw": rec.get("odds_draw") or 0,
-                    "odds_away": rec.get("odds_away") or 0,
-                }
+            is_done = rec.get("status") in ("STATUS_FINAL", "STATUS_FULL_TIME")
+            pred_dict = rec.get("prediction", {})
+            if not pred_dict:
+                continue
+
+            match_odds = {
+                "odds_home": rec.get("odds_home") or 0,
+                "odds_draw": rec.get("odds_draw") or 0,
+                "odds_away": rec.get("odds_away") or 0,
+            }
+            has_odds = any(v and v > 1.0 for v in match_odds.values())
+
+            if not is_done:
+                # Enregistrer / mettre à jour les prédictions à venir
                 new_recs = tracker.record_from_prediction(
                     match_date=rec["date"][:10],
                     home=rec["home"],
@@ -565,6 +573,24 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                     source=pred_dict.get("source", "FIFA"),
                 )
                 new_count += len(new_recs)
+            elif has_odds:
+                # Match terminé ET cotes disponibles : mettre à jour les cotes dans le tracker
+                # (cas où les cotes étaient dispo au moment du scan mais le match est maintenant fini)
+                new_recs = tracker.record_from_prediction(
+                    match_date=rec["date"][:10],
+                    home=rec["home"],
+                    away=rec["away"],
+                    prediction=pred_dict,
+                    match_odds=match_odds,
+                    source=pred_dict.get("source", "FIFA"),
+                )
+                # Re-résoudre immédiatement
+                if rec.get("home_score") is not None:
+                    n = tracker.resolve_match(
+                        rec["home"], rec["away"],
+                        int(rec["home_score"]), int(rec["away_score"])
+                    )
+                    updated_count += n
 
         if resolved_count:
             console.print(f"  ✅ {resolved_count} prédictions résolues")
