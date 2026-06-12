@@ -35,7 +35,8 @@ ESPN_TO_MARTJ42: dict[str, str] = {
     "Bosnia-Herzegovina":   "Bosnia and Herzegovina",
     "Bosnia-Herz":          "Bosnia and Herzegovina",
     "Ivory Coast":          "Ivory Coast",
-    "Türkiye":              "Turkey",
+    "Türkiye":              "Türkiye",           # ESPN et martj42 utilisent "Türkiye"
+    "Turkey":               "Türkiye",           # fallback ancien nom
     "Saudi Arabia":         "Saudi Arabia",
     "New Zealand":          "New Zealand",
     "Congo DR":             "DR Congo",
