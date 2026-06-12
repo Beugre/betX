@@ -465,11 +465,11 @@ with tab_wc:
         p_o25 = pred.get("p_over_25", 0)
         p_u25 = pred.get("p_under_25", p_o25 and (1 - p_o25))
         if p_o25 >= 0.5:
-            edge_ou = _edge_str(p_o25, o_over) if o_over > 1 else _edge_str(p_o25, 1.90)
-            edge_ou = edge_ou.replace("@1.90", "@~1.90")
+            raw = _edge_str(p_o25, o_over) if o_over > 1 else _edge_str(p_o25, 1.90)
+            edge_ou = raw.replace("@1.90", "@~1.90").replace("pts ", "pts O2.5 ") if raw != "—" else "—"
         else:
-            edge_ou = _edge_str(p_u25, o_under) if o_under > 1 else _edge_str(p_u25, 1.90)
-            edge_ou = edge_ou.replace("@1.90", "@~1.90")
+            raw = _edge_str(p_u25, o_under) if o_under > 1 else _edge_str(p_u25, 1.90)
+            edge_ou = raw.replace("@1.90", "@~1.90").replace("pts ", "pts U2.5 ") if raw != "—" else "—"
 
         wc_rows.append({
             "📅": m["date"][:10],
