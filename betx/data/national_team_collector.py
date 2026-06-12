@@ -607,3 +607,37 @@ class NationalTeamCollector:
             recent_matches=recent_matches,
             h2h_matches=h2h_matches,
         )
+
+    def inject_recent_matches(
+        self,
+        profile: NationalTeamProfile,
+        extra_matches: list[MatchRecord],
+    ) -> NationalTeamProfile:
+        """
+        Injecte des matchs récents (ex: matchs CdM déjà joués) dans un profil.
+        Les matchs récents sont insérés en tête de liste (les plus récents en premier).
+        Les doublons (même date + même adversaire) sont ignorés.
+        """
+        existing_keys = {
+            (m.date, m.home_team, m.away_team)
+            for m in profile.recent_matches
+        }
+        new_matches = [
+            m for m in extra_matches
+            if (m.date, m.home_team, m.away_team) not in existing_keys
+        ]
+        if not new_matches:
+            return profile
+
+        # Insérer en tête (plus récent = plus prioritaire)
+        merged = sorted(
+            new_matches + profile.recent_matches,
+            key=lambda m: m.date,
+            reverse=True,
+        )
+        return NationalTeamProfile(
+            team_name=profile.team_name,
+            team_id=profile.team_id,
+            recent_matches=merged,
+            h2h_matches=profile.h2h_matches,
+        )

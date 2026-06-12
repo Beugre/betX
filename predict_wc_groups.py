@@ -382,6 +382,72 @@ def load_profiles(teams: list[str], fetch: bool = False) -> dict:
     return profiles
 
 
+def inject_wc_results(
+    profiles: dict,
+    matches: list[dict],
+) -> dict:
+    """
+    Injecte les matchs CdM déjà joués dans les profils de chaque équipe.
+    Enrichit les prédictions avec les tout derniers résultats (Option A).
+
+    Les matchs CdM sont idéaux : contexte exact (terrain neutre, compétition
+    officielle) et adversaires de bon niveau.
+    """
+    from betx.data.national_team_collector import NationalTeamCollector, MatchRecord
+    from betx.data.national_team_collector import COMPETITION_IDS
+
+    collector = NationalTeamCollector()
+    WC_COMP_ID = COMPETITION_IDS.get("world_cup", 1)
+    injected_total = 0
+
+    for m in matches:
+        status = m.get("status", "")
+        if status not in ("STATUS_FINAL", "STATUS_FULL_TIME"):
+            continue
+        if m.get("home_score") is None or m.get("away_score") is None:
+            continue
+
+        home_name = m["home"]
+        away_name = m["away"]
+        h_goals = int(m["home_score"])
+        a_goals = int(m["away_score"])
+        match_date = m["date"][:10]
+
+        # Créer les MatchRecord pour home et away
+        rec_home = MatchRecord(
+            date=match_date,
+            competition="World Cup",
+            competition_id=WC_COMP_ID,
+            home_team=home_name,
+            away_team=away_name,
+            home_goals=h_goals,
+            away_goals=a_goals,
+            is_home=True,
+        )
+        rec_away = MatchRecord(
+            date=match_date,
+            competition="World Cup",
+            competition_id=WC_COMP_ID,
+            home_team=home_name,
+            away_team=away_name,
+            home_goals=h_goals,
+            away_goals=a_goals,
+            is_home=False,
+        )
+
+        # Injecter dans les profils
+        for team_name, rec in [(home_name, rec_home), (away_name, rec_away)]:
+            if team_name in profiles:
+                profiles[team_name] = collector.inject_recent_matches(
+                    profiles[team_name], [rec]
+                )
+                injected_total += 1
+
+    if injected_total:
+        console.print(f"  ⚽ {injected_total} résultats CdM injectés dans les profils")
+    return profiles
+
+
 # ─── Affichage ────────────────────────────────────────────────────────────────
 
 def display_predictions(matches: list[dict], profiles: dict, filter_date: str | None = None):
@@ -1354,6 +1420,9 @@ def main():
 
     console.print("[bold cyan]📊 Chargement des profils équipes...[/bold cyan]")
     profiles = load_profiles(teams, fetch=args.fetch)
+
+    # Injecter les matchs CdM déjà joués dans les profils (Option A)
+    profiles = inject_wc_results(profiles, matches)
 
     # Export JSON (toujours)
     data = export_predictions(matches, profiles, filter_date=args.date)
