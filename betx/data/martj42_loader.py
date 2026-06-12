@@ -32,6 +32,9 @@ TOURNAMENT_MAP = {
     "CONCACAF Gold Cup":                22,
     "UEFA Euro":                        4,
     "Africa Cup of Nations":            6,
+    "Arab Cup":                         656,
+    "WAFF Championship":                656,
+    "Gulf Cup":                         656,
 }
 
 
@@ -126,22 +129,34 @@ def load_into_cache(force: bool = False) -> int:
                 "goals": {"home": m["home_score"], "away": m["away_score"]},
             })
 
-        existing_data = fixtures.get(str(use_id), {}).get("data", [])
-        existing_keys = {
-            (f["fixture"]["date"][:10], f["teams"]["home"]["name"], f["teams"]["away"]["name"])
-            for f in existing_data
-        }
-        to_add = [
-            f for f in new_fixtures
-            if (f["fixture"]["date"][:10], f["teams"]["home"]["name"], f["teams"]["away"]["name"])
-            not in existing_keys
-        ]
-
-        merged = sorted(
-            existing_data + to_add,
-            key=lambda x: x["fixture"]["date"],
-            reverse=True,
-        )
+        if force:
+            # En mode force, les fixtures martj42 remplacent entièrement les anciennes
+            # (nécessaire pour propager les corrections de comp_id)
+            existing_api = [
+                f for f in fixtures.get(str(use_id), {}).get("data", [])
+                if f.get("_source") == "api"  # conserver les matchs live API
+            ]
+            merged = sorted(
+                existing_api + new_fixtures,
+                key=lambda x: x["fixture"]["date"],
+                reverse=True,
+            )
+        else:
+            existing_data = fixtures.get(str(use_id), {}).get("data", [])
+            existing_keys = {
+                (f["fixture"]["date"][:10], f["teams"]["home"]["name"], f["teams"]["away"]["name"])
+                for f in existing_data
+            }
+            to_add = [
+                f for f in new_fixtures
+                if (f["fixture"]["date"][:10], f["teams"]["home"]["name"], f["teams"]["away"]["name"])
+                not in existing_keys
+            ]
+            merged = sorted(
+                existing_data + to_add,
+                key=lambda x: x["fixture"]["date"],
+                reverse=True,
+            )
         fixtures[str(use_id)] = {"data": merged, "timestamp": time.time()}
         integrated += 1
 
