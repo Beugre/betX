@@ -509,9 +509,9 @@ with tab_wc:
 
     if wc_rows:
         wc_df = pd.DataFrame(wc_rows)
-        display_cols = ["📅", "🕐", "Match", "Score réel", "Score prédit",
+        display_cols = ["📅", "🕐", "Match", "Score réel", "Score prédit", "Conf Score",
                         "P(1/X/2)", "Conf 1X2", "λ",
-                        "O2.5", "Conf O/U", "BTTS", "Conf BTTS", "Conf Score",
+                        "O2.5", "Conf O/U", "BTTS", "Conf BTTS",
                         "Edge 1X2", "Edge O/U", "Bkm", "1X2 ✓", "O/U ✓", "Src"]
         st.dataframe(
             wc_df[display_cols],
