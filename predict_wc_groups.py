@@ -343,6 +343,15 @@ def load_profiles(teams: list[str], fetch: bool = False) -> dict:
     """
     from betx.data.national_team_collector import NationalTeamCollector
 
+    # Charger le dataset martj42 (30 derniers matchs par équipe, 2026)
+    try:
+        from betx.data.martj42_loader import load_into_cache
+        n = load_into_cache()
+        if n:
+            console.print(f"  📥 Dataset martj42 : {n} équipes intégrées")
+    except Exception as e:
+        console.print(f"  [yellow]⚠️  martj42: {e}[/yellow]")
+
     collector = NationalTeamCollector()
     profiles = {}
 
