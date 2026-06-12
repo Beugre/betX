@@ -304,9 +304,11 @@ def build_features(
         from betx.data.national_team_collector import MATCH_TYPE_WEIGHTS
         REF_ELO = 1750.0
 
-        matches = [m for m in profile.recent_matches if m.is_competitive][:10]
-        if not matches:
-            matches = profile.recent_matches[:10]
+        # Utiliser les 10 matchs les plus récents (pas seulement compétitifs).
+        # L'ancienne logique "compétitifs seulement" crée un biais extrême quand
+        # seuls 1-2 matchs API-Football (souvent spectaculaires) sont disponibles.
+        # w_comp gère déjà la pondération compétition officielle vs amicaux.
+        matches = profile.recent_matches[:10]
         if not matches:
             return 1.20
 
