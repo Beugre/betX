@@ -322,7 +322,10 @@ def build_features(
             if opp_elo is None:
                 opp_elo = REF_ELO  # adversaire inconnu = niveau moyen
             w_opp = (opp_elo / REF_ELO) ** 0.5
-            w_total = w_comp * w_opp
+            # CdM = terrain neutre : décote légère des matchs joués à domicile
+            # (l'avantage domicile historique ne s'applique pas en sol américain)
+            w_location = 0.85 if m.is_home else 1.0
+            w_total = w_comp * w_opp * w_location
 
             goals = m.goals_scored if is_atk else m.goals_conceded
             total_goals += goals * w_total
