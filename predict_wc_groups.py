@@ -632,6 +632,25 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
     if filter_date:
         matches = [m for m in matches if m["date"].startswith(filter_date)]
 
+    # ── Conserver les cotes saisies manuellement dans l'UI ──
+    existing_odds: dict[str, dict] = {}
+    if WC_JSON_FILE.exists():
+        try:
+            existing = json.loads(WC_JSON_FILE.read_text())
+            for rec in existing.get("matches", []):
+                if rec.get("odds_home"):
+                    key = f"{rec['home']}|{rec['away']}"
+                    existing_odds[key] = {
+                        "odds_home":     rec.get("odds_home"),
+                        "odds_draw":     rec.get("odds_draw"),
+                        "odds_away":     rec.get("odds_away"),
+                        "odds_over_25":  rec.get("odds_over_25"),
+                        "odds_under_25": rec.get("odds_under_25"),
+                        "odds_bookmaker": rec.get("odds_bookmaker", ""),
+                    }
+        except Exception:
+            pass
+
     records = []
     for m in sorted(matches, key=lambda x: x["date"]):
         try:
@@ -640,7 +659,7 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
             pred = {}
 
         top3 = pred.get("top_scores", [])
-        records.append({
+        rec = {
             "date": m["date"],
             "home": m["home"],
             "away": m["away"],
@@ -671,7 +690,12 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                 "conf_btts":  round(pred.get("conf_btts", 0), 3),
                 "conf_score": round(pred.get("conf_score", 0), 3),
             } if pred else {},
-        })
+        }
+        # Réinjecter les cotes saisies manuellement (non écrasées par le cron)
+        saved = existing_odds.get(f"{m['home']}|{m['away']}")
+        if saved:
+            rec.update(saved)
+        records.append(rec)
 
     data = {
         "generated_at": datetime.now().strftime("%d/%m/%Y %H:%M"),
