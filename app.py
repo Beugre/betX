@@ -373,7 +373,7 @@ with tab_wc:
     today_str = datetime.now().strftime("%Y-%m-%d")
     default_idx = next((i for i, d in enumerate(all_dates) if d >= today_str), 0)
     selected_date = st.selectbox("📅 Journée", ["Toutes"] + all_dates,
-                                  index=default_idx + 1 if all_dates else 0)
+                                  index=0)  # "Toutes" par défaut
 
     matches = matches_all if selected_date == "Toutes" else [
         m for m in matches_all if m["date"].startswith(selected_date)
