@@ -242,6 +242,33 @@ class MinimalProfile:
         self.avg_conceded = round(1.65 - ratio * 0.95, 3)
 
 
+# ─── Niveaux de confiance ────────────────────────────────────────────────────────
+
+def _confidence_levels(
+    ph: float, px: float, pa: float,
+    p_o25: float, p_btts: float,
+    top_score_prob: float,
+) -> dict:
+    """
+    Niveaux de confiance normalisés 0→1 pour chaque marché.
+
+    1X2  : distance à l'équiprobabilité (1/3). 0 = pile ou face, 1 = certitude.
+    O/U  : écart à 50%. 0 = 50/50, 1 = certitude.
+    BTTS : écart à 50%.
+    Score: prob du meilleur score / 20% (20% ≈ plafond empirique Poisson).
+    """
+    conf_1x2   = round(max(0.0, (max(ph, px, pa) - 1 / 3) / (2 / 3)), 3)
+    conf_ou25  = round(abs(p_o25 - 0.5) * 2, 3)
+    conf_btts  = round(abs(p_btts - 0.5) * 2, 3)
+    conf_score = round(min(top_score_prob / 0.20, 1.0), 3)
+    return {
+        "conf_1x2":   conf_1x2,
+        "conf_ou25":  conf_ou25,
+        "conf_btts":  conf_btts,
+        "conf_score": conf_score,
+    }
+
+
 # ─── Prédiction par match ──────────────────────────────────────────────────────
 
 def predict_match(
@@ -335,6 +362,11 @@ def predict_match(
         "p_cs_home": round(p_cs_home, 4),
         "p_cs_away": round(p_cs_away, 4),
         "source": source,
+        **_confidence_levels(
+            probs.p_home_win, probs.p_draw, probs.p_away_win,
+            probs.p_over_25, probs.p_btts,
+            top3[0][1] if top3 else 0.0,
+        ),
     }
 
 
@@ -634,6 +666,10 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
                 "top_scores": [{"score": sc, "prob": round(p, 4)} for sc, p in top3],
                 "most_likely": top3[0][0] if top3 else "1-0",
                 "source": pred.get("source", "FIFA"),
+                "conf_1x2":   round(pred.get("conf_1x2", 0), 3),
+                "conf_ou25":  round(pred.get("conf_ou25", 0), 3),
+                "conf_btts":  round(pred.get("conf_btts", 0), 3),
+                "conf_score": round(pred.get("conf_score", 0), 3),
             } if pred else {},
         })
 

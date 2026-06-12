@@ -480,6 +480,11 @@ with tab_wc:
             raw = _edge_str(p_u25, o_under) if o_under > 1 else _edge_str(p_u25, 1.90)
             edge_ou = raw.replace("@1.90", "@~1.90").replace("pts ", "pts U2.5 ") if raw != "—" else "—"
 
+        def _conf_bar(v: float) -> str:
+            if v >= 0.65: return f"🟢 {v:.0%}"
+            if v >= 0.35: return f"🟡 {v:.0%}"
+            return f"⚪ {v:.0%}"
+
         wc_rows.append({
             "📅": m["date"][:10],
             "🕐": heure,
@@ -487,9 +492,13 @@ with tab_wc:
             "Score réel": f"{m['home_score']}-{m['away_score']}" if is_done else "—",
             "Score prédit": display_score,
             "P(1/X/2)": f"{ph:.0%}/{px:.0%}/{pa:.0%}",
+            "Conf 1X2": _conf_bar(pred.get("conf_1x2", 0)),
             "λ": f"{pred.get('lambda_home',0):.2f}–{pred.get('lambda_away',0):.2f}",
             "O2.5": f"{pred.get('p_over_25',0):.0%}",
+            "Conf O/U": _conf_bar(pred.get("conf_ou25", 0)),
             "BTTS": f"{pred.get('p_btts',0):.0%}",
+            "Conf BTTS": _conf_bar(pred.get("conf_btts", 0)),
+            "Conf Score": _conf_bar(pred.get("conf_score", 0)),
             "Edge 1X2": edge_1x2,
             "Edge O/U": edge_ou,
             "Bkm": bkm[:8] if bkm else "—",
@@ -501,7 +510,8 @@ with tab_wc:
     if wc_rows:
         wc_df = pd.DataFrame(wc_rows)
         display_cols = ["📅", "🕐", "Match", "Score réel", "Score prédit",
-                        "P(1/X/2)", "λ", "O2.5", "BTTS",
+                        "P(1/X/2)", "Conf 1X2", "λ",
+                        "O2.5", "Conf O/U", "BTTS", "Conf BTTS", "Conf Score",
                         "Edge 1X2", "Edge O/U", "Bkm", "1X2 ✓", "O/U ✓", "Src"]
         st.dataframe(
             wc_df[display_cols],
