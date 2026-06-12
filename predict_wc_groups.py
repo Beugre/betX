@@ -120,7 +120,17 @@ def fetch_group_matches(
     start: date = date(2026, 6, 11),
     end: date = date(2026, 6, 28),
 ) -> list[dict]:
-    """Récupère tous les matchs de poule depuis ESPN."""
+    """
+    Récupère tous les matchs de poule depuis ESPN.
+    Enrichit les cotes avec The Odds API (Betclic/Pinnacle) en priorité sur DraftKings.
+    """
+    # Pré-charger les cotes EU (cache 2h, ~1 req)
+    try:
+        from betx.data.odds_api_collector import fetch_wc_odds
+        eu_odds = fetch_wc_odds()
+    except Exception:
+        eu_odds = {}
+
     all_matches = []
     d = start
     while d <= end:
@@ -148,26 +158,38 @@ def fetch_group_matches(
                 if "1A" in h_name or "2B" in h_name or "3RD" in h_name:
                     continue
 
-                # Cotes ESPN (moneyline US → décimal)
-                def _ml_to_dec(ml) -> float | None:
-                    if ml is None:
-                        return None
-                    try:
-                        v = float(str(ml).replace("+", ""))
-                        if str(ml).upper() == "EVEN":
-                            return 2.0
-                        return round(1 + v / 100, 2) if v > 0 else round(1 + 100 / abs(v), 2)
-                    except Exception:
-                        return None
+                # ── Cotes EU (Betclic/Pinnacle via The Odds API) ──
+                eu_key = f"{h_name}_{a_name}"
+                eu = eu_odds.get(eu_key, {})
 
-                odds_home = odds_draw = odds_away = None
-                odds_raw = [x for x in comp.get("odds", []) if x]
-                if odds_raw:
-                    o = odds_raw[0]
-                    ml = o.get("moneyline", {})
-                    odds_home = _ml_to_dec(ml.get("home", {}).get("close", {}).get("odds"))
-                    odds_away = _ml_to_dec(ml.get("away", {}).get("close", {}).get("odds"))
-                    odds_draw = _ml_to_dec(o.get("drawOdds", {}).get("moneyLine"))
+                odds_home = eu.get("odds_home")
+                odds_draw = eu.get("odds_draw")
+                odds_away = eu.get("odds_away")
+                odds_over_25 = eu.get("over_25")
+                odds_under_25 = eu.get("under_25")
+                odds_bookmaker = eu.get("bookmaker", "DraftKings")
+
+                # ── Fallback : cotes ESPN DraftKings (moneyline US → décimal) ──
+                if not odds_home:
+                    def _ml_to_dec(ml) -> float | None:
+                        if ml is None:
+                            return None
+                        try:
+                            v = float(str(ml).replace("+", ""))
+                            if str(ml).upper() == "EVEN":
+                                return 2.0
+                            return round(1 + v / 100, 2) if v > 0 else round(1 + 100 / abs(v), 2)
+                        except Exception:
+                            return None
+
+                    odds_raw = [x for x in comp.get("odds", []) if x]
+                    if odds_raw:
+                        o = odds_raw[0]
+                        ml = o.get("moneyline", {})
+                        odds_home = _ml_to_dec(ml.get("home", {}).get("close", {}).get("odds"))
+                        odds_away = _ml_to_dec(ml.get("away", {}).get("close", {}).get("odds"))
+                        odds_draw = _ml_to_dec(o.get("drawOdds", {}).get("moneyLine"))
+                        odds_bookmaker = "DraftKings"
 
                 all_matches.append({
                     "date": e.get("date", "")[:16],
@@ -183,6 +205,9 @@ def fetch_group_matches(
                     "odds_home": odds_home,
                     "odds_draw": odds_draw,
                     "odds_away": odds_away,
+                    "odds_over_25": odds_over_25,
+                    "odds_under_25": odds_under_25,
+                    "odds_bookmaker": odds_bookmaker,
                 })
         except Exception as e:
             console.print(f"[yellow]⚠️  ESPN {d}: {e}[/yellow]")
@@ -788,26 +813,31 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                     "market": "1X2",
                 })
 
-        # Marchés Over/Under (cotes ESPN si disponibles, sinon cote standard ~1.90)
-        # ESPN expose peu les O/U sur CdM → on utilise 1.90 comme proxy marché
+        # Marchés Over/Under — cotes réelles Betclic/Pinnacle si disponibles, sinon proxy 1.90
+        real_over_odds  = m.get("odds_over_25")
+        real_under_odds = m.get("odds_under_25")
+        ou_bookmaker = m.get("odds_bookmaker", "proxy")
         STD_OU = 1.90
-        for sel, prob, label in [
-            ("over_25", p_o25, f"Over 2.5 {match_label}"),
-            ("under_25", p_u25, f"Under 2.5 {match_label}"),
+        for sel, prob, label, real_odds in [
+            ("over_25",  p_o25, f"Over 2.5 {match_label}",  real_over_odds),
+            ("under_25", p_u25, f"Under 2.5 {match_label}", real_under_odds),
         ]:
-            e = _edge(prob, STD_OU)
-            if e and e >= 0.07:  # seuil légèrement plus haut (proxy cote)
+            odds_used = real_odds if (real_odds and real_odds > 1.0) else STD_OU
+            min_edge = 0.05 if real_odds else 0.07  # seuil plus bas si cote réelle
+            e = _edge(prob, odds_used)
+            if e and e >= min_edge:
                 value_bets.append({
-                    "label": label, "sel": sel, "odds": STD_OU,
-                    "model_p": prob, "implied_p": _implied(STD_OU),
-                    "edge": e, "ev": round(prob * (STD_OU - 1) - (1 - prob), 4),
+                    "label": label, "sel": sel, "odds": odds_used,
+                    "model_p": prob, "implied_p": _implied(odds_used),
+                    "edge": e, "ev": round(prob * (odds_used - 1) - (1 - prob), 4),
                     "time": time_str, "day_tag": day_tag,
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
                     "market": "O/U",
+                    "bookmaker": ou_bookmaker if real_odds else "proxy ~1.90",
                 })
 
-        # Marché BTTS
+        # Marché BTTS (pas de cote dédiée sur The Odds API — proxy 1.90)
         for sel, prob, label in [
             ("btts_yes", p_btts, f"BTTS Oui {match_label}"),
             ("btts_no", p_btts_no, f"BTTS Non {match_label}"),
@@ -822,6 +852,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                     "home": m["home"], "away": m["away"],
                     "home_short": m["home_short"], "away_short": m["away_short"],
                     "market": "BTTS",
+                    "bookmaker": "proxy ~1.90",
                 })
 
     value_bets.sort(key=lambda x: x["edge"], reverse=True)
@@ -954,7 +985,7 @@ def build_wc_telegram(data: dict, filter_date: str | None = None) -> list[str]:
                 lines1 += [
                     f"{badge} {_flag(vb['label'].split()[0] if vb['label'] else '')} <b>{vb['label']}</b>{mkt_tag} {odds_tag}{vb['odds']:.2f}{vb['day_tag']}",
                     f"   📈 Modèle: <b>{vb['model_p']:.0%}</b>  │  📊 Marché: <b>{vb['implied_p']:.0%}</b>  │  🎰 Cote: {vb['odds']:.2f}",
-                    f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>  │  EV: <b>{vb.get('ev', 0)*100:+.0f}%</b>",
+                    f"   🔥 Edge: <b>+{vb['edge']*100:.0f} pts</b>  │  EV: <b>{vb.get('ev', 0)*100:+.0f}%</b>  │  📚 {vb.get('bookmaker', '')}",
                     kelly_str,
                     rel_str,
                     f"   🕐 {vb['time']}",
