@@ -136,21 +136,21 @@ def update_dataset(matches: list[dict]) -> int:
                 for mx in entry["matches"]
             }
 
+            opp = away_espn if is_home else home_espn
+            team_score = m["home_score"] if is_home else m["away_score"]
+            opp_score = m["away_score"] if is_home else m["home_score"]
+
             # Déduplication robuste : même score à ±1 jour (gère les décalages UTC)
             from datetime import date as _date
             match_d = _date.fromisoformat(match_date)
             score_key = (team_score, opp_score)
             is_dup = any(
                 abs((_date.fromisoformat(mx["date"]) - match_d).days) <= 1
-                and (mx["team_score"], mx["opponent_score"]) == score_key
+                and (mx.get("team_score"), mx.get("opponent_score")) == score_key
                 for mx in entry["matches"]
             )
             if is_dup:
                 continue  # déjà présent
-
-            opp = away_espn if is_home else home_espn
-            team_score = m["home_score"] if is_home else m["away_score"]
-            opp_score = m["away_score"] if is_home else m["home_score"]
 
             new_match = {
                 "date": match_date,

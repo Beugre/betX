@@ -31,7 +31,7 @@ log = get_logger("data.national_features")
 
 # Moyenne internationale de buts par équipe par match (2022-2024)
 INTL_AVG_GOALS_PER_TEAM: float = 1.20   # ~2.40 total par match
-INTL_AVG_HOME: float = 1.25             # légère tendance "home" même en CdM (meilleure gestion logistique)
+INTL_AVG_HOME: float = 1.25             # légère tendance "home" même en CdM
 INTL_AVG_AWAY: float = 1.15
 
 
@@ -336,11 +336,12 @@ def build_features(
 
         raw = total_goals / total_w if total_w > 0 else 1.20
 
-        # Blend 50% données pondérées + 50% FIFA attendu (ancrage)
+        # Blend 65% FIFA attendu + 35% données pondérées.
+        # CdM 2026 J1-J2 confirme des matchs plus fermés — FIFA ancre mieux.
         fifa_vals = _fifa_expected_lambda(profile.team_name)
         if fifa_vals is not None:
             fifa_val = fifa_vals[0] if is_atk else fifa_vals[1]
-            return round(0.50 * fifa_val + 0.50 * raw, 3)
+            return round(0.65 * fifa_val + 0.35 * raw, 3)
         return round(raw, 3)
 
     h_elo = _best_elo(h)
@@ -496,15 +497,23 @@ class NationalMatchPredictor:
         # car ses λ proviennent déjà d'un classement calibré.
         total_sample = feats.home_sample_size + feats.away_sample_size
         if total_sample > 0:
-            # Données historiques : shrinkage selon quantité (max à 40 matchs combinés)
-            confidence = min(1.0, total_sample / 40)
+            # Shrinkage renforcé : CdM 2026 montre des matchs fermés (moy ~2.4 buts)
+            # On cible 60 matchs combinés pour confiance totale (était 40)
+            confidence = min(1.0, total_sample / 60)
             lambda_home = lambda_home * confidence + avg * (1 - confidence)
             lambda_away = lambda_away * confidence + avg * (1 - confidence)
         # else : fallback FIFA pur → pas de shrinkage, les λ reflètent le ranking
 
-        # Caps
-        lambda_home = max(0.30, min(3.50, lambda_home))
-        lambda_away = max(0.30, min(3.50, lambda_away))
+        # Caps — plafond réduit à 2.50 par équipe (CdM 2026 : matchs fermés)
+        lambda_home = max(0.30, min(2.50, lambda_home))
+        lambda_away = max(0.30, min(2.50, lambda_away))
+
+        # Correction empirique CdM 2026 : les λ Poisson surestiment les buts
+        # en phase de poules. Facteur 0.88 calibré sur J1-J2 (hors Germany 7-1).
+        # → réduit la moyenne de ~2.9 à ~2.55 buts/match
+        WC_SHRINK = 0.88
+        lambda_home = round(lambda_home * WC_SHRINK, 3)
+        lambda_away = round(lambda_away * WC_SHRINK, 3)
 
         log.debug(
             f"λ {feats.home_team}={lambda_home:.3f} "
