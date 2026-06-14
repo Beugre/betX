@@ -56,18 +56,23 @@ def normalize_team_name(name: str) -> str:
 # ─── Normalisation noms ESPN → API-Football ─────────────────────────────────────
 
 TEAM_NAME_MAP: dict[str, str] = {
-    "czechia":              "Czech Republic",
-    "korea republic":       "South Korea",
-    "republic of korea":    "South Korea",
-    "côte d'ivoire":        "Ivory Coast",
-    "cote d'ivoire":        "Ivory Coast",
-    "united states":        "USA",
-    "u.s.a.":               "USA",
-    "dr congo":             "DR Congo",
-    "guinea bissau":        "Guinea-Bissau",
-    "trinidad & tobago":    "Trinidad and Tobago",
-    "north macedonia":      "North Macedonia",
-    "cape verde":           "Cape Verde Islands",
+    "czechia":                  "Czech Republic",
+    "korea republic":           "South Korea",
+    "republic of korea":        "South Korea",
+    "côte d'ivoire":            "Ivory Coast",
+    "cote d'ivoire":            "Ivory Coast",
+    "united states":            "USA",
+    "u.s.a.":                   "USA",
+    "dr congo":                 "DR Congo",
+    "guinea bissau":            "Guinea-Bissau",
+    "trinidad & tobago":        "Trinidad and Tobago",
+    "north macedonia":          "North Macedonia",
+    "cape verde":               "Cape Verde Islands",
+    "bosnia-herzegovina":       "Bosnia and Herzegovina",
+    "bosnia-herz":              "Bosnia and Herzegovina",
+    "bosnia & herzegovina":     "Bosnia and Herzegovina",
+    "türkiye":                  "Turkey",
+    "turkey":                   "Turkey",
 }
 
 
@@ -471,8 +476,15 @@ class NationalTeamCollector:
         if cached and cached.get("id"):
             return cached["id"]
 
-        # Normaliser le nom (ESPN → API-Football)
+        # Essai avec le nom normalisé comme clé de cache
         api_name = normalize_team_name(team_name)
+        api_key = api_name.lower().strip()
+        if api_key != key:
+            cached = self._cache.get("team_ids", {}).get(api_key)
+            if cached and cached.get("id"):
+                # Sauvegarder l'alias pour les prochains appels
+                self._cache.setdefault("team_ids", {})[key] = cached
+                return cached["id"]
 
         # Tentative avec le nom normalisé
         data = self._get("teams", {"name": api_name})
