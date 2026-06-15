@@ -423,7 +423,7 @@ class NationalMatchPredictor:
     MAX_GOALS: int = 7              # Grille 0..6 (analytique)
     N_SIMULATIONS: int = 10_000     # Simulations Monte Carlo
 
-    RHO: float = -0.10              # Paramètre Dixon-Coles (correction scores faibles)
+    RHO: float = -0.18              # Paramètre Dixon-Coles — recalibré CdM 2026 (45% nuls vs 25% historique)
 
     # Seuil de confiance selon la taille de l'échantillon
     MIN_SAMPLE_CONFIDENT: int = 10
@@ -472,7 +472,9 @@ class NationalMatchPredictor:
 
         # Ajustement : multiplier home par elo_ratio, diviser away
         # Poids 0.60 sur ELO (fort signal en phase de poules CdM)
-        ELO_WEIGHT = 0.60
+        # ELO_WEIGHT réduit de 0.60 à 0.50 : CdM 2026 montre plusieurs surprises
+        # indiquant que la dynamique récente compte autant que le classement ELO
+        ELO_WEIGHT = 0.50
         elo_factor = elo_ratio ** ELO_WEIGHT
         lambda_home *= elo_factor
         lambda_away /= elo_factor
@@ -518,10 +520,12 @@ class NationalMatchPredictor:
         lambda_home = max(0.30, min(2.50, lambda_home))
         lambda_away = max(0.30, min(2.50, lambda_away))
 
-        # Correction empirique CdM 2026 : les λ Poisson surestiment les buts
-        # en phase de poules. Facteur 0.88 calibré sur J1-J2 (hors Germany 7-1).
-        # → réduit la moyenne de ~2.9 à ~2.55 buts/match
-        WC_SHRINK = 0.88
+        # WC_SHRINK dynamique selon l'écart ELO :
+        #   match équilibré (ΔELO <50)  → 0.85 (plus défensif)
+        #   match moyen (ΔELO 50-150)  → 0.90
+        #   grand favori (ΔELO >150)   → 0.95 (le favori peut scorer librement)
+        elo_diff_abs = abs(feats.elo_diff)
+        WC_SHRINK = 0.85 if elo_diff_abs < 50 else (0.90 if elo_diff_abs < 150 else 0.95)
         lambda_home = round(lambda_home * WC_SHRINK, 3)
         lambda_away = round(lambda_away * WC_SHRINK, 3)
 
