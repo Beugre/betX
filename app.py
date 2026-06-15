@@ -399,7 +399,8 @@ with tab_wc:
         best = top3[0] if top3 else {}
         status = m.get("status", "")
         is_done = status in ("STATUS_FINAL", "STATUS_FULL_TIME")
-        h_fr = (int(m["date"][11:13]) + 2) % 24
+        h_s = m["date"][11:13]
+        h_fr = (int(h_s) + 2) % 24 if h_s.isdigit() else 0
         heure = f"{h_fr:02d}h" if not is_done else "FT"
         ph = pred.get("p_home", 0)
 
