@@ -381,16 +381,7 @@ def load_profiles(teams: list[str], fetch: bool = False) -> dict:
     """
     from betx.data.national_team_collector import NationalTeamCollector
 
-    # 1. Charger goalscorers (40 matchs/équipe depuis 2018 — source principale)
-    try:
-        from betx.data.goalscorers_loader import load_into_cache as _load_gs
-        n_gs = _load_gs()
-        if n_gs:
-            console.print(f"  📊 Goalscorers : {n_gs} équipes enrichies")
-    except Exception as e:
-        console.print(f"  [yellow]⚠️  goalscorers: {e}[/yellow]")
-
-    # 2. Charger le dataset martj42 (30 matchs/équipe, 2026 — complète goalscorers)
+    # 1. Charger le dataset martj42 (30 matchs/équipe, 2026 — source principale)
     try:
         from betx.data.martj42_loader import load_into_cache
         n = load_into_cache()
@@ -399,7 +390,7 @@ def load_profiles(teams: list[str], fetch: bool = False) -> dict:
     except Exception as e:
         console.print(f"  [yellow]⚠️  martj42: {e}[/yellow]")
 
-    # 3. Mettre à jour le dataset avec les résultats CdM récents (ESPN)
+    # 2. Mettre à jour le dataset avec les résultats CdM récents (ESPN)
     try:
         from betx.data.update_wc_dataset import run as _update_wc
         n_new = _update_wc()

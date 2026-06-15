@@ -576,24 +576,10 @@ class NationalMatchPredictor:
     @staticmethod
     def _rho_for_match(lh: float, la: float) -> float:
         """
-        RHO dynamique conservateur.
-
-        Principe : boost LÉGER des nuls pour les matchs équilibrés.
-        Calibré pour maintenir ~64% sur CdM 2022 (17% nuls réels)
-        et améliorer les prédictions de nuls sur CdM 2026 (40% nuls réels).
-
-          Δλ < 0.20  (très équilibré) → -0.28
-          Δλ < 0.45  (légèrement déséquilibré) → -0.22
-          Δλ ≥ 0.45  (déséquilibré) → -0.18
-
-        Note: un RHO plus négatif (-0.40+) améliore les nuls mais
-        crée trop de faux positifs draw — net loss sur 59 matchs.
+        RHO fixe -0.18 — calibré CdM 2026 (75% 1X2 sur 12 matchs).
+        Produit ~25/61 top-1=1-1 : mathématiquement correct pour Poisson
+        sur des matchs semi-équilibrés (λ≈1.0-1.5).
         """
-        delta = abs(lh - la)
-        if delta < 0.20:
-            return -0.28
-        if delta < 0.45:
-            return -0.22
         return -0.18
 
     def _dixon_coles(self, x: int, y: int, lh: float, la: float) -> float:
