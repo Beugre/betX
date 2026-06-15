@@ -640,3 +640,63 @@ with tab_wc:
 
 st.divider()
 st.caption("betX © 2026 – Données : ESPN + API-Football + FIFA Ranking")
+
+# ── Bloc MPP : Mon Petit Prono ────────────────────────────────────────────────
+with tab_wc:
+    st.divider()
+    st.subheader("🏆 Mon Petit Prono — Scores à jouer")
+    st.caption("Score le plus probable selon le modèle Poisson+ELO. 🔥🔥🔥 = >18% | 🔥🔥 = >14% | 🔥 = >11%")
+
+    if wc_data:
+        mpp_rows = []
+        for m in sorted(wc_data.get("matches", []), key=lambda x: x["date"]):
+            if m.get("status") == "STATUS_FULL_TIME":
+                continue
+            p = m.get("prediction", {})
+            top = p.get("top_scores", [])
+            if not top:
+                continue
+            best_score = top[0]["score"]
+            best_prob = top[0]["prob"]
+            s2 = top[1]["score"] if len(top) > 1 else "—"
+            s2p = top[1]["prob"] if len(top) > 1 else 0
+            s3 = top[2]["score"] if len(top) > 2 else "—"
+            s3p = top[2]["prob"] if len(top) > 2 else 0
+
+            if best_prob >= 0.18: conf = "🔥🔥🔥"
+            elif best_prob >= 0.14: conf = "🔥🔥"
+            elif best_prob >= 0.11: conf = "🔥"
+            else: conf = "·"
+
+            h_fr = (int(m["date"][11:13]) + 2) % 24
+            heure = f"{h_fr:02d}h"
+
+            mpp_rows.append({
+                "📅": m["date"][:10],
+                "🕐": heure,
+                "Domicile": m["home_short"],
+                "Extérieur": m["away_short"],
+                "✍️ Prono": best_score,
+                "Conf": conf,
+                "P%": f"{best_prob:.0%}",
+                "2e choix": f"{s2} ({s2p:.0%})" if s2 != "—" else "—",
+                "3e choix": f"{s3} ({s3p:.0%})" if s3 != "—" else "—",
+            })
+
+        if mpp_rows:
+            mpp_df = pd.DataFrame(mpp_rows)
+            st.dataframe(
+                mpp_df,
+                use_container_width=True,
+                height=min(len(mpp_df) * 42 + 60, 900),
+                hide_index=True,
+                column_config={
+                    "✍️ Prono": st.column_config.TextColumn("✍️ Prono", width="small"),
+                    "Conf": st.column_config.TextColumn("Conf", width="small"),
+                    "P%": st.column_config.TextColumn("P%", width="small"),
+                    "Domicile": st.column_config.TextColumn(width="medium"),
+                    "Extérieur": st.column_config.TextColumn(width="medium"),
+                },
+            )
+            st.caption(f"{len(mpp_rows)} matchs restants · Copie le score colonne '✍️ Prono' dans Mon Petit Prono")
+
