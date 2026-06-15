@@ -339,7 +339,7 @@ def predict_match(
         )
         source = "FIFA" if not home_api and not away_api else "MIXED"
 
-    probs = predictor.predict(feats, use_monte_carlo=True)
+    probs = predictor.predict(feats)
     top3 = sorted(probs.exact_scores.items(), key=lambda x: x[1], reverse=True)[:3]
 
     # P(Clean Sheet) = P(équipe adverse marque 0 buts)
@@ -657,6 +657,18 @@ def export_predictions(matches: list[dict], profiles: dict, filter_date: str | N
             pred = predict_match(m["home"], m["away"], profiles)
         except Exception:
             pred = {}
+
+        # ── Blend Pinnacle (40%) — réduit l'écart modèle/marché ──────────
+        # Si cotes disponibles, blend 60% modèle + 40% probabilités implicites
+        MARKET_BLEND = 0.35
+        oh = m.get("odds_home"); ox = m.get("odds_draw"); oa = m.get("odds_away")
+        if pred and oh and ox and oa and oh > 1.0 and ox > 1.0 and oa > 1.0:
+            s = 1/oh + 1/ox + 1/oa
+            mkt_h, mkt_x, mkt_a = (1/oh)/s, (1/ox)/s, (1/oa)/s
+            pred["p_home"] = round((1-MARKET_BLEND)*pred["p_home"] + MARKET_BLEND*mkt_h, 4)
+            pred["p_draw"] = round((1-MARKET_BLEND)*pred["p_draw"] + MARKET_BLEND*mkt_x, 4)
+            pred["p_away"] = round((1-MARKET_BLEND)*pred["p_away"] + MARKET_BLEND*mkt_a, 4)
+            pred["source"] = pred.get("source","?") + "+MKT"
 
         top3 = pred.get("top_scores", [])
         rec = {

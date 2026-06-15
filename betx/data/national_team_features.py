@@ -274,20 +274,33 @@ def build_features(
         """
         Priorité :
           1. ELO officiel eloratings.net (source la plus fiable)
-          2. Blend 60% FIFA + 40% calculé (fallback si pas dans eloratings)
+          2. Correction par valeur marchande Transfermarkt si disponible
+          3. Blend 60% FIFA + 40% calculé (fallback)
         """
         from betx.data.elo_loader import get_elo as _get_elo
         official = _get_elo(profile.team_name)
         if official is not None:
-            # Blend léger avec l'ELO calculé pour ne pas ignorer la forme récente
             computed = profile.elo_estimate
-            return round(0.80 * official + 0.20 * computed, 1)
-        # Fallback FIFA
-        computed = profile.elo_estimate
-        fifa = _fifa_elo(profile.team_name)
-        if fifa is not None:
-            return round(0.60 * fifa + 0.40 * computed, 1)
-        return computed
+            elo_base = round(0.80 * official + 0.20 * computed, 1)
+        else:
+            computed = profile.elo_estimate
+            fifa = _fifa_elo(profile.team_name)
+            if fifa is not None:
+                elo_base = round(0.60 * fifa + 0.40 * computed, 1)
+            else:
+                elo_base = computed
+
+        # Correction valeur marchande : ajuste l'ELO si la squad value
+        # suggère une force différente du classement ELO.
+        # Calibré : valeur ref=250M€ → facteur neutre, ±200M → ±50 ELO pts
+        sv = _get_squad_value(profile.team_name)
+        if sv is not None:
+            REF_VALUE_M = 250.0  # valeur médiane équipes CdM
+            elo_adjust = (sv - REF_VALUE_M) / 20.0  # 200M€ d'écart = ±10 pts ELO
+            elo_adjust = max(-80.0, min(80.0, elo_adjust))  # cap ±80 pts
+            elo_base = round(elo_base + elo_adjust * 0.25, 1)  # poids 25%
+
+        return elo_base
 
     # ── Étape 2 : λ pondérés par force adversaire ─────────────────────────
     def _opponent_weighted_lambda(profile: "NationalTeamProfile", is_atk: bool) -> float:
@@ -407,6 +420,29 @@ def _friendly_form(profile: "NationalTeamProfile") -> float:
         total_pts += result_map[m.result] * w
         total_w += w
     return total_pts / total_w if total_w > 0 else 0.0
+
+
+_SQUAD_VALUES: dict | None = None
+
+def _get_squad_value(team_name: str) -> float | None:
+    """
+    Valeur marchande du XI (Transfermarkt, Mio EUR).
+    Source : data/squad_values_2026.json
+    Utilisée comme régularisateur ELO pour les équipes mal calibrées.
+    """
+    global _SQUAD_VALUES
+    if _SQUAD_VALUES is None:
+        try:
+            import json
+            from pathlib import Path
+            f = Path("data/squad_values_2026.json")
+            if f.exists():
+                _SQUAD_VALUES = json.loads(f.read_text()).get("values", {})
+            else:
+                _SQUAD_VALUES = {}
+        except Exception:
+            _SQUAD_VALUES = {}
+    return _SQUAD_VALUES.get(team_name)
 
 
 # ─── Prédicteur (Poisson calibré + Monte Carlo) ────────────────────────────────
