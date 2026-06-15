@@ -423,7 +423,7 @@ class NationalMatchPredictor:
     MAX_GOALS: int = 7              # Grille 0..6 (analytique)
     N_SIMULATIONS: int = 10_000     # Simulations Monte Carlo
 
-    RHO: float = -0.18              # Paramètre Dixon-Coles — recalibré CdM 2026 (45% nuls vs 25% historique)
+    RHO: float = -0.18              # Paramètre Dixon-Coles de base — override par _rho_for_match()
 
     # Seuil de confiance selon la taille de l'échantillon
     MIN_SAMPLE_CONFIDENT: int = 10
@@ -537,9 +537,32 @@ class NationalMatchPredictor:
         )
         return lambda_home, lambda_away
 
+    @staticmethod
+    def _rho_for_match(lh: float, la: float) -> float:
+        """
+        RHO dynamique conservateur.
+
+        Principe : boost LÉGER des nuls pour les matchs équilibrés.
+        Calibré pour maintenir ~64% sur CdM 2022 (17% nuls réels)
+        et améliorer les prédictions de nuls sur CdM 2026 (40% nuls réels).
+
+          Δλ < 0.20  (très équilibré) → -0.28
+          Δλ < 0.45  (légèrement déséquilibré) → -0.22
+          Δλ ≥ 0.45  (déséquilibré) → -0.18
+
+        Note: un RHO plus négatif (-0.40+) améliore les nuls mais
+        crée trop de faux positifs draw — net loss sur 59 matchs.
+        """
+        delta = abs(lh - la)
+        if delta < 0.20:
+            return -0.28
+        if delta < 0.45:
+            return -0.22
+        return -0.18
+
     def _dixon_coles(self, x: int, y: int, lh: float, la: float) -> float:
         """Correction Dixon-Coles pour les scores faibles (0-0, 1-0, 0-1, 1-1)."""
-        rho = self.RHO
+        rho = self._rho_for_match(lh, la)
         if x == 0 and y == 0:
             return 1.0 - lh * la * rho
         elif x == 1 and y == 0:
@@ -670,14 +693,14 @@ class NationalMatchPredictor:
     def predict(
         self,
         feats: NationalTeamFeatureSet,
-        use_monte_carlo: bool = True,
+        use_monte_carlo: bool = False,
     ) -> ScoreProbabilities:
         """
         Pipeline complet : features → lambdas → prédiction.
 
-        Args:
-            feats           : feature set du match
-            use_monte_carlo : True (MC 10k) | False (analytique pur)
+        Utilise la méthode analytique (Poisson + Dixon-Coles dynamique) par défaut
+        car elle intègre le RHO dynamique selon l'équilibre du match.
+        Le Monte Carlo ne supporte pas la correction Dixon-Coles.
         """
         lambda_home, lambda_away = self.compute_lambdas(feats)
 
