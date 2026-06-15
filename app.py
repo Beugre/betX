@@ -668,7 +668,8 @@ with tab_wc:
             elif best_prob >= 0.11: conf = "🔥"
             else: conf = "·"
 
-            h_fr = (int(m["date"][11:13]) + 2) % 24
+            h_s = m["date"][11:13]
+            h_fr = (int(h_s) + 2) % 24 if h_s.isdigit() else 0
             heure = f"{h_fr:02d}h"
 
             mpp_rows.append({
