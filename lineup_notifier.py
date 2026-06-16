@@ -128,54 +128,83 @@ def calc_lineup_impact(team_name: str, starters: list[dict], ratings: dict) -> d
     """
     starter_names = {p["name"] for p in starters}
 
-    # Joueurs clés de cette équipe
+    # Joueurs connus de cette équipe dans notre DB
     team_ratings = {
         name: info for name, info in ratings.items()
         if info.get("team") == team_name
     }
 
-    if not team_ratings:
-        return {"squad_strength": 80.0, "lambda_multiplier": 1.0, "key_players": [], "summary": "—"}
+    # Rating par défaut pour les joueurs non référencés dans EA FC 26
+    DEFAULT_RATING = 60
 
     key_players = []
-    for player_name, info in sorted(team_ratings.items(), key=lambda x: -x[1]["rating"]):
-        # Match approximatif (gère les accents/variantes)
-        present = any(
-            player_name.lower() in s.lower() or s.lower() in player_name.lower()
-            for s in starter_names
-        )
-        key_players.append({
-            "name": player_name,
-            "rating": info["rating"],
-            "position": info.get("position", "?"),
-            "present": present,
-        })
 
-    # Squad strength = moyenne pondérée des joueurs clés présents
-    if key_players:
-        present_ratings = [p["rating"] for p in key_players if p["present"]]
-        absent_ratings = [p["rating"] for p in key_players if not p["present"]]
-
-        # Baseline = team rating moyen (sans info compo)
-        avg_all = sum(p["rating"] for p in key_players) / len(key_players)
-
-        if present_ratings:
-            avg_present = sum(present_ratings) / len(present_ratings)
+    # 1) Tous les starters ESPN — connus ou non
+    for starter in starters:
+        sname = starter["name"]
+        # Cherche un match dans notre DB (approximatif, gère accents)
+        matched = None
+        for db_name, info in team_ratings.items():
+            if db_name.lower() in sname.lower() or sname.lower() in db_name.lower():
+                matched = (db_name, info)
+                break
+        if matched:
+            key_players.append({
+                "name": matched[0],
+                "rating": matched[1]["rating"],
+                "position": matched[1].get("position", "?"),
+                "present": True,
+            })
         else:
-            avg_present = avg_all * 0.85  # aucun titulaire connu → pénalité
+            key_players.append({
+                "name": sname,
+                "rating": DEFAULT_RATING,
+                "position": "?",
+                "present": True,
+            })
 
-        # Facteur λ : +/- selon présence des joueurs clés
-        # +1% par 5 points de rating au-dessus de la baseline
+    # 2) Joueurs connus de la DB NON présents dans la compo (absents notables)
+    starter_lower = {s["name"].lower() for s in starters}
+    for db_name, info in sorted(team_ratings.items(), key=lambda x: -x[1]["rating"]):
+        already = any(
+            db_name.lower() in s or s in db_name.lower()
+            for s in starter_lower
+        )
+        if not already and info["rating"] >= 82:
+            key_players.append({
+                "name": db_name,
+                "rating": info["rating"],
+                "position": info.get("position", "?"),
+                "present": False,
+            })
+
+    # Squad strength = moyenne des 11 titulaires
+    present_ratings = [p["rating"] for p in key_players if p["present"]]
+
+    if present_ratings:
+        avg_present = sum(present_ratings) / len(present_ratings)
+    else:
+        avg_present = DEFAULT_RATING
+
+    # Baseline = moyenne DB équipe (ou défaut si équipe inconnue)
+    if team_ratings:
+        avg_all = sum(i["rating"] for i in team_ratings.values()) / len(team_ratings)
+    else:
+        avg_all = DEFAULT_RATING
+
+    if key_players:
+        # Facteur λ basé sur l'écart compo réelle vs baseline DB
         lambda_mult = 1.0 + (avg_present - avg_all) / 500.0
         lambda_mult = max(0.85, min(1.20, lambda_mult))
 
         squad_strength = round(avg_present, 1)
     else:
         lambda_mult = 1.0
-        squad_strength = 80.0
+        squad_strength = DEFAULT_RATING
 
-    # Résumé des joueurs clés (top 5)
-    top5 = key_players[:5]
+    # Résumé : joueurs connus présents (rating >= 82) + absents notables
+    known_present = [p for p in key_players if p["present"] and p["rating"] >= 82]
+    notable_absent = [p for p in key_players if not p["present"] and p["rating"] >= 82]
     parts = []
     for p in top5:
         flag = "✓" if p["present"] else "✗"
