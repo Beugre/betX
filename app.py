@@ -710,6 +710,7 @@ with tab_wc:
     # ── Helper : dessin du terrain ────────────────────────────────────────
     def draw_pitch(home_players, away_players, home_name, away_name):
         """Terrain football avec les deux équipes positionnées par ligne."""
+        import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
         W, H = 68.0, 105.0
         fig, ax = plt.subplots(figsize=(9, 13))
