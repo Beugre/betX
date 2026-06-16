@@ -17,6 +17,99 @@ except ImportError:
     print("pip install requests beautifulsoup4")
     sys.exit(1)
 
+# Clubs / leagues féminines connus EA FC 26 → exclure ces joueurs
+WOMEN_CLUBS = {
+    "OL Lyonnes", "Paris Saint-Germain W", "FC Barcelona W", "Arsenal W",
+    "Chelsea W", "Manchester City W", "Manchester United W", "Bayern München W",
+    "Real Madrid W", "Juventus W", "Portland Thorns FC", "Washington Spirit",
+    "Chicago Stars FC", "North Carolina Courage", "Kansas City Current",
+    "Orlando Pride", "Gotham FC", "Houston Dash", "San Diego Wave FC",
+    "Seattle Reign FC", "Racing Louisville FC", "Angel City FC",
+    "Bay FC", "Utah Royals", "London City Lionesses", "Eintracht Frankfurt W",
+    "VfL Wolfsburg W", "Bayer 04 Leverkusen W", "TSG 1899 Hoffenheim W",
+    "Brighton & Hove Albion W", "Tottenham Hotspur W", "Everton W", "Aston Villa W",
+    "Roma W", "Milano FC W", "Atletico de Madrid W", "Real Sociedad W",
+    "RC Deportivo", "FC Fleury 91", "Paris FC", "Stade de Reims W",
+    "Montpellier HSC W", "Atlético de Madrid W", "Real Betis Balompié W",
+    "San Diego Wave FC", "NJ/NY Gotham FC",
+}
+
+# Noms de joueurs féminines connues à exclure explicitement (pour les cas où le club ne suffit pas)
+KNOWN_WOMEN = {
+    "Alexia Putellas", "Aitana Bonmatí", "Caroline Graham Hansen", "Claudia Pina",
+    "Mapi León", "Mariona", "Patri Guijarro", "Ona Batlle", "Irene Paredes",
+    "Laia Aleixandri", "Salma Paralluelo", "Olga Carmona", "Cata Coll", "Esther",
+    "Alba Redondo", "Jenni Hermoso", "Athenea", "Eva Navarro", "Vicky López",
+    "Aitana Bonmati", "Lucy Bronze", "Millie Bright", "Leah Williamson",
+    "Lauren Hemp", "Georgia Stanway", "Beth Mead", "Chloe Kelly", "Lauren James",
+    "Ella Toone", "Keira Walsh", "Hannah Hampton", "Mary Earps", "Alex Greenwood",
+    "Maya Le Tissier", "Alessia Russo", "Khadija Shaw", "Sam Kerr", "Caitlin Foord",
+    "Steph Catley", "Ellie Carpenter", "Sam Kerr", "Klara Bühl", "Lena Oberdorf",
+    "Giulia Gwinn", "Alexandra Popp", "Lea Schüller", "Ann-Katrin Berger",
+    "Svenja Huth", "Sara Däbritz", "Sara Doorsoun", "Linda Dallmann", "Merle Frohms",
+    "Jule Brand", "Sjoeke Nüsken", "Nicole Anyomi", "Selina Cerci", "Vanessa Fudalla",
+    "Pernille Harder", "Signe Bruun", "Sofie Svava", "Caroline Møller", "Cornelia Kramer",
+    "Marta", "Bia Zaneratto", "Debinha", "Lorena", "Lauren Leal", "Kerolin Nicoli",
+    "Rosemonde Kouassi", "Bernadette Amani", "Inès Konan",
+    "Lindsey Heaps", "Rose Lavelle", "Mallory Swanson", "Trinity Rodman",
+    "Emily Fox", "Naomi Girma", "Emily Sonnett", "Catarina Macario",
+    "Aubrey Kingsbury", "Sam Coffey", "Lo'eau LaBonta", "Taylor Flint", "Korbin Shrader",
+    "Crystal Dunn", "Lynn Biyendolo", "Sofia Huerta", "Ashley Hatch", "Casey Murphy",
+    "Ashley Sanchez", "Phallon Tullis-Joyce", "Vanessa DiBernardo", "Hailie Mace",
+    "Alyssa Thompson", "Alyssa Naeher", "Jane Campbell", "Olivia Moultrie", "Yazmeen Ryan",
+    "Savannah DeMelo", "Sakina Karchaoui", "Selma Bacha", "Wendie Renard",
+    "Kenza Dali", "Clara Mateo", "Sandy Baltimore", "Delphine Cascarino",
+    "Griedge Mbock", "Pauline Peyraud-Magnin",
+    "Fridolina Rolfö", "Kosovare Asllani", "Magdalena Eriksson", "Stina Blackstenius",
+    "Johanna Kaneryd", "Amanda Ilestedt", "Filippa Angeldahl", "Nathalie Björn",
+    "Sofia Jakobsson", "Lina Hurtig", "Zećira Mušović", "Jennifer Falk",
+    "Amanda Nildén", "Hanna Glas", "Julia Zigiotti", "Hanna Lundkvist",
+    "Jill Roord", "Vivianne Miedema", "Damaris Egurrola", "Dominique Janssen",
+    "Jackie Groenen", "Kerstin Casparij", "Sherida Spitse", "Daniëlle van de Donk",
+    "Daphne van Domselaar", "Esmee Brugts",
+    "Ada Hegerberg", "Guro Reiten", "Frida Maanum", "Ingrid Syrstad Engen",
+    "Emilie Haavi", "Elisabeth Terland", "Celin Bizet", "Vilde Bøe Risa",
+    "Synne Jensen", "Cecilie Fiskerstrand", "Tuva Hansen", "Karina Sævik",
+    "Justine Kielland", "Kamilla Melgård",
+    "Christiane Endler", "Andreia Jacinto", "Inês Pereira",
+    "Géraldine Reuteler", "Lia Wälti", "Ana-Maria Crnogorčević", "Viola Calligaris",
+    "Noëlle Maritz", "Alisha Lehmann", "Eseosa Aigbogun", "Elvira Herzog",
+    "Livia Peng", "Alayah Pilgrim", "Sydney Schertenleib",
+    "Linda Caicedo", "Mayra Ramírez", "Manuela Vanegas", "Leicy Santos",
+    "Lice Chamorro", "Chiamaka Nnadozie", "Rasheedat Ajibade", "Gift Monday",
+    "Omorinsola Babajide", "Toni Payne", "Jennifer Echegini",
+    "Kim Little", "Erin Cuthbert", "Caroline Weir",
+    "Yui Hasegawa", "Saki Kumagai", "Hina Sugita", "Ayaka Yamashita",
+    "Moeka Minami", "Jun Endo", "Honoka Hayashi", "Hinata Miyazawa",
+    "Maika Hamano", "Risa Shimizu", "Aoba Fujino", "Kiko Seike",
+    "Manaka Matsukubo", "Yuka Momiki", "Riko Ueki",
+    "Ashley Lawrence", "Vanessa Gilles", "Kadeisha Buchanan",
+    "Jessie Fleming", "Évelyne Viens", "Quinn", "Sophie Schmidt",
+    "Julia Grosso", "Marie Levasseur", "Olivia Smith", "Janine Sonis",
+    "Adriana Leon", "Nichelle Prince", "Deanne Rose", "Jayde Riviere",
+    "Shelina Zadorsky", "Cloé Lacasse", "Promise David", "Jordyn Huitema",
+    "Gabrielle Carle", "Allysha Chapman", "Sabrina D'Angelo",
+    "Sarah Zadrazil", "Barbara Dunst", "Katharina Naschenweng",
+    "Verena Hanshaw", "Manuela Zinsberger", "Laura Feiersinger",
+    "Sarah Puntigam", "Ewelina Kamczyk", "Tanja Pawollek",
+    "Katarzyna Kiedrzynek", "Klaudia Jedlińska", "Adriana Achcińska",
+    "Weronika Zawistowska", "Kinga Szemik", "Nadia Krezyman",
+    "Sylwia Matysik", "Aleksandra Zaremba", "Dominika Grabowska",
+    "Nérilia Mondésir", "Kethna Louis", "Amandine Pierre-Louis", "Tabita Joseph",
+    "Nina Ngueleu", "Colette Ndzana", "Monique Ngock",
+    "Hildah Magaia", "Linda Motlhalo",
+    "Jovana Damnjanović", "Jelena Čanković", "Allegra Poljak",
+    "Kate Taylor", "Ali Riley",
+    "Lice Chamorro", "Lizbeth Ovalle", "María Sánchez", "Karla Nieto", "Scarlett Camberos", "Diana Ordóñez",
+    "Mária Mikolajová", "Diana Bartovičová", "Martina Šurnovská",
+    "Kateřina Svitková", "Klára Cahynová", "Barbora Votíková", "Tereza Szewieczková",
+    "Inès Belloumou", "Massiren Aït Zefrane",
+    "Paulina Dudek",
+    "Chantelle Swaby", "Kiki Van Zanten", "Becky Spencer",
+    "Falung",
+}
+
+
 # Mapping nom WC → nom EA FC 26 (pour le filtre nationality)
 # On mappe les noms du système vers les noms exacts utilisés par fifaindex
 WC_TEAMS_MAP = {
@@ -91,11 +184,10 @@ HEADERS = {
 }
 
 def parse_page(html: str) -> list[dict]:
-    """Parse une page HTML de fifaindex et retourne les joueurs."""
+    """Parse une page HTML de fifaindex et retourne les joueurs MASCULINS."""
     soup = BeautifulSoup(html, "html.parser")
     players = []
     
-    # La table des joueurs
     table = soup.find("table")
     if not table:
         return players
@@ -106,37 +198,42 @@ def parse_page(html: str) -> list[dict]:
         if len(cols) < 6:
             continue
         try:
-            # Structure: rank | name | position | nationality | club | overall | potential
             name_cell = cols[1]
             name = name_cell.get_text(strip=True)
-            # Nettoyer "Player photo not found" du nom
             name = re.sub(r'^Player photo not found\s*', '', name).strip()
-            
+
+            if not name or name in KNOWN_WOMEN:
+                continue
+
             pos_cell = cols[2]
             position = pos_cell.get_text(strip=True)
-            
+
             nat_cell = cols[3]
-            # Nationality — chercher le texte
             nationality = nat_cell.get_text(strip=True)
-            # Enlever le doublon (ex: "France France" → "France")
             parts = nationality.split()
             if len(parts) >= 2 and parts[0] == parts[-1]:
                 nationality = parts[0]
             elif len(parts) > 1:
-                # "Republic of Korea Republic of Korea" → "Republic of Korea"
                 mid = len(parts) // 2
                 if parts[:mid] == parts[mid:]:
                     nationality = " ".join(parts[:mid])
-            
+
+            # Club — col 4
+            club_cell = cols[4]
+            club = club_cell.get_text(strip=True)
+            if club in WOMEN_CLUBS:
+                continue
+
             rating_cell = cols[5]
             rating_text = rating_cell.get_text(strip=True)
             rating = int(rating_text) if rating_text.isdigit() else 0
-            
+
             if rating > 0 and name:
                 players.append({
                     "name": name,
                     "position": position,
                     "nationality": nationality,
+                    "club": club,
                     "rating": rating,
                 })
         except (IndexError, ValueError):
@@ -145,10 +242,9 @@ def parse_page(html: str) -> list[dict]:
     return players
 
 
-def scrape_all_wc_players(min_rating: int = 60, max_pages: int = 120) -> dict:
+def scrape_all_wc_players(min_rating: int = 60, max_pages: int = 500) -> dict:
     """
-    Scrape fifaindex jusqu'à min_rating.
-    Retourne un dict {nom_joueur: {team, rating, position}} pour les nations WC.
+    Scrape fifaindex jusqu'à min_rating, hommes uniquement.
     """
     wc_ea_names = set(WC_TEAMS_MAP.values())
     all_players = {}
@@ -158,12 +254,27 @@ def scrape_all_wc_players(min_rating: int = 60, max_pages: int = 120) -> dict:
     
     for page in range(1, max_pages + 1):
         url = f"{BASE_URL}?page={page}&order=desc"
-        try:
-            resp = session.get(url, timeout=15)
-            resp.raise_for_status()
-        except Exception as e:
-            print(f"  ⚠ Page {page} erreur: {e}")
-            time.sleep(3)
+        
+        # Retry avec backoff exponentiel
+        resp = None
+        for attempt in range(4):
+            try:
+                resp = session.get(url, timeout=15)
+                if resp.status_code == 403:
+                    wait = 2 ** attempt + 1
+                    print(f"  403 page {page}, retry dans {wait}s...")
+                    time.sleep(wait)
+                    resp = None
+                    continue
+                resp.raise_for_status()
+                break
+            except Exception as e:
+                if attempt == 3:
+                    print(f"  ⚠ Page {page} erreur définitive: {e}")
+                time.sleep(2 ** attempt)
+        
+        if resp is None:
+            print(f"  ⚠ Page {page} ignorée")
             continue
         
         players = parse_page(resp.text)
@@ -178,11 +289,13 @@ def scrape_all_wc_players(min_rating: int = 60, max_pages: int = 120) -> dict:
         for p in wc_on_page:
             ea_nat = p["nationality"]
             wc_team = EA_TO_WC.get(ea_nat, ea_nat)
-            all_players[p["name"]] = {
-                "team": wc_team,
-                "rating": p["rating"],
-                "position": p["position"],
-            }
+            # Ne pas écraser un joueur déjà présent avec un rating plus élevé
+            if p["name"] not in all_players or all_players[p["name"]]["rating"] < p["rating"]:
+                all_players[p["name"]] = {
+                    "team": wc_team,
+                    "rating": p["rating"],
+                    "position": p["position"],
+                }
         
         total_wc = len(all_players)
         print(f"  Page {page:3d} | rating min={min_on_page} | +{len(wc_on_page):3d} WC players | total={total_wc}")
@@ -191,7 +304,7 @@ def scrape_all_wc_players(min_rating: int = 60, max_pages: int = 120) -> dict:
             print(f"  → Rating {min_on_page} < {min_rating}, arrêt.")
             break
         
-        time.sleep(0.4)  # poli avec le serveur
+        time.sleep(0.5)
     
     return all_players
 

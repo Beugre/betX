@@ -1,27 +1,472 @@
 {
   "_comment": "Ratings joueurs CdM 2026 (EA FC 26 base cards — source: fifaindex.com)",
   "_methodology": "Cartes de base EA FC 26. rating >= 88 = joueur décisif, 84-87 = joueur important, 80-83 = joueur solide, <80 = standard.",
-  "_source": "fifaindex.com/players/fc26 — top 30 par nation, 1384 joueurs",
+  "_source": "fifaindex.com/players/fc26 — top 30 hommes par nation, 1378 joueurs WC 2026",
   "players": {
-    "David Raya": {
-      "team": "Spain",
+    "Joshua Kimmich": {
+      "team": "Germany",
+      "rating": 89,
+      "position": "CDM"
+    },
+    "Florian Wirtz": {
+      "team": "Germany",
       "rating": 87,
+      "position": "CAM"
+    },
+    "Jamal Musiala": {
+      "team": "Germany",
+      "rating": 87,
+      "position": "CAM"
+    },
+    "Jonathan Tah": {
+      "team": "Germany",
+      "rating": 87,
+      "position": "CB"
+    },
+    "Nico Schlotterbeck": {
+      "team": "Germany",
+      "rating": 86,
+      "position": "CB"
+    },
+    "Marc-André ter Stegen": {
+      "team": "Germany",
+      "rating": 84,
       "position": "GK"
     },
-    "Claudia Pina": {
-      "team": "Spain",
-      "rating": 87,
-      "position": "LW"
+    "Oliver Baumann": {
+      "team": "Germany",
+      "rating": 84,
+      "position": "GK"
     },
-    "Esther": {
-      "team": "Spain",
-      "rating": 86,
+    "Antonio Rüdiger": {
+      "team": "Germany",
+      "rating": 84,
+      "position": "CB"
+    },
+    "Felix Nmecha": {
+      "team": "Germany",
+      "rating": 84,
+      "position": "CM"
+    },
+    "Laura Freigang": {
+      "team": "Germany",
+      "rating": 84,
+      "position": "CAM"
+    },
+    "Janina Minge": {
+      "team": "Germany",
+      "rating": 84,
+      "position": "CM"
+    },
+    "Serge Gnabry": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Matthias Ginter": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "CB"
+    },
+    "Maximilian Mittelstädt": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "LB"
+    },
+    "Waldemar Anton": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "CB"
+    },
+    "David Raum": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "LB"
+    },
+    "Angelo Stiller": {
+      "team": "Germany",
+      "rating": 83,
+      "position": "CDM"
+    },
+    "Manuel Neuer": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "GK"
+    },
+    "Emre Can": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Julian Brandt": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CAM"
+    },
+    "Kai Havertz": {
+      "team": "Germany",
+      "rating": 82,
       "position": "ST"
     },
-    "Ona Batlle": {
-      "team": "Spain",
+    "Deniz Undav": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Jonathan Burkardt": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Lena Lattwein": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CM"
+    },
+    "Karim Adeyemi": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "RM"
+    },
+    "Sophia Kleinherne": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Kristin Kögel": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "LM"
+    },
+    "Elisa Senß": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CM"
+    },
+    "Aleksandar Pavlović": {
+      "team": "Germany",
+      "rating": 82,
+      "position": "CDM"
+    },
+    "Leon Goretzka": {
+      "team": "Germany",
+      "rating": 81,
+      "position": "CDM"
+    },
+    "Raphinha": {
+      "team": "Brazil",
+      "rating": 89,
+      "position": "LW"
+    },
+    "Gabriel Magalhães": {
+      "team": "Brazil",
+      "rating": 89,
+      "position": "CB"
+    },
+    "Vini Jr.": {
+      "team": "Brazil",
+      "rating": 89,
+      "position": "LW"
+    },
+    "Alisson": {
+      "team": "Brazil",
+      "rating": 88,
+      "position": "GK"
+    },
+    "Marquinhos": {
+      "team": "Brazil",
+      "rating": 87,
+      "position": "CB"
+    },
+    "Bruno Guimarães": {
+      "team": "Brazil",
       "rating": 86,
+      "position": "CM"
+    },
+    "Éder Militão": {
+      "team": "Brazil",
+      "rating": 84,
+      "position": "CB"
+    },
+    "Rodrygo": {
+      "team": "Brazil",
+      "rating": 84,
+      "position": "LW"
+    },
+    "Neymar Jr": {
+      "team": "Brazil",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Ederson": {
+      "team": "Brazil",
+      "rating": 83,
+      "position": "GK"
+    },
+    "Ronaldo Cabrais": {
+      "team": "Brazil",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Matheus Cunha": {
+      "team": "Brazil",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Thiago Silva": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Casemiro": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CDM"
+    },
+    "Fabinho": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CDM"
+    },
+    "Malcom": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "RW"
+    },
+    "Lucas Mantela": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "GK"
+    },
+    "Josué Chiamulera": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Ibañez": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CB"
+    },
+    "João Pedro": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Éderson": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CM"
+    },
+    "Murillo": {
+      "team": "Brazil",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Anderson Talisca": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "CAM"
+    },
+    "Joelinton": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "CM"
+    },
+    "Rosival Dourado": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "CDM"
+    },
+    "Adriano Bisesi": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "ST"
+    },
+    "Welington Dano": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "LB"
+    },
+    "Nailton Suzuki": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "CAM"
+    },
+    "Oswaldinato": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "ST"
+    },
+    "David Neres": {
+      "team": "Brazil",
+      "rating": 81,
+      "position": "LW"
+    },
+    "Harry Kane": {
+      "team": "England",
+      "rating": 90,
+      "position": "ST"
+    },
+    "Jude Bellingham": {
+      "team": "England",
+      "rating": 89,
+      "position": "CAM"
+    },
+    "Declan Rice": {
+      "team": "England",
+      "rating": 88,
+      "position": "CDM"
+    },
+    "Bukayo Saka": {
+      "team": "England",
+      "rating": 87,
+      "position": "RW"
+    },
+    "Cole Palmer": {
+      "team": "England",
+      "rating": 86,
+      "position": "CAM"
+    },
+    "Jordan Pickford": {
+      "team": "England",
+      "rating": 85,
+      "position": "GK"
+    },
+    "Trent Alexander-Arnold": {
+      "team": "England",
+      "rating": 85,
       "position": "RB"
+    },
+    "Phil Foden": {
+      "team": "England",
+      "rating": 85,
+      "position": "CAM"
+    },
+    "Ezri Konsa": {
+      "team": "England",
+      "rating": 84,
+      "position": "CB"
+    },
+    "Eberechi Eze": {
+      "team": "England",
+      "rating": 84,
+      "position": "CAM"
+    },
+    "Reece James": {
+      "team": "England",
+      "rating": 84,
+      "position": "RB"
+    },
+    "Marc Guéhi": {
+      "team": "England",
+      "rating": 84,
+      "position": "CB"
+    },
+    "Morgan Rogers": {
+      "team": "England",
+      "rating": 84,
+      "position": "CAM"
+    },
+    "James Maddison": {
+      "team": "England",
+      "rating": 83,
+      "position": "CM"
+    },
+    "Jarrod Bowen": {
+      "team": "England",
+      "rating": 83,
+      "position": "RM"
+    },
+    "Mason Greenwood": {
+      "team": "England",
+      "rating": 83,
+      "position": "RM"
+    },
+    "John Stones": {
+      "team": "England",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Jack Grealish": {
+      "team": "England",
+      "rating": 82,
+      "position": "LM"
+    },
+    "Ivan Toney": {
+      "team": "England",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Ollie Watkins": {
+      "team": "England",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Fran Kirby": {
+      "team": "England",
+      "rating": 82,
+      "position": "CAM"
+    },
+    "Marcus Rashford": {
+      "team": "England",
+      "rating": 82,
+      "position": "LW"
+    },
+    "Benjamin White": {
+      "team": "England",
+      "rating": 82,
+      "position": "RB"
+    },
+    "Dean Henderson": {
+      "team": "England",
+      "rating": 82,
+      "position": "GK"
+    },
+    "Anthony Gordon": {
+      "team": "England",
+      "rating": 82,
+      "position": "LW"
+    },
+    "Elliot Anderson": {
+      "team": "England",
+      "rating": 82,
+      "position": "CDM"
+    },
+    "Bethany England": {
+      "team": "England",
+      "rating": 82,
+      "position": "ST"
+    },
+    "Millie Turner": {
+      "team": "England",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Jess Park": {
+      "team": "England",
+      "rating": 82,
+      "position": "CM"
+    },
+    "Harry Maguire": {
+      "team": "England",
+      "rating": 81,
+      "position": "CB"
+    },
+    "Pedri": {
+      "team": "Spain",
+      "rating": 90,
+      "position": "CM"
+    },
+    "Rodri": {
+      "team": "Spain",
+      "rating": 89,
+      "position": "CDM"
+    },
+    "Lamine Yamal": {
+      "team": "Spain",
+      "rating": 89,
+      "position": "RW"
     },
     "Joan García": {
       "team": "Spain",
@@ -98,35 +543,10 @@
       "rating": 84,
       "position": "CAM"
     },
-    "Alba Redondo": {
-      "team": "Spain",
-      "rating": 84,
-      "position": "ST"
-    },
-    "Olga Carmona": {
-      "team": "Spain",
-      "rating": 84,
-      "position": "LB"
-    },
-    "Cata Coll": {
-      "team": "Spain",
-      "rating": 84,
-      "position": "GK"
-    },
-    "Salma Paralluelo": {
-      "team": "Spain",
-      "rating": 84,
-      "position": "LW"
-    },
     "Mikel Merino": {
       "team": "Spain",
       "rating": 83,
       "position": "CM"
-    },
-    "Jenni Hermoso": {
-      "team": "Spain",
-      "rating": 83,
-      "position": "ST"
     },
     "Oyarzabal": {
       "team": "Spain",
@@ -138,490 +558,70 @@
       "rating": 83,
       "position": "CB"
     },
-    "Laia Aleixandri": {
-      "team": "Spain",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Athenea": {
-      "team": "Spain",
-      "rating": 83,
-      "position": "RW"
-    },
     "Balde": {
       "team": "Spain",
       "rating": 83,
       "position": "LB"
     },
-    "Lucy Bronze": {
-      "team": "England",
-      "rating": 87,
-      "position": "RB"
+    "Gavi": {
+      "team": "Spain",
+      "rating": 83,
+      "position": "CM"
     },
-    "Millie Bright": {
-      "team": "England",
-      "rating": 87,
+    "Pablo Barrios": {
+      "team": "Spain",
+      "rating": 83,
+      "position": "CM"
+    },
+    "Fermín": {
+      "team": "Spain",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Edna Imade": {
+      "team": "Spain",
+      "rating": 83,
+      "position": "ST"
+    },
+    "Pau Cubarsí": {
+      "team": "Spain",
+      "rating": 83,
       "position": "CB"
     },
-    "Leah Williamson": {
-      "team": "England",
-      "rating": 87,
-      "position": "CB"
-    },
-    "Bukayo Saka": {
-      "team": "England",
-      "rating": 87,
+    "Iago Aspas": {
+      "team": "Spain",
+      "rating": 82,
       "position": "RW"
     },
-    "Lauren Hemp": {
-      "team": "England",
-      "rating": 87,
-      "position": "LW"
+    "Aymeric Laporte": {
+      "team": "Spain",
+      "rating": 82,
+      "position": "CB"
     },
-    "Georgia Stanway": {
-      "team": "England",
-      "rating": 86,
-      "position": "CDM"
-    },
-    "Beth Mead": {
-      "team": "England",
-      "rating": 86,
-      "position": "RM"
-    },
-    "Chloe Kelly": {
-      "team": "England",
-      "rating": 86,
-      "position": "RM"
-    },
-    "Cole Palmer": {
-      "team": "England",
-      "rating": 86,
-      "position": "CAM"
-    },
-    "Jordan Pickford": {
-      "team": "England",
-      "rating": 85,
+    "Álex Remiro": {
+      "team": "Spain",
+      "rating": 82,
       "position": "GK"
     },
-    "Trent Alexander-Arnold": {
-      "team": "England",
-      "rating": 85,
-      "position": "RB"
-    },
-    "Phil Foden": {
-      "team": "England",
-      "rating": 85,
-      "position": "CAM"
-    },
-    "Keira Walsh": {
-      "team": "England",
-      "rating": 85,
-      "position": "CDM"
-    },
-    "Hannah Hampton": {
-      "team": "England",
-      "rating": 85,
-      "position": "GK"
-    },
-    "Ella Toone": {
-      "team": "England",
-      "rating": 85,
-      "position": "CAM"
-    },
-    "Lauren James": {
-      "team": "England",
-      "rating": 85,
-      "position": "LM"
-    },
-    "Alex Greenwood": {
-      "team": "England",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Ezri Konsa": {
-      "team": "England",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Eberechi Eze": {
-      "team": "England",
-      "rating": 84,
-      "position": "CAM"
-    },
-    "Reece James": {
-      "team": "England",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Marc Guéhi": {
-      "team": "England",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Morgan Rogers": {
-      "team": "England",
-      "rating": 84,
-      "position": "CAM"
-    },
-    "Maya Le Tissier": {
-      "team": "England",
-      "rating": 84,
-      "position": "CB"
-    },
-    "James Maddison": {
-      "team": "England",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Jarrod Bowen": {
-      "team": "England",
-      "rating": 83,
-      "position": "RM"
-    },
-    "Mason Greenwood": {
-      "team": "England",
-      "rating": 83,
-      "position": "RM"
-    },
-    "Mary Earps": {
-      "team": "England",
-      "rating": 83,
-      "position": "GK"
-    },
-    "John Stones": {
-      "team": "England",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Jack Grealish": {
-      "team": "England",
-      "rating": 82,
-      "position": "LM"
-    },
-    "Ivan Toney": {
-      "team": "England",
-      "rating": 82,
+    "Kylian Mbappé": {
+      "team": "France",
+      "rating": 91,
       "position": "ST"
     },
-    "Frenkie de Jong": {
-      "team": "Netherlands",
-      "rating": 87,
-      "position": "CM"
-    },
-    "Vivianne Miedema": {
-      "team": "Netherlands",
-      "rating": 86,
+    "Ousmane Dembélé": {
+      "team": "France",
+      "rating": 90,
       "position": "ST"
     },
-    "Jill Roord": {
-      "team": "Netherlands",
-      "rating": 86,
-      "position": "CM"
-    },
-    "Ryan Gravenberch": {
-      "team": "Netherlands",
-      "rating": 86,
-      "position": "CDM"
-    },
-    "Tijjani Reijnders": {
-      "team": "Netherlands",
-      "rating": 85,
-      "position": "CM"
-    },
-    "Denzel Dumfries": {
-      "team": "Netherlands",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Lineth Beerensteyn": {
-      "team": "Netherlands",
-      "rating": 84,
-      "position": "ST"
-    },
-    "Jurriën Timber": {
-      "team": "Netherlands",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Damaris Egurrola": {
-      "team": "Netherlands",
-      "rating": 84,
-      "position": "CDM"
-    },
-    "Stefan de Vrij": {
-      "team": "Netherlands",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Dominique Janssen": {
-      "team": "Netherlands",
-      "rating": 83,
-      "position": "CDM"
-    },
-    "Cody Gakpo": {
-      "team": "Netherlands",
-      "rating": 83,
-      "position": "LM"
-    },
-    "Daphne van Domselaar": {
-      "team": "Netherlands",
-      "rating": 83,
-      "position": "GK"
-    },
-    "Esmee Brugts": {
-      "team": "Netherlands",
-      "rating": 83,
-      "position": "LB"
-    },
-    "Nathan Aké": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Sherida Spitse": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Daniëlle van de Donk": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CM"
-    },
-    "Matthijs de Ligt": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Xavi Simons": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CAM"
-    },
-    "Jeremie Frimpong": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "RB"
-    },
-    "Micky van de Ven": {
-      "team": "Netherlands",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Marten de Roon": {
-      "team": "Netherlands",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Jackie Groenen": {
-      "team": "Netherlands",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Sven Botman": {
-      "team": "Netherlands",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Joey Veerman": {
-      "team": "Netherlands",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Kerstin Casparij": {
-      "team": "Netherlands",
-      "rating": 81,
-      "position": "RB"
-    },
-    "Memphis Depay": {
-      "team": "Netherlands",
-      "rating": 80,
-      "position": "ST"
-    },
-    "Donyell Malen": {
-      "team": "Netherlands",
-      "rating": 80,
-      "position": "ST"
-    },
-    "Danilho Doekhi": {
-      "team": "Netherlands",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Teun Koopmeiners": {
-      "team": "Netherlands",
-      "rating": 80,
-      "position": "CAM"
-    },
-    "Lindsey Heaps": {
-      "team": "United States",
-      "rating": 87,
-      "position": "CAM"
-    },
-    "Rose Lavelle": {
-      "team": "United States",
-      "rating": 87,
-      "position": "CM"
-    },
-    "Mallory Swanson": {
-      "team": "United States",
-      "rating": 86,
-      "position": "LM"
-    },
-    "Christian Pulisic": {
-      "team": "United States",
-      "rating": 85,
+    "Michael Olise": {
+      "team": "France",
+      "rating": 89,
       "position": "RW"
     },
-    "Trinity Rodman": {
-      "team": "United States",
-      "rating": 85,
-      "position": "RM"
-    },
-    "Emily Fox": {
-      "team": "United States",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Naomi Girma": {
-      "team": "United States",
-      "rating": 84,
+    "William Saliba": {
+      "team": "France",
+      "rating": 88,
       "position": "CB"
-    },
-    "Emily Sonnett": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Catarina Macario": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Aubrey Kingsbury": {
-      "team": "United States",
-      "rating": 83,
-      "position": "GK"
-    },
-    "Sam Coffey": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Lo'eau LaBonta": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Taylor Flint": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CDM"
-    },
-    "Korbin Shrader": {
-      "team": "United States",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Crystal Dunn": {
-      "team": "United States",
-      "rating": 82,
-      "position": "RM"
-    },
-    "Lynn Biyendolo": {
-      "team": "United States",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Sofia Huerta": {
-      "team": "United States",
-      "rating": 82,
-      "position": "RB"
-    },
-    "Ashley Hatch": {
-      "team": "United States",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Casey Murphy": {
-      "team": "United States",
-      "rating": 82,
-      "position": "GK"
-    },
-    "Ashley Sanchez": {
-      "team": "United States",
-      "rating": 82,
-      "position": "LM"
-    },
-    "Phallon Tullis-Joyce": {
-      "team": "United States",
-      "rating": 82,
-      "position": "GK"
-    },
-    "Vanessa DiBernardo": {
-      "team": "United States",
-      "rating": 82,
-      "position": "CM"
-    },
-    "Hailie Mace": {
-      "team": "United States",
-      "rating": 82,
-      "position": "RB"
-    },
-    "Alyssa Thompson": {
-      "team": "United States",
-      "rating": 82,
-      "position": "LM"
-    },
-    "Alyssa Naeher": {
-      "team": "United States",
-      "rating": 81,
-      "position": "GK"
-    },
-    "Antonee Robinson": {
-      "team": "United States",
-      "rating": 81,
-      "position": "LB"
-    },
-    "Jane Campbell": {
-      "team": "United States",
-      "rating": 81,
-      "position": "GK"
-    },
-    "Olivia Moultrie": {
-      "team": "United States",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Yazmeen Ryan": {
-      "team": "United States",
-      "rating": 81,
-      "position": "RM"
-    },
-    "Savannah DeMelo": {
-      "team": "United States",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Sakina Karchaoui": {
-      "team": "France",
-      "rating": 87,
-      "position": "CM"
-    },
-    "Dayot Upamecano": {
-      "team": "France",
-      "rating": 86,
-      "position": "CB"
-    },
-    "Jules Koundé": {
-      "team": "France",
-      "rating": 86,
-      "position": "RB"
-    },
-    "Selma Bacha": {
-      "team": "France",
-      "rating": 86,
-      "position": "LB"
     },
     "Désiré Doué": {
       "team": "France",
@@ -638,22 +638,7 @@
       "rating": 85,
       "position": "CM"
     },
-    "Wendie Renard": {
-      "team": "France",
-      "rating": 85,
-      "position": "CB"
-    },
-    "Kenza Dali": {
-      "team": "France",
-      "rating": 85,
-      "position": "CDM"
-    },
     "Marcus Thuram": {
-      "team": "France",
-      "rating": 85,
-      "position": "ST"
-    },
-    "Clara Mateo": {
       "team": "France",
       "rating": 85,
       "position": "ST"
@@ -662,11 +647,6 @@
       "team": "France",
       "rating": 85,
       "position": "ST"
-    },
-    "Sandy Baltimore": {
-      "team": "France",
-      "rating": 85,
-      "position": "LM"
     },
     "Antoine Griezmann": {
       "team": "France",
@@ -678,11 +658,6 @@
       "rating": 84,
       "position": "CDM"
     },
-    "Delphine Cascarino": {
-      "team": "France",
-      "rating": 84,
-      "position": "RM"
-    },
     "Theo Hernández": {
       "team": "France",
       "rating": 84,
@@ -692,11 +667,6 @@
       "team": "France",
       "rating": 84,
       "position": "CDM"
-    },
-    "Grace Geyoro": {
-      "team": "France",
-      "rating": 84,
-      "position": "CM"
     },
     "Ibrahima Konaté": {
       "team": "France",
@@ -718,20 +688,10 @@
       "rating": 84,
       "position": "LW"
     },
-    "Griedge Mbock": {
-      "team": "France",
-      "rating": 83,
-      "position": "CB"
-    },
     "Moussa Diaby": {
       "team": "France",
       "rating": 83,
       "position": "RM"
-    },
-    "Pauline Peyraud-Magnin": {
-      "team": "France",
-      "rating": 83,
-      "position": "GK"
     },
     "Warren Zaïre-Emery": {
       "team": "France",
@@ -753,155 +713,65 @@
       "rating": 82,
       "position": "ST"
     },
-    "Alexander Isak": {
-      "team": "Sweden",
-      "rating": 87,
-      "position": "ST"
-    },
-    "Viktor Gyökeres": {
-      "team": "Sweden",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Fridolina Rolfö": {
-      "team": "Sweden",
-      "rating": 84,
-      "position": "LB"
-    },
-    "Dejan Kulusevski": {
-      "team": "Sweden",
-      "rating": 83,
+    "Mattéo Guendouzi": {
+      "team": "France",
+      "rating": 82,
       "position": "CM"
     },
-    "Kosovare Asllani": {
-      "team": "Sweden",
+    "Lucas Chevalier": {
+      "team": "France",
       "rating": 82,
-      "position": "CAM"
+      "position": "GK"
     },
-    "Magdalena Eriksson": {
-      "team": "Sweden",
+    "Melvine Malard": {
+      "team": "France",
       "rating": 82,
-      "position": "CB"
-    },
-    "Stina Blackstenius": {
-      "team": "Sweden",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Johanna Kaneryd": {
-      "team": "Sweden",
-      "rating": 82,
-      "position": "RM"
-    },
-    "Amanda Ilestedt": {
-      "team": "Sweden",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Filippa Angeldahl": {
-      "team": "Sweden",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Nathalie Björn": {
-      "team": "Sweden",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Sofia Jakobsson": {
-      "team": "Sweden",
-      "rating": 79,
       "position": "LM"
     },
-    "Yasin Ayari": {
-      "team": "Sweden",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Anthony Elanga": {
-      "team": "Sweden",
-      "rating": 79,
-      "position": "RW"
-    },
-    "Daniel Svensson": {
-      "team": "Sweden",
-      "rating": 79,
-      "position": "LB"
-    },
-    "Emil Forsberg": {
-      "team": "Sweden",
-      "rating": 78,
-      "position": "CAM"
-    },
-    "Carl Starfelt": {
-      "team": "Sweden",
-      "rating": 78,
-      "position": "CB"
-    },
-    "Lina Hurtig": {
-      "team": "Sweden",
-      "rating": 78,
+    "Kessya Bussy": {
+      "team": "France",
+      "rating": 82,
       "position": "LW"
     },
-    "Zećira Mušović": {
-      "team": "Sweden",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Jennifer Falk": {
-      "team": "Sweden",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Isak Hien": {
-      "team": "Sweden",
-      "rating": 78,
+    "Maëlle Lakrar": {
+      "team": "France",
+      "rating": 82,
       "position": "CB"
     },
-    "Amanda Nildén": {
-      "team": "Sweden",
-      "rating": 78,
+    "Florian Thauvin": {
+      "team": "France",
+      "rating": 81,
+      "position": "RW"
+    },
+    "Lucas Hernández": {
+      "team": "France",
+      "rating": 81,
       "position": "LB"
     },
-    "Lucas Bergvall": {
-      "team": "Sweden",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Gabriel Gudmundsson": {
-      "team": "Sweden",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Hanna Glas": {
-      "team": "Sweden",
-      "rating": 77,
-      "position": "RB"
-    },
-    "Julia Zigiotti": {
-      "team": "Sweden",
-      "rating": 77,
-      "position": "CDM"
-    },
-    "Hugo Larsson": {
-      "team": "Sweden",
-      "rating": 77,
-      "position": "CM"
-    },
-    "Hanna Lundkvist": {
-      "team": "Sweden",
-      "rating": 77,
-      "position": "RB"
-    },
-    "Victor Lindelöf": {
-      "team": "Sweden",
-      "rating": 76,
+    "Benjamin Pavard": {
+      "team": "France",
+      "rating": 81,
       "position": "CB"
     },
-    "Mattias Svanberg": {
-      "team": "Sweden",
-      "rating": 76,
+    "Vitinha": {
+      "team": "Portugal",
+      "rating": 90,
       "position": "CM"
+    },
+    "João Neves": {
+      "team": "Portugal",
+      "rating": 88,
+      "position": "CM"
+    },
+    "Nuno Mendes": {
+      "team": "Portugal",
+      "rating": 88,
+      "position": "LB"
+    },
+    "Bruno Fernandes": {
+      "team": "Portugal",
+      "rating": 88,
+      "position": "CAM"
     },
     "Rúben Dias": {
       "team": "Portugal",
@@ -973,11 +843,6 @@
       "rating": 82,
       "position": "RB"
     },
-    "Andreia Jacinto": {
-      "team": "Portugal",
-      "rating": 82,
-      "position": "CM"
-    },
     "Danilo Pereira": {
       "team": "Portugal",
       "rating": 81,
@@ -987,6 +852,11 @@
       "team": "Portugal",
       "rating": 81,
       "position": "GK"
+    },
+    "Otávio": {
+      "team": "Portugal",
+      "rating": 81,
+      "position": "CM"
     },
     "Ricardo Horta": {
       "team": "Portugal",
@@ -1007,11 +877,6 @@
       "team": "Portugal",
       "rating": 80,
       "position": "ST"
-    },
-    "Inês Pereira": {
-      "team": "Portugal",
-      "rating": 80,
-      "position": "GK"
     },
     "Raphaël Guerreiro": {
       "team": "Portugal",
@@ -1036,2046 +901,6 @@
     "Daniel Heuer Fernandes": {
       "team": "Portugal",
       "rating": 78,
-      "position": "GK"
-    },
-    "Guedes": {
-      "team": "Portugal",
-      "rating": 78,
-      "position": "LW"
-    },
-    "Gelson Martins": {
-      "team": "Portugal",
-      "rating": 78,
-      "position": "RM"
-    },
-    "Nélson Semedo": {
-      "team": "Portugal",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Luis Díaz": {
-      "team": "Colombia",
-      "rating": 87,
-      "position": "LM"
-    },
-    "Linda Caicedo": {
-      "team": "Colombia",
-      "rating": 85,
-      "position": "LW"
-    },
-    "Daniel Muñoz": {
-      "team": "Colombia",
-      "rating": 82,
-      "position": "RB"
-    },
-    "Mayra Ramírez": {
-      "team": "Colombia",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Manuela Vanegas": {
-      "team": "Colombia",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Duván Zapata": {
-      "team": "Colombia",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Davinson Sánchez": {
-      "team": "Colombia",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Leicy Santos": {
-      "team": "Colombia",
-      "rating": 81,
-      "position": "CM"
-    },
-    "James Rodríguez": {
-      "team": "Colombia",
-      "rating": 80,
-      "position": "CAM"
-    },
-    "Luis Javier Suárez": {
-      "team": "Colombia",
-      "rating": 80,
-      "position": "ST"
-    },
-    "Cucho Hernández": {
-      "team": "Colombia",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Jhon Durán": {
-      "team": "Colombia",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Cristian Arango": {
-      "team": "Colombia",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Jorge Carrascal": {
-      "team": "Colombia",
-      "rating": 78,
-      "position": "CAM"
-    },
-    "Richard Ríos": {
-      "team": "Colombia",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Camilo Vargas": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Jefferson Lerma": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "CDM"
-    },
-    "Johan Mojica": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Sebastián Villa": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Jhon Arias": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "RM"
-    },
-    "Willer Ditta": {
-      "team": "Colombia",
-      "rating": 77,
-      "position": "CB"
-    },
-    "Juan Fernando Quintero": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "CAM"
-    },
-    "Yerry Mina": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Alfredo Morelos": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Álvaro Montero": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Jhon Lucumí": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Jaminton Campaz": {
-      "team": "Colombia",
-      "rating": 76,
-      "position": "LM"
-    },
-    "David Ospina": {
-      "team": "Colombia",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Dayro Moreno": {
-      "team": "Colombia",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Edwin Cardona": {
-      "team": "Colombia",
-      "rating": 75,
-      "position": "CAM"
-    },
-    "Klara Bühl": {
-      "team": "Germany",
-      "rating": 87,
-      "position": "LM"
-    },
-    "Florian Wirtz": {
-      "team": "Germany",
-      "rating": 87,
-      "position": "CAM"
-    },
-    "Jamal Musiala": {
-      "team": "Germany",
-      "rating": 87,
-      "position": "CAM"
-    },
-    "Ann-Katrin Berger": {
-      "team": "Germany",
-      "rating": 87,
-      "position": "GK"
-    },
-    "Nico Schlotterbeck": {
-      "team": "Germany",
-      "rating": 86,
-      "position": "CB"
-    },
-    "Alexandra Popp": {
-      "team": "Germany",
-      "rating": 85,
-      "position": "ST"
-    },
-    "Svenja Huth": {
-      "team": "Germany",
-      "rating": 85,
-      "position": "CM"
-    },
-    "Lea Schüller": {
-      "team": "Germany",
-      "rating": 85,
-      "position": "ST"
-    },
-    "Marc-André ter Stegen": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "GK"
-    },
-    "Oliver Baumann": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "GK"
-    },
-    "Antonio Rüdiger": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Felix Nmecha": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "CM"
-    },
-    "Giulia Gwinn": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Lena Oberdorf": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "CDM"
-    },
-    "Laura Freigang": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "CAM"
-    },
-    "Janina Minge": {
-      "team": "Germany",
-      "rating": 84,
-      "position": "CM"
-    },
-    "Serge Gnabry": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Matthias Ginter": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Sara Däbritz": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Maximilian Mittelstädt": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "LB"
-    },
-    "Waldemar Anton": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CB"
-    },
-    "David Raum": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "LB"
-    },
-    "Sara Doorsoun": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Linda Dallmann": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "RM"
-    },
-    "Merle Frohms": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "GK"
-    },
-    "Angelo Stiller": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CDM"
-    },
-    "Jule Brand": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "LW"
-    },
-    "Sjoeke Nüsken": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "CDM"
-    },
-    "Nicole Anyomi": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "ST"
-    },
-    "Selina Cerci": {
-      "team": "Germany",
-      "rating": 83,
-      "position": "ST"
-    },
-    "Pernille Harder": {
-      "team": "Denmark",
-      "rating": 87,
-      "position": "CAM"
-    },
-    "Morten Hjulmand": {
-      "team": "Denmark",
-      "rating": 83,
-      "position": "CDM"
-    },
-    "Sofie Svava": {
-      "team": "Denmark",
-      "rating": 82,
-      "position": "LB"
-    },
-    "Pierre-Emile Højbjerg": {
-      "team": "Denmark",
-      "rating": 81,
-      "position": "CDM"
-    },
-    "Signe Bruun": {
-      "team": "Denmark",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Christian Nørgaard": {
-      "team": "Denmark",
-      "rating": 80,
-      "position": "CDM"
-    },
-    "Andreas Christensen": {
-      "team": "Denmark",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Mikkel Damsgaard": {
-      "team": "Denmark",
-      "rating": 80,
-      "position": "CAM"
-    },
-    "Frederik Rønnow": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "GK"
-    },
-    "Joachim Andersen": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Mathias Jensen": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Jens Stage": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Rasmus Kristensen": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "RB"
-    },
-    "Caroline Møller": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "CAM"
-    },
-    "Victor Froholdt": {
-      "team": "Denmark",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Cornelia Kramer": {
-      "team": "Denmark",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Anders Dreyer": {
-      "team": "Denmark",
-      "rating": 78,
-      "position": "RW"
-    },
-    "Rasmus Højlund": {
-      "team": "Denmark",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Kasper Schmeichel": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Kasper Dolberg": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Jens Odgaard": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Joakim Mæhle": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Matt O'Riley": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Alexander Bah": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "RB"
-    },
-    "Filip Jörgensen": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Mika Biereth": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Sofie Bredgaard": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Malou Marcetto": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "CM"
-    },
-    "Patrick Dorgu": {
-      "team": "Denmark",
-      "rating": 77,
-      "position": "LM"
-    },
-    "Christian Eriksen": {
-      "team": "Denmark",
-      "rating": 76,
-      "position": "CAM"
-    },
-    "Lionel Messi": {
-      "team": "Argentina",
-      "rating": 86,
-      "position": "CAM"
-    },
-    "Julián Alvarez": {
-      "team": "Argentina",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Paulo Dybala": {
-      "team": "Argentina",
-      "rating": 85,
-      "position": "CAM"
-    },
-    "Alexis Mac Allister": {
-      "team": "Argentina",
-      "rating": 85,
-      "position": "CM"
-    },
-    "Enzo Fernández": {
-      "team": "Argentina",
-      "rating": 85,
-      "position": "CM"
-    },
-    "Rodrigo De Paul": {
-      "team": "Argentina",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Exequiel Palacios": {
-      "team": "Argentina",
-      "rating": 83,
-      "position": "CM"
-    },
-    "Ángel Di María": {
-      "team": "Argentina",
-      "rating": 82,
-      "position": "RW"
-    },
-    "Cristian Romero": {
-      "team": "Argentina",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Giuliano": {
-      "team": "Argentina",
-      "rating": 82,
-      "position": "RM"
-    },
-    "Nico Paz": {
-      "team": "Argentina",
-      "rating": 82,
-      "position": "CAM"
-    },
-    "Leandro Paredes": {
-      "team": "Argentina",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Gerónimo Rulli": {
-      "team": "Argentina",
-      "rating": 81,
-      "position": "GK"
-    },
-    "Giovani Lo Celso": {
-      "team": "Argentina",
-      "rating": 81,
-      "position": "CAM"
-    },
-    "Marcos Senesi": {
-      "team": "Argentina",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Lisandro Martínez": {
-      "team": "Argentina",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Nicolás Otamendi": {
-      "team": "Argentina",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Juan Musso": {
-      "team": "Argentina",
-      "rating": 80,
-      "position": "GK"
-    },
-    "Leonardo Balerdi": {
-      "team": "Argentina",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Alan Varela": {
-      "team": "Argentina",
-      "rating": 80,
-      "position": "CDM"
-    },
-    "Mauro Icardi": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Ángel Correa": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Augusto Batalla": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "GK"
-    },
-    "Facundo Medina": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Juan Foyth": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Taty Castellanos": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Nico Gonzalez": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "LM"
-    },
-    "Aldana Cometti": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Santiago Hezze": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Matías Soulé": {
-      "team": "Argentina",
-      "rating": 79,
-      "position": "CAM"
-    },
-    "Yann Sommer": {
-      "team": "Switzerland",
-      "rating": 86,
-      "position": "GK"
-    },
-    "Gregor Kobel": {
-      "team": "Switzerland",
-      "rating": 86,
-      "position": "GK"
-    },
-    "Granit Xhaka": {
-      "team": "Switzerland",
-      "rating": 85,
-      "position": "CDM"
-    },
-    "Géraldine Reuteler": {
-      "team": "Switzerland",
-      "rating": 84,
-      "position": "CM"
-    },
-    "Manuel Akanji": {
-      "team": "Switzerland",
-      "rating": 83,
-      "position": "CB"
-    },
-    "Remo Freuler": {
-      "team": "Switzerland",
-      "rating": 82,
-      "position": "CDM"
-    },
-    "Fabian Schär": {
-      "team": "Switzerland",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Lia Wälti": {
-      "team": "Switzerland",
-      "rating": 82,
-      "position": "CDM"
-    },
-    "Denis Zakaria": {
-      "team": "Switzerland",
-      "rating": 81,
-      "position": "CDM"
-    },
-    "Ana-Maria Crnogorčević": {
-      "team": "Switzerland",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Viola Calligaris": {
-      "team": "Switzerland",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Ruben Vargas": {
-      "team": "Switzerland",
-      "rating": 78,
-      "position": "LW"
-    },
-    "Noëlle Maritz": {
-      "team": "Switzerland",
-      "rating": 78,
-      "position": "LB"
-    },
-    "Alisha Lehmann": {
-      "team": "Switzerland",
-      "rating": 78,
-      "position": "RW"
-    },
-    "Xherdan Shaqiri": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Breel Embolo": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Philipp Köhn": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Ardon Jashari": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "CDM"
-    },
-    "Dan Ndoye": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "LM"
-    },
-    "Eseosa Aigbogun": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Elvira Herzog": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Johan Manzambi": {
-      "team": "Switzerland",
-      "rating": 77,
-      "position": "CM"
-    },
-    "Roman Bürki": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Yvon Mvogo": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Nico Elvedi": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Noah Okafor": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Livia Peng": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Alayah Pilgrim": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "RW"
-    },
-    "Sydney Schertenleib": {
-      "team": "Switzerland",
-      "rating": 76,
-      "position": "CAM"
-    },
-    "Djibril Sow": {
-      "team": "Switzerland",
-      "rating": 75,
-      "position": "CM"
-    },
-    "Robert Lewandowski": {
-      "team": "Poland",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Wojciech Szczęsny": {
-      "team": "Poland",
-      "rating": 83,
-      "position": "GK"
-    },
-    "Piotr Zieliński": {
-      "team": "Poland",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Matty Cash": {
-      "team": "Poland",
-      "rating": 81,
-      "position": "RB"
-    },
-    "Kamil Grabara": {
-      "team": "Poland",
-      "rating": 81,
-      "position": "GK"
-    },
-    "Paulina Dudek": {
-      "team": "Poland",
-      "rating": 81,
-      "position": "CB"
-    },
-    "Jan Bednarek": {
-      "team": "Poland",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Ewelina Kamczyk": {
-      "team": "Poland",
-      "rating": 80,
-      "position": "CAM"
-    },
-    "Jakub Kiwior": {
-      "team": "Poland",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Tanja Pawollek": {
-      "team": "Poland",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Łukasz Skorupski": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Arkadiusz Milik": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Krzysztof Piątek": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Marcin Bułka": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Katarzyna Kiedrzynek": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Klaudia Jedlińska": {
-      "team": "Poland",
-      "rating": 78,
-      "position": "RM"
-    },
-    "Sebastian Szymański": {
-      "team": "Poland",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Jakub Kamiński": {
-      "team": "Poland",
-      "rating": 77,
-      "position": "LM"
-    },
-    "Nicola Zalewski": {
-      "team": "Poland",
-      "rating": 77,
-      "position": "LM"
-    },
-    "Przemysław Frankowski": {
-      "team": "Poland",
-      "rating": 76,
-      "position": "RB"
-    },
-    "Adriana Achcińska": {
-      "team": "Poland",
-      "rating": 76,
-      "position": "CM"
-    },
-    "Weronika Zawistowska": {
-      "team": "Poland",
-      "rating": 76,
-      "position": "LM"
-    },
-    "Kinga Szemik": {
-      "team": "Poland",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Nadia Krezyman": {
-      "team": "Poland",
-      "rating": 75,
-      "position": "LM"
-    },
-    "Radosław Majecki": {
-      "team": "Poland",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Sylwia Matysik": {
-      "team": "Poland",
-      "rating": 75,
-      "position": "RB"
-    },
-    "Aleksandra Zaremba": {
-      "team": "Poland",
-      "rating": 75,
-      "position": "RB"
-    },
-    "Mateusz Lis": {
-      "team": "Poland",
-      "rating": 74,
-      "position": "GK"
-    },
-    "Jakub Moder": {
-      "team": "Poland",
-      "rating": 74,
-      "position": "CM"
-    },
-    "Dominika Grabowska": {
-      "team": "Poland",
-      "rating": 74,
-      "position": "LM"
-    },
-    "Hakan Çalhanoğlu": {
-      "team": "Türkiye",
-      "rating": 86,
-      "position": "CDM"
-    },
-    "Arda Güler": {
-      "team": "Türkiye",
-      "rating": 83,
-      "position": "RM"
-    },
-    "Orkun Kökçü": {
-      "team": "Türkiye",
-      "rating": 82,
-      "position": "CM"
-    },
-    "Kenan Yıldız": {
-      "team": "Türkiye",
-      "rating": 82,
-      "position": "CAM"
-    },
-    "Uğurcan Çakır": {
-      "team": "Türkiye",
-      "rating": 80,
-      "position": "GK"
-    },
-    "Abdülkerim Bardakcı": {
-      "team": "Türkiye",
-      "rating": 80,
-      "position": "CB"
-    },
-    "Barış Alper Yılmaz": {
-      "team": "Türkiye",
-      "rating": 80,
-      "position": "LM"
-    },
-    "Ferdi Kadıoğlu": {
-      "team": "Türkiye",
-      "rating": 79,
-      "position": "LB"
-    },
-    "Merih Demiral": {
-      "team": "Türkiye",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Yunus Akgün": {
-      "team": "Türkiye",
-      "rating": 79,
-      "position": "RM"
-    },
-    "Kerem Aktürkoğlu": {
-      "team": "Türkiye",
-      "rating": 79,
-      "position": "LW"
-    },
-    "Zeki Çelik": {
-      "team": "Türkiye",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Berke Özer": {
-      "team": "Türkiye",
-      "rating": 78,
-      "position": "GK"
-    },
-    "Can Uzun": {
-      "team": "Türkiye",
-      "rating": 78,
-      "position": "CAM"
-    },
-    "İsmail Yüksek": {
-      "team": "Türkiye",
-      "rating": 77,
-      "position": "CDM"
-    },
-    "Enes Ünal": {
-      "team": "Türkiye",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Doğucan Haspolat": {
-      "team": "Türkiye",
-      "rating": 76,
-      "position": "CDM"
-    },
-    "Atakan Karazor": {
-      "team": "Türkiye",
-      "rating": 76,
-      "position": "CDM"
-    },
-    "Ozan Kabak": {
-      "team": "Türkiye",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Aral Şimşir": {
-      "team": "Türkiye",
-      "rating": 76,
-      "position": "LW"
-    },
-    "Mert Günok": {
-      "team": "Türkiye",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Çağlar Söyüncü": {
-      "team": "Türkiye",
-      "rating": 75,
-      "position": "CB"
-    },
-    "Cengiz Ünder": {
-      "team": "Türkiye",
-      "rating": 75,
-      "position": "RM"
-    },
-    "Altay Bayındır": {
-      "team": "Türkiye",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Eren Elmalı": {
-      "team": "Türkiye",
-      "rating": 75,
-      "position": "LB"
-    },
-    "İrfan Can Kahveci": {
-      "team": "Türkiye",
-      "rating": 74,
-      "position": "RM"
-    },
-    "Yusuf Yazıcı": {
-      "team": "Türkiye",
-      "rating": 74,
-      "position": "CAM"
-    },
-    "Salih Özcan": {
-      "team": "Türkiye",
-      "rating": 74,
-      "position": "CDM"
-    },
-    "Mert Müldür": {
-      "team": "Türkiye",
-      "rating": 74,
-      "position": "RB"
-    },
-    "Emirhan Topçu": {
-      "team": "Türkiye",
-      "rating": 74,
-      "position": "CB"
-    },
-    "Martin Ødegaard": {
-      "team": "Norway",
-      "rating": 86,
-      "position": "CM"
-    },
-    "Ada Hegerberg": {
-      "team": "Norway",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Guro Reiten": {
-      "team": "Norway",
-      "rating": 86,
-      "position": "LM"
-    },
-    "Frida Maanum": {
-      "team": "Norway",
-      "rating": 84,
-      "position": "CAM"
-    },
-    "Ingrid Syrstad Engen": {
-      "team": "Norway",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Alexander Sørloth": {
-      "team": "Norway",
-      "rating": 83,
-      "position": "ST"
-    },
-    "Emilie Haavi": {
-      "team": "Norway",
-      "rating": 82,
-      "position": "LW"
-    },
-    "Elisabeth Terland": {
-      "team": "Norway",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Julian Ryerson": {
-      "team": "Norway",
-      "rating": 80,
-      "position": "RB"
-    },
-    "Fredrik Aursnes": {
-      "team": "Norway",
-      "rating": 80,
-      "position": "CM"
-    },
-    "Patrick Berg": {
-      "team": "Norway",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Sander Berge": {
-      "team": "Norway",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Celin Bizet": {
-      "team": "Norway",
-      "rating": 79,
-      "position": "RM"
-    },
-    "Vilde Bøe Risa": {
-      "team": "Norway",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Antonio Nusa": {
-      "team": "Norway",
-      "rating": 78,
-      "position": "LW"
-    },
-    "Zlatko Tripić": {
-      "team": "Norway",
-      "rating": 77,
-      "position": "RM"
-    },
-    "Synne Jensen": {
-      "team": "Norway",
-      "rating": 77,
-      "position": "LW"
-    },
-    "Jørgen Strand Larsen": {
-      "team": "Norway",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Andreas Schjelderup": {
-      "team": "Norway",
-      "rating": 77,
-      "position": "LW"
-    },
-    "Joshua King": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Kristoffer Ajer": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Cecilie Fiskerstrand": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "GK"
-    },
-    "Jens Petter Hauge": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "LW"
-    },
-    "Aron Dønnum": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "RM"
-    },
-    "Tuva Hansen": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Kristian Thorstvedt": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "CM"
-    },
-    "Karina Sævik": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Oscar Bobb": {
-      "team": "Norway",
-      "rating": 76,
-      "position": "RM"
-    },
-    "Justine Kielland": {
-      "team": "Norway",
-      "rating": 75,
-      "position": "CM"
-    },
-    "Kamilla Melgård": {
-      "team": "Norway",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Sam Kerr": {
-      "team": "Australia",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Caitlin Foord": {
-      "team": "Australia",
-      "rating": 85,
-      "position": "LM"
-    },
-    "Steph Catley": {
-      "team": "Australia",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Ellie Carpenter": {
-      "team": "Australia",
-      "rating": 84,
-      "position": "RB"
-    },
-    "Emily van Egmond": {
-      "team": "Australia",
-      "rating": 80,
-      "position": "CDM"
-    },
-    "Mackenzie Arnold": {
-      "team": "Australia",
-      "rating": 80,
-      "position": "GK"
-    },
-    "Mathew Ryan": {
-      "team": "Australia",
-      "rating": 79,
-      "position": "GK"
-    },
-    "Mary Fowler": {
-      "team": "Australia",
-      "rating": 79,
-      "position": "RW"
-    },
-    "Clare Hunt": {
-      "team": "Australia",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Alanna Kennedy": {
-      "team": "Australia",
-      "rating": 78,
-      "position": "CB"
-    },
-    "Katrina Gorry": {
-      "team": "Australia",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Kyra Cooney-Cross": {
-      "team": "Australia",
-      "rating": 77,
-      "position": "CDM"
-    },
-    "Hayley Raso": {
-      "team": "Australia",
-      "rating": 75,
-      "position": "RM"
-    },
-    "Teagan Micah": {
-      "team": "Australia",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Kyah Simon": {
-      "team": "Australia",
-      "rating": 74,
-      "position": "CAM"
-    },
-    "Cameron Devlin": {
-      "team": "Australia",
-      "rating": 74,
-      "position": "CDM"
-    },
-    "Jordan Bos": {
-      "team": "Australia",
-      "rating": 74,
-      "position": "LB"
-    },
-    "Cameron Burgess": {
-      "team": "Australia",
-      "rating": 73,
-      "position": "CB"
-    },
-    "Cortnee Vine": {
-      "team": "Australia",
-      "rating": 73,
-      "position": "ST"
-    },
-    "Paul Izzo": {
-      "team": "Australia",
-      "rating": 72,
-      "position": "GK"
-    },
-    "Massimo Luongo": {
-      "team": "Australia",
-      "rating": 72,
-      "position": "CDM"
-    },
-    "Harry Souttar": {
-      "team": "Australia",
-      "rating": 72,
-      "position": "CB"
-    },
-    "Riley McGree": {
-      "team": "Australia",
-      "rating": 72,
-      "position": "LM"
-    },
-    "Alessandro Circati": {
-      "team": "Australia",
-      "rating": 72,
-      "position": "CB"
-    },
-    "Martin Boyle": {
-      "team": "Australia",
-      "rating": 71,
-      "position": "ST"
-    },
-    "Jamie Maclaren": {
-      "team": "Australia",
-      "rating": 71,
-      "position": "ST"
-    },
-    "Clare Wheeler": {
-      "team": "Australia",
-      "rating": 71,
-      "position": "CM"
-    },
-    "Charlize Rule": {
-      "team": "Australia",
-      "rating": 71,
-      "position": "RB"
-    },
-    "Mathew Leckie": {
-      "team": "Australia",
-      "rating": 70,
-      "position": "CM"
-    },
-    "Alex Grant": {
-      "team": "Australia",
-      "rating": 70,
-      "position": "CB"
-    },
-    "Victor Osimhen": {
-      "team": "Nigeria",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Chiamaka Nnadozie": {
-      "team": "Nigeria",
-      "rating": 85,
-      "position": "GK"
-    },
-    "Ademola Lookman": {
-      "team": "Nigeria",
-      "rating": 83,
-      "position": "ST"
-    },
-    "Rasheedat Ajibade": {
-      "team": "Nigeria",
-      "rating": 82,
-      "position": "RM"
-    },
-    "Gift Monday": {
-      "team": "Nigeria",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Alex Iwobi": {
-      "team": "Nigeria",
-      "rating": 80,
-      "position": "LM"
-    },
-    "Ola Aina": {
-      "team": "Nigeria",
-      "rating": 80,
-      "position": "RB"
-    },
-    "Samuel Chukwueze": {
-      "team": "Nigeria",
-      "rating": 79,
-      "position": "RM"
-    },
-    "Victor Boniface": {
-      "team": "Nigeria",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Nathan Tella": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "RM"
-    },
-    "Calvin Bassey": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "CB"
-    },
-    "Raphael Onyedika": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "CDM"
-    },
-    "Omorinsola Babajide": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "LW"
-    },
-    "Toni Payne": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "RM"
-    },
-    "Jennifer Echegini": {
-      "team": "Nigeria",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Paul Onuachu": {
-      "team": "Nigeria",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Christantus Uche": {
-      "team": "Nigeria",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Moses Simon": {
-      "team": "Nigeria",
-      "rating": 76,
-      "position": "LW"
-    },
-    "Umar Sadiq": {
-      "team": "Nigeria",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Chidera Ejuke": {
-      "team": "Nigeria",
-      "rating": 76,
-      "position": "LW"
-    },
-    "Tolu Arokodare": {
-      "team": "Nigeria",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Wilfred Ndidi": {
-      "team": "Nigeria",
-      "rating": 75,
-      "position": "CDM"
-    },
-    "Igoh Ogbu": {
-      "team": "Nigeria",
-      "rating": 75,
-      "position": "CB"
-    },
-    "Felix Agu": {
-      "team": "Nigeria",
-      "rating": 75,
-      "position": "LB"
-    },
-    "Akor Jerome Adams": {
-      "team": "Nigeria",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Rafiu Durosinmi": {
-      "team": "Nigeria",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Peter Olayinka": {
-      "team": "Nigeria",
-      "rating": 74,
-      "position": "LM"
-    },
-    "Taiwo Awoniyi": {
-      "team": "Nigeria",
-      "rating": 74,
-      "position": "ST"
-    },
-    "Jordan Torunarigha": {
-      "team": "Nigeria",
-      "rating": 74,
-      "position": "CB"
-    },
-    "Frank Onyeka": {
-      "team": "Nigeria",
-      "rating": 74,
-      "position": "CM"
-    },
-    "Scott McTominay": {
-      "team": "Scotland",
-      "rating": 86,
-      "position": "CM"
-    },
-    "Caroline Weir": {
-      "team": "Scotland",
-      "rating": 86,
-      "position": "CAM"
-    },
-    "Kim Little": {
-      "team": "Scotland",
-      "rating": 85,
-      "position": "CDM"
-    },
-    "Erin Cuthbert": {
-      "team": "Scotland",
-      "rating": 85,
-      "position": "CDM"
-    },
-    "John McGinn": {
-      "team": "Scotland",
-      "rating": 81,
-      "position": "RM"
-    },
-    "Andrew Robertson": {
-      "team": "Scotland",
-      "rating": 81,
-      "position": "LB"
-    },
-    "Callum McGregor": {
-      "team": "Scotland",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Ryan Christie": {
-      "team": "Scotland",
-      "rating": 78,
-      "position": "CDM"
-    },
-    "Ché Adams": {
-      "team": "Scotland",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Lewis Ferguson": {
-      "team": "Scotland",
-      "rating": 78,
-      "position": "CDM"
-    },
-    "Kirsty Hanson": {
-      "team": "Scotland",
-      "rating": 78,
-      "position": "LM"
-    },
-    "Ryan Gauld": {
-      "team": "Scotland",
-      "rating": 77,
-      "position": "LW"
-    },
-    "Kieran Tierney": {
-      "team": "Scotland",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Claire Emslie": {
-      "team": "Scotland",
-      "rating": 77,
-      "position": "RM"
-    },
-    "Lawrence Shankland": {
-      "team": "Scotland",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Martha Thomas": {
-      "team": "Scotland",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Craig Halkett": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "CB"
-    },
-    "Scott McKenna": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "CB"
-    },
-    "Jordan Holsgrove": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "CM"
-    },
-    "Lee Gibson": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "GK"
-    },
-    "Billy Gilmour": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "CM"
-    },
-    "Aaron Hickey": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "RB"
-    },
-    "Lisa Evans": {
-      "team": "Scotland",
-      "rating": 75,
-      "position": "RB"
-    },
-    "Oli McBurnie": {
-      "team": "Scotland",
-      "rating": 74,
-      "position": "ST"
-    },
-    "Stuart Findlay": {
-      "team": "Scotland",
-      "rating": 74,
-      "position": "CB"
-    },
-    "Sophie Howard": {
-      "team": "Scotland",
-      "rating": 74,
-      "position": "CB"
-    },
-    "Rachel McLauchlan": {
-      "team": "Scotland",
-      "rating": 74,
-      "position": "RB"
-    },
-    "Lauren Davidson": {
-      "team": "Scotland",
-      "rating": 74,
-      "position": "ST"
-    },
-    "Harry Milne": {
-      "team": "Scotland",
-      "rating": 73,
-      "position": "LB"
-    },
-    "Barry Bannan": {
-      "team": "Scotland",
-      "rating": 73,
-      "position": "CM"
-    },
-    "Bremer": {
-      "team": "Brazil",
-      "rating": 86,
-      "position": "CB"
-    },
-    "Bruno Guimarães": {
-      "team": "Brazil",
-      "rating": 86,
-      "position": "CM"
-    },
-    "Marta": {
-      "team": "Brazil",
-      "rating": 85,
-      "position": "CAM"
-    },
-    "Éder Militão": {
-      "team": "Brazil",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Rodrygo": {
-      "team": "Brazil",
-      "rating": 84,
-      "position": "LW"
-    },
-    "Lorena": {
-      "team": "Brazil",
-      "rating": 84,
-      "position": "GK"
-    },
-    "Neymar Jr": {
-      "team": "Brazil",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Ederson": {
-      "team": "Brazil",
-      "rating": 83,
-      "position": "GK"
-    },
-    "Ronaldo Cabrais": {
-      "team": "Brazil",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Matheus Cunha": {
-      "team": "Brazil",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Thiago Silva": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Casemiro": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CDM"
-    },
-    "Fabinho": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CDM"
-    },
-    "Malcom": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "RW"
-    },
-    "Bia Zaneratto": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Lucas Mantela": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "GK"
-    },
-    "Josué Chiamulera": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Ibañez": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CB"
-    },
-    "João Pedro": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "ST"
-    },
-    "Éderson": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CM"
-    },
-    "Lauren Leal": {
-      "team": "Brazil",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Anderson Talisca": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "CAM"
-    },
-    "Joelinton": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Rosival Dourado": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "CDM"
-    },
-    "Adriano Bisesi": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Welington Dano": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "LB"
-    },
-    "Nailton Suzuki": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "CAM"
-    },
-    "Oswaldinato": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "ST"
-    },
-    "David Neres": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "LW"
-    },
-    "Gabriel Martinelli": {
-      "team": "Brazil",
-      "rating": 81,
-      "position": "LW"
-    },
-    "Yui Hasegawa": {
-      "team": "Japan",
-      "rating": 86,
-      "position": "CDM"
-    },
-    "Saki Kumagai": {
-      "team": "Japan",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Hina Sugita": {
-      "team": "Japan",
-      "rating": 82,
-      "position": "CDM"
-    },
-    "Ritsu Doan": {
-      "team": "Japan",
-      "rating": 81,
-      "position": "RM"
-    },
-    "Takefusa Kubo": {
-      "team": "Japan",
-      "rating": 81,
-      "position": "RM"
-    },
-    "Kaoru Mitoma": {
-      "team": "Japan",
-      "rating": 81,
-      "position": "LM"
-    },
-    "Kaishū Sano": {
-      "team": "Japan",
-      "rating": 80,
-      "position": "CDM"
-    },
-    "Ayaka Yamashita": {
-      "team": "Japan",
-      "rating": 80,
-      "position": "GK"
-    },
-    "Wataru Endo": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Moeka Minami": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "CB"
-    },
-    "Jun Endo": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "LM"
-    },
-    "Honoka Hayashi": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Hinata Miyazawa": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Maika Hamano": {
-      "team": "Japan",
-      "rating": 79,
-      "position": "CAM"
-    },
-    "Takumi Minamino": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "LM"
-    },
-    "Daichi Kamada": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Hiroki Ito": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "CB"
-    },
-    "Hidemasa Morita": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "CM"
-    },
-    "Risa Shimizu": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Daizen Maeda": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "LW"
-    },
-    "Ayase Ueda": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Aoba Fujino": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "RW"
-    },
-    "Kiko Seike": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "RM"
-    },
-    "Manaka Matsukubo": {
-      "team": "Japan",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Takehiro Tomiyasu": {
-      "team": "Japan",
-      "rating": 77,
-      "position": "RB"
-    },
-    "Yuka Momiki": {
-      "team": "Japan",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Tsuyoshi Watanabe": {
-      "team": "Japan",
-      "rating": 77,
-      "position": "CB"
-    },
-    "Riko Ueki": {
-      "team": "Japan",
-      "rating": 77,
-      "position": "ST"
-    },
-    "Momoko Tanikawa": {
-      "team": "Japan",
-      "rating": 76,
-      "position": "CAM"
-    },
-    "Junya Ito": {
-      "team": "Japan",
-      "rating": 76,
-      "position": "RM"
-    },
-    "Melchie Dumornay": {
-      "team": "Haiti",
-      "rating": 86,
-      "position": "ST"
-    },
-    "Nérilia Mondésir": {
-      "team": "Haiti",
-      "rating": 77,
-      "position": "CAM"
-    },
-    "Jean-Ricner Bellegarde": {
-      "team": "Haiti",
-      "rating": 75,
-      "position": "CAM"
-    },
-    "Wilson Isidor": {
-      "team": "Haiti",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Kethna Louis": {
-      "team": "Haiti",
-      "rating": 75,
-      "position": "LB"
-    },
-    "Carlens Arcus": {
-      "team": "Haiti",
-      "rating": 72,
-      "position": "RB"
-    },
-    "Jean-Kévin Duverne": {
-      "team": "Haiti",
-      "rating": 72,
-      "position": "CB"
-    },
-    "Ricardo Adé": {
-      "team": "Haiti",
-      "rating": 72,
-      "position": "CB"
-    },
-    "Josué Casimir": {
-      "team": "Haiti",
-      "rating": 71,
-      "position": "RM"
-    },
-    "Ruthny Mathurin": {
-      "team": "Haiti",
-      "rating": 71,
-      "position": "LB"
-    },
-    "Hannes Delcroix": {
-      "team": "Haiti",
-      "rating": 70,
-      "position": "CB"
-    },
-    "Amandine Pierre-Louis": {
-      "team": "Haiti",
-      "rating": 70,
-      "position": "RM"
-    },
-    "Danley Jean Jacques": {
-      "team": "Haiti",
-      "rating": 70,
-      "position": "CM"
-    },
-    "Tabita Joseph": {
-      "team": "Haiti",
-      "rating": 70,
-      "position": "CB"
-    },
-    "Johny Placide": {
-      "team": "Haiti",
-      "rating": 69,
       "position": "GK"
     },
     "Luka Modrić": {
@@ -3213,6 +1038,11 @@
       "rating": 75,
       "position": "CDM"
     },
+    "Franjo Ivanović": {
+      "team": "Croatia",
+      "rating": 74,
+      "position": "ST"
+    },
     "Duje Ćaleta-Car": {
       "team": "Croatia",
       "rating": 74,
@@ -3223,160 +1053,305 @@
       "rating": 74,
       "position": "LM"
     },
-    "Dinko Horkaš": {
-      "team": "Croatia",
-      "rating": 74,
-      "position": "GK"
+    "Granit Xhaka": {
+      "team": "Switzerland",
+      "rating": 85,
+      "position": "CDM"
     },
-    "José María Giménez": {
-      "team": "Uruguay",
+    "Manuel Akanji": {
+      "team": "Switzerland",
       "rating": 83,
       "position": "CB"
     },
-    "Giorgian De Arrascaeta": {
-      "team": "Uruguay",
-      "rating": 83,
-      "position": "CAM"
-    },
-    "Lucas Torreira": {
-      "team": "Uruguay",
+    "Remo Freuler": {
+      "team": "Switzerland",
       "rating": 82,
       "position": "CDM"
     },
-    "Ronald Araujo": {
-      "team": "Uruguay",
+    "Fabian Schär": {
+      "team": "Switzerland",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Denis Zakaria": {
+      "team": "Switzerland",
+      "rating": 81,
+      "position": "CDM"
+    },
+    "Ruben Vargas": {
+      "team": "Switzerland",
+      "rating": 78,
+      "position": "LW"
+    },
+    "Xherdan Shaqiri": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "CAM"
+    },
+    "Breel Embolo": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Philipp Köhn": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Ardon Jashari": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "CDM"
+    },
+    "Dan Ndoye": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "LM"
+    },
+    "Johan Manzambi": {
+      "team": "Switzerland",
+      "rating": 77,
+      "position": "CM"
+    },
+    "Roman Bürki": {
+      "team": "Switzerland",
+      "rating": 76,
+      "position": "GK"
+    },
+    "Yvon Mvogo": {
+      "team": "Switzerland",
+      "rating": 76,
+      "position": "GK"
+    },
+    "Nico Elvedi": {
+      "team": "Switzerland",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Noah Okafor": {
+      "team": "Switzerland",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Djibril Sow": {
+      "team": "Switzerland",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Miro Muheim": {
+      "team": "Switzerland",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Filip Ugrinić": {
+      "team": "Switzerland",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Svenja Fölmli": {
+      "team": "Switzerland",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Steven Zuber": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Marwin Hitz": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Renato Steffen": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "RM"
+    },
+    "Edimilson Fernandes": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Ulisses Garcia": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "LB"
+    },
+    "Vincent Sierro": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Cédric Zesiger": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Michel Aebischer": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Dominik Schmid": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "LB"
+    },
+    "Bećir Omeragić": {
+      "team": "Switzerland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Lautaro Martínez": {
+      "team": "Argentina",
+      "rating": 88,
+      "position": "ST"
+    },
+    "Emiliano Martínez": {
+      "team": "Argentina",
+      "rating": 85,
+      "position": "GK"
+    },
+    "Paulo Dybala": {
+      "team": "Argentina",
+      "rating": 85,
+      "position": "CAM"
+    },
+    "Alexis Mac Allister": {
+      "team": "Argentina",
+      "rating": 85,
+      "position": "CM"
+    },
+    "Enzo Fernández": {
+      "team": "Argentina",
+      "rating": 85,
+      "position": "CM"
+    },
+    "Rodrigo De Paul": {
+      "team": "Argentina",
+      "rating": 83,
+      "position": "CM"
+    },
+    "Exequiel Palacios": {
+      "team": "Argentina",
+      "rating": 83,
+      "position": "CM"
+    },
+    "Ángel Di María": {
+      "team": "Argentina",
+      "rating": 82,
+      "position": "RW"
+    },
+    "Cristian Romero": {
+      "team": "Argentina",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Giuliano": {
+      "team": "Argentina",
+      "rating": 82,
+      "position": "RM"
+    },
+    "Nico Paz": {
+      "team": "Argentina",
+      "rating": 82,
+      "position": "CAM"
+    },
+    "Leandro Paredes": {
+      "team": "Argentina",
+      "rating": 81,
+      "position": "CM"
+    },
+    "Gerónimo Rulli": {
+      "team": "Argentina",
+      "rating": 81,
+      "position": "GK"
+    },
+    "Giovani Lo Celso": {
+      "team": "Argentina",
+      "rating": 81,
+      "position": "CAM"
+    },
+    "Marcos Senesi": {
+      "team": "Argentina",
       "rating": 81,
       "position": "CB"
     },
-    "Rodrigo Bentancur": {
-      "team": "Uruguay",
+    "Lisandro Martínez": {
+      "team": "Argentina",
+      "rating": 81,
+      "position": "CB"
+    },
+    "Nicolás Otamendi": {
+      "team": "Argentina",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Juan Musso": {
+      "team": "Argentina",
+      "rating": 80,
+      "position": "GK"
+    },
+    "Leonardo Balerdi": {
+      "team": "Argentina",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Alan Varela": {
+      "team": "Argentina",
       "rating": 80,
       "position": "CDM"
     },
-    "Mauro Arambarri": {
-      "team": "Uruguay",
-      "rating": 80,
-      "position": "CM"
+    "Mauro Icardi": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "ST"
     },
-    "Rodrigo Zalazar": {
-      "team": "Uruguay",
-      "rating": 80,
-      "position": "CAM"
+    "Ángel Correa": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "ST"
     },
-    "Sebastián Coates": {
-      "team": "Uruguay",
+    "Augusto Batalla": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "GK"
+    },
+    "Facundo Medina": {
+      "team": "Argentina",
       "rating": 79,
       "position": "CB"
     },
-    "Luis Suárez": {
-      "team": "Uruguay",
-      "rating": 78,
+    "Juan Foyth": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Taty Castellanos": {
+      "team": "Argentina",
+      "rating": 79,
       "position": "ST"
     },
-    "Fernando Muslera": {
-      "team": "Uruguay",
-      "rating": 78,
-      "position": "GK"
+    "Nico Gonzalez": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "LM"
     },
-    "Leonardo Fernández": {
-      "team": "Uruguay",
-      "rating": 78,
-      "position": "CAM"
-    },
-    "Darwin Núñez": {
-      "team": "Uruguay",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Manuel Ugarte": {
-      "team": "Uruguay",
-      "rating": 78,
+    "Santiago Hezze": {
+      "team": "Argentina",
+      "rating": 79,
       "position": "CDM"
     },
-    "Maximiliano Araújo": {
-      "team": "Uruguay",
-      "rating": 78,
-      "position": "LM"
+    "Matías Soulé": {
+      "team": "Argentina",
+      "rating": 79,
+      "position": "CAM"
     },
-    "Santiago Mouriño": {
-      "team": "Uruguay",
+    "Paulo Gazzaniga": {
+      "team": "Argentina",
       "rating": 78,
-      "position": "RB"
-    },
-    "Sergio Rochet": {
-      "team": "Uruguay",
-      "rating": 77,
       "position": "GK"
-    },
-    "Nahitan Nández": {
-      "team": "Uruguay",
-      "rating": 77,
-      "position": "CM"
-    },
-    "Mathías Olivera": {
-      "team": "Uruguay",
-      "rating": 77,
-      "position": "LB"
-    },
-    "Brian Rodríguez": {
-      "team": "Uruguay",
-      "rating": 77,
-      "position": "LW"
-    },
-    "Leandro Cabrera": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Guillermo Varela": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "RB"
-    },
-    "Matías Vecino": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "CM"
-    },
-    "Jonathan Rodríguez": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "LM"
-    },
-    "Santiago Bueno": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "CB"
-    },
-    "Miguel Ángel Merentiel": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Nicolás De la Cruz": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "CM"
-    },
-    "Joaquín Piquerez": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "LB"
-    },
-    "Tiago Palacios": {
-      "team": "Uruguay",
-      "rating": 76,
-      "position": "RM"
-    },
-    "Cristhian Stuani": {
-      "team": "Uruguay",
-      "rating": 75,
-      "position": "ST"
-    },
-    "Abel Hernández": {
-      "team": "Uruguay",
-      "rating": 75,
-      "position": "ST"
     },
     "Serhou Guirassy": {
       "team": "Guinea",
@@ -3447,6 +1422,16 @@
       "team": "Guinea",
       "rating": 70,
       "position": "CDM"
+    },
+    "Thibaut Courtois": {
+      "team": "Belgium",
+      "rating": 90,
+      "position": "GK"
+    },
+    "Kevin De Bruyne": {
+      "team": "Belgium",
+      "rating": 87,
+      "position": "CM"
     },
     "Youri Tielemans": {
       "team": "Belgium",
@@ -3588,16 +1573,6 @@
       "rating": 77,
       "position": "LW"
     },
-    "Johan Bakayoko": {
-      "team": "Belgium",
-      "rating": 77,
-      "position": "RW"
-    },
-    "Arthur Vermeeren": {
-      "team": "Belgium",
-      "rating": 77,
-      "position": "CM"
-    },
     "Sergej Milinković-Savić": {
       "team": "Serbia",
       "rating": 85,
@@ -3633,20 +1608,10 @@
       "rating": 79,
       "position": "GK"
     },
-    "Jovana Damnjanović": {
-      "team": "Serbia",
-      "rating": 79,
-      "position": "CAM"
-    },
     "Đorđe Petrović": {
       "team": "Serbia",
       "rating": 79,
       "position": "GK"
-    },
-    "Jelena Čanković": {
-      "team": "Serbia",
-      "rating": 79,
-      "position": "CM"
     },
     "Saša Lukić": {
       "team": "Serbia",
@@ -3682,11 +1647,6 @@
       "team": "Serbia",
       "rating": 77,
       "position": "CAM"
-    },
-    "Allegra Poljak": {
-      "team": "Serbia",
-      "rating": 77,
-      "position": "LB"
     },
     "Veljko Birmančević": {
       "team": "Serbia",
@@ -3748,6 +1708,171 @@
       "rating": 72,
       "position": "CM"
     },
+    "Rade Dugalić": {
+      "team": "Serbia",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Mihailo Ristić": {
+      "team": "Serbia",
+      "rating": 72,
+      "position": "LB"
+    },
+    "Aleksandar Stanković": {
+      "team": "Serbia",
+      "rating": 72,
+      "position": "CDM"
+    },
+    "Christian Pulisic": {
+      "team": "United States",
+      "rating": 85,
+      "position": "RW"
+    },
+    "Antonee Robinson": {
+      "team": "United States",
+      "rating": 81,
+      "position": "LB"
+    },
+    "Christen Press": {
+      "team": "United States",
+      "rating": 80,
+      "position": "ST"
+    },
+    "Johnny Cardoso": {
+      "team": "United States",
+      "rating": 80,
+      "position": "CDM"
+    },
+    "Carson Pickett": {
+      "team": "United States",
+      "rating": 80,
+      "position": "LB"
+    },
+    "Cameron Carter-Vickers": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Tyler Adams": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Lauren Barnes": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Weston McKennie": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CM"
+    },
+    "Folarin Balogun": {
+      "team": "United States",
+      "rating": 79,
+      "position": "ST"
+    },
+    "Chris Richards": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Sergiño Dest": {
+      "team": "United States",
+      "rating": 79,
+      "position": "RB"
+    },
+    "Malik Tillman": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CAM"
+    },
+    "Katie Lind": {
+      "team": "United States",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Abby Smith": {
+      "team": "United States",
+      "rating": 78,
+      "position": "GK"
+    },
+    "Rachel Corboz": {
+      "team": "United States",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Alejandro Zendejas": {
+      "team": "United States",
+      "rating": 77,
+      "position": "RW"
+    },
+    "Timothy Weah": {
+      "team": "United States",
+      "rating": 77,
+      "position": "RM"
+    },
+    "Ella Stevens": {
+      "team": "United States",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Christen Westphal": {
+      "team": "United States",
+      "rating": 77,
+      "position": "RB"
+    },
+    "Shea Groom": {
+      "team": "United States",
+      "rating": 77,
+      "position": "CM"
+    },
+    "Madison Haley": {
+      "team": "United States",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Eva Gaetino": {
+      "team": "United States",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Brenden Aaronson": {
+      "team": "United States",
+      "rating": 76,
+      "position": "RW"
+    },
+    "Ricardo Pepi": {
+      "team": "United States",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Tanner Tessmann": {
+      "team": "United States",
+      "rating": 76,
+      "position": "CDM"
+    },
+    "Kaleigh Kurtz": {
+      "team": "United States",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Tyler Lussi": {
+      "team": "United States",
+      "rating": 76,
+      "position": "LM"
+    },
+    "Darlington Nagbe": {
+      "team": "United States",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Cristian Roldan": {
+      "team": "United States",
+      "rating": 75,
+      "position": "CDM"
+    },
     "Patrik Schick": {
       "team": "Czechia",
       "rating": 85,
@@ -3773,11 +1898,6 @@
       "rating": 78,
       "position": "CB"
     },
-    "Kateřina Svitková": {
-      "team": "Czechia",
-      "rating": 78,
-      "position": "LM"
-    },
     "Václav Černý": {
       "team": "Czechia",
       "rating": 77,
@@ -3797,16 +1917,6 @@
       "team": "Czechia",
       "rating": 77,
       "position": "ST"
-    },
-    "Barbora Votíková": {
-      "team": "Czechia",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Klára Cahynová": {
-      "team": "Czechia",
-      "rating": 77,
-      "position": "CDM"
     },
     "Jindřich Staněk": {
       "team": "Czechia",
@@ -3863,6 +1973,36 @@
       "rating": 75,
       "position": "GK"
     },
+    "Olivie Lukášová": {
+      "team": "Czechia",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Lukáš Červ": {
+      "team": "Czechia",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Štěpán Chaloupek": {
+      "team": "Czechia",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Matěj Šín": {
+      "team": "Czechia",
+      "rating": 74,
+      "position": "CAM"
+    },
+    "Matěj Vydra": {
+      "team": "Czechia",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Pavel Kadeřábek": {
+      "team": "Czechia",
+      "rating": 74,
+      "position": "RB"
+    },
     "Jiří Pavlenka": {
       "team": "Czechia",
       "rating": 74,
@@ -3883,20 +2023,155 @@
       "rating": 74,
       "position": "CB"
     },
-    "Matěj Ryneš": {
-      "team": "Czechia",
-      "rating": 74,
-      "position": "LM"
+    "Virgil van Dijk": {
+      "team": "Netherlands",
+      "rating": 88,
+      "position": "CB"
     },
-    "Mojmír Chytil": {
-      "team": "Czechia",
-      "rating": 74,
+    "Tijjani Reijnders": {
+      "team": "Netherlands",
+      "rating": 85,
+      "position": "CM"
+    },
+    "Denzel Dumfries": {
+      "team": "Netherlands",
+      "rating": 84,
+      "position": "RB"
+    },
+    "Lineth Beerensteyn": {
+      "team": "Netherlands",
+      "rating": 84,
       "position": "ST"
     },
-    "Tereza Szewieczková": {
-      "team": "Czechia",
-      "rating": 74,
+    "Jurriën Timber": {
+      "team": "Netherlands",
+      "rating": 84,
+      "position": "RB"
+    },
+    "Stefan de Vrij": {
+      "team": "Netherlands",
+      "rating": 83,
+      "position": "CB"
+    },
+    "Cody Gakpo": {
+      "team": "Netherlands",
+      "rating": 83,
       "position": "LM"
+    },
+    "Nathan Aké": {
+      "team": "Netherlands",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Matthijs de Ligt": {
+      "team": "Netherlands",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Xavi Simons": {
+      "team": "Netherlands",
+      "rating": 82,
+      "position": "CAM"
+    },
+    "Jeremie Frimpong": {
+      "team": "Netherlands",
+      "rating": 82,
+      "position": "RB"
+    },
+    "Micky van de Ven": {
+      "team": "Netherlands",
+      "rating": 82,
+      "position": "CB"
+    },
+    "Marten de Roon": {
+      "team": "Netherlands",
+      "rating": 81,
+      "position": "CM"
+    },
+    "Sven Botman": {
+      "team": "Netherlands",
+      "rating": 81,
+      "position": "CB"
+    },
+    "Joey Veerman": {
+      "team": "Netherlands",
+      "rating": 81,
+      "position": "CM"
+    },
+    "Memphis Depay": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "ST"
+    },
+    "Donyell Malen": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "ST"
+    },
+    "Danilho Doekhi": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Teun Koopmeiners": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "CAM"
+    },
+    "Quinten Timber": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "CM"
+    },
+    "Lynn Wilms": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "RB"
+    },
+    "Bart Verbruggen": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "GK"
+    },
+    "Jan Paul van Hecke": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Robin Roefs": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "GK"
+    },
+    "Romée Leuchter": {
+      "team": "Netherlands",
+      "rating": 80,
+      "position": "ST"
+    },
+    "Georginio Wijnaldum": {
+      "team": "Netherlands",
+      "rating": 79,
+      "position": "CAM"
+    },
+    "Steven Bergwijn": {
+      "team": "Netherlands",
+      "rating": 79,
+      "position": "CAM"
+    },
+    "Jerdy Schouten": {
+      "team": "Netherlands",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Justin Kluivert": {
+      "team": "Netherlands",
+      "rating": 79,
+      "position": "CAM"
+    },
+    "Noa Lang": {
+      "team": "Netherlands",
+      "rating": 79,
+      "position": "LW"
     },
     "Bryan Mbeumo": {
       "team": "Cameroon",
@@ -3933,11 +2208,6 @@
       "rating": 76,
       "position": "ST"
     },
-    "Falone Meffometou": {
-      "team": "Cameroon",
-      "rating": 76,
-      "position": "CB"
-    },
     "Eric Maxim Choupo-Moting": {
       "team": "Cameroon",
       "rating": 75,
@@ -3948,10 +2218,10 @@
       "rating": 75,
       "position": "ST"
     },
-    "Monique Ngock": {
+    "Arthur Avom Ebong": {
       "team": "Cameroon",
-      "rating": 75,
-      "position": "CDM"
+      "rating": 74,
+      "position": "CM"
     },
     "Yvan Neyou": {
       "team": "Cameroon",
@@ -4033,20 +2303,25 @@
       "rating": 71,
       "position": "CM"
     },
-    "Nina Ngueleu": {
-      "team": "Cameroon",
-      "rating": 71,
-      "position": "ST"
-    },
-    "Colette Ndzana": {
-      "team": "Cameroon",
-      "rating": 71,
-      "position": "LB"
-    },
     "Enzo Ebosse": {
       "team": "Cameroon",
       "rating": 70,
       "position": "CB"
+    },
+    "Junior Tchamadeu": {
+      "team": "Cameroon",
+      "rating": 70,
+      "position": "RB"
+    },
+    "Malcom Bokele": {
+      "team": "Cameroon",
+      "rating": 70,
+      "position": "CB"
+    },
+    "Enzo Tchato": {
+      "team": "Cameroon",
+      "rating": 70,
+      "position": "RB"
     },
     "Son Heung Min": {
       "team": "South Korea",
@@ -4077,6 +2352,16 @@
       "team": "South Korea",
       "rating": 75,
       "position": "CAM"
+    },
+    "Jo Hyeon Woo": {
+      "team": "South Korea",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Joo Min Kyu": {
+      "team": "South Korea",
+      "rating": 74,
+      "position": "ST"
     },
     "Hwang Hee Chan": {
       "team": "South Korea",
@@ -4188,16 +2473,6 @@
       "rating": 71,
       "position": "CAM"
     },
-    "Kim Min Su": {
-      "team": "South Korea",
-      "rating": 70,
-      "position": "LW"
-    },
-    "Kim Young Gwon": {
-      "team": "South Korea",
-      "rating": 70,
-      "position": "CB"
-    },
     "Riyad Mahrez": {
       "team": "Algeria",
       "rating": 84,
@@ -4293,25 +2568,10 @@
       "rating": 77,
       "position": "CAM"
     },
-    "Ilan Kebbal": {
-      "team": "Algeria",
-      "rating": 77,
-      "position": "RW"
-    },
-    "Inès Belloumou": {
-      "team": "Algeria",
-      "rating": 77,
-      "position": "LB"
-    },
     "Anis Hadj-Moussa": {
       "team": "Algeria",
       "rating": 76,
       "position": "RW"
-    },
-    "Massiren Aït Zefrane": {
-      "team": "Algeria",
-      "rating": 76,
-      "position": "LM"
     },
     "Samy Belouhane": {
       "team": "Algeria",
@@ -4348,6 +2608,21 @@
       "rating": 75,
       "position": "LM"
     },
+    "Nadir Ouzrani": {
+      "team": "Algeria",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Haris Belkebla": {
+      "team": "Algeria",
+      "rating": 75,
+      "position": "CDM"
+    },
+    "Abdelkahar Kadri": {
+      "team": "Algeria",
+      "rating": 75,
+      "position": "CM"
+    },
     "Konrad Laimer": {
       "team": "Austria",
       "rating": 84,
@@ -4363,21 +2638,6 @@
       "rating": 81,
       "position": "CAM"
     },
-    "Sarah Zadrazil": {
-      "team": "Austria",
-      "rating": 81,
-      "position": "CDM"
-    },
-    "Barbara Dunst": {
-      "team": "Austria",
-      "rating": 81,
-      "position": "CM"
-    },
-    "Katharina Naschenweng": {
-      "team": "Austria",
-      "rating": 81,
-      "position": "LB"
-    },
     "David Alaba": {
       "team": "Austria",
       "rating": 80,
@@ -4392,11 +2652,6 @@
       "team": "Austria",
       "rating": 79,
       "position": "CB"
-    },
-    "Verena Hanshaw": {
-      "team": "Austria",
-      "rating": 79,
-      "position": "LB"
     },
     "Stefan Posch": {
       "team": "Austria",
@@ -4423,11 +2678,6 @@
       "rating": 78,
       "position": "CAM"
     },
-    "Manuela Zinsberger": {
-      "team": "Austria",
-      "rating": 78,
-      "position": "GK"
-    },
     "Marko Arnautović": {
       "team": "Austria",
       "rating": 77,
@@ -4443,20 +2693,10 @@
       "rating": 77,
       "position": "LM"
     },
-    "Laura Feiersinger": {
-      "team": "Austria",
-      "rating": 77,
-      "position": "CM"
-    },
     "Leopold Querfeld": {
       "team": "Austria",
       "rating": 77,
       "position": "CB"
-    },
-    "Sarah Puntigam": {
-      "team": "Austria",
-      "rating": 77,
-      "position": "CDM"
     },
     "Valentino Lazaro": {
       "team": "Austria",
@@ -4498,155 +2738,40 @@
       "rating": 75,
       "position": "LB"
     },
-    "Ashley Lawrence": {
-      "team": "Canada",
-      "rating": 84,
-      "position": "RB"
+    "Paul Wanner": {
+      "team": "Austria",
+      "rating": 75,
+      "position": "CAM"
     },
-    "Vanessa Gilles": {
-      "team": "Canada",
-      "rating": 84,
-      "position": "CB"
-    },
-    "Alphonso Davies": {
-      "team": "Canada",
-      "rating": 83,
-      "position": "LB"
-    },
-    "Kadeisha Buchanan": {
-      "team": "Canada",
-      "rating": 82,
-      "position": "CB"
-    },
-    "Kailen Sheridan": {
-      "team": "Canada",
-      "rating": 82,
-      "position": "GK"
-    },
-    "Jonathan David": {
-      "team": "Canada",
-      "rating": 81,
-      "position": "ST"
-    },
-    "Jessie Fleming": {
-      "team": "Canada",
-      "rating": 80,
+    "Annabel Schasching": {
+      "team": "Austria",
+      "rating": 75,
       "position": "CM"
     },
-    "Évelyne Viens": {
-      "team": "Canada",
-      "rating": 80,
-      "position": "ST"
-    },
-    "Quinn": {
-      "team": "Canada",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Sophie Schmidt": {
-      "team": "Canada",
-      "rating": 79,
-      "position": "CDM"
-    },
-    "Julia Grosso": {
-      "team": "Canada",
-      "rating": 79,
-      "position": "CM"
-    },
-    "Marie Levasseur": {
-      "team": "Canada",
-      "rating": 79,
-      "position": "RB"
-    },
-    "Olivia Smith": {
-      "team": "Canada",
-      "rating": 79,
-      "position": "ST"
-    },
-    "Janine Sonis": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Adriana Leon": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Nichelle Prince": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "RW"
-    },
-    "Deanne Rose": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "ST"
-    },
-    "Jayde Riviere": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Alistair Johnston": {
-      "team": "Canada",
-      "rating": 78,
-      "position": "RB"
-    },
-    "Milan Borjan": {
-      "team": "Canada",
-      "rating": 77,
-      "position": "GK"
-    },
-    "Shelina Zadorsky": {
-      "team": "Canada",
-      "rating": 77,
-      "position": "CB"
-    },
-    "Cloé Lacasse": {
-      "team": "Canada",
-      "rating": 77,
-      "position": "LM"
-    },
-    "Promise David": {
-      "team": "Canada",
-      "rating": 76,
-      "position": "ST"
-    },
-    "Tajon Buchanan": {
-      "team": "Canada",
-      "rating": 76,
+    "Lilli Purtscheller": {
+      "team": "Austria",
+      "rating": 75,
       "position": "RM"
     },
-    "Jordyn Huitema": {
-      "team": "Canada",
-      "rating": 76,
+    "Eileen Campbell": {
+      "team": "Austria",
+      "rating": 75,
       "position": "ST"
     },
-    "Gabrielle Carle": {
-      "team": "Canada",
-      "rating": 76,
-      "position": "RB"
-    },
-    "Allysha Chapman": {
-      "team": "Canada",
-      "rating": 75,
-      "position": "LB"
-    },
-    "Sabrina D'Angelo": {
-      "team": "Canada",
-      "rating": 75,
+    "Mariella El Sherif": {
+      "team": "Austria",
+      "rating": 74,
       "position": "GK"
     },
-    "Stephen Eustáquio": {
-      "team": "Canada",
-      "rating": 75,
-      "position": "CDM"
+    "Kevin Stöger": {
+      "team": "Austria",
+      "rating": 74,
+      "position": "CAM"
     },
-    "Ismaël Koné": {
-      "team": "Canada",
-      "rating": 75,
-      "position": "CM"
+    "Maximilian Wöber": {
+      "team": "Austria",
+      "rating": 74,
+      "position": "CB"
     },
     "Antoine Semenyo": {
       "team": "Ghana",
@@ -4798,6 +2923,156 @@
       "rating": 72,
       "position": "CB"
     },
+    "Wojciech Szczęsny": {
+      "team": "Poland",
+      "rating": 83,
+      "position": "GK"
+    },
+    "Piotr Zieliński": {
+      "team": "Poland",
+      "rating": 81,
+      "position": "CM"
+    },
+    "Matty Cash": {
+      "team": "Poland",
+      "rating": 81,
+      "position": "RB"
+    },
+    "Kamil Grabara": {
+      "team": "Poland",
+      "rating": 81,
+      "position": "GK"
+    },
+    "Jan Bednarek": {
+      "team": "Poland",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Jakub Kiwior": {
+      "team": "Poland",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Łukasz Skorupski": {
+      "team": "Poland",
+      "rating": 78,
+      "position": "GK"
+    },
+    "Arkadiusz Milik": {
+      "team": "Poland",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Krzysztof Piątek": {
+      "team": "Poland",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Marcin Bułka": {
+      "team": "Poland",
+      "rating": 78,
+      "position": "GK"
+    },
+    "Sebastian Szymański": {
+      "team": "Poland",
+      "rating": 77,
+      "position": "CAM"
+    },
+    "Jakub Kamiński": {
+      "team": "Poland",
+      "rating": 77,
+      "position": "LM"
+    },
+    "Nicola Zalewski": {
+      "team": "Poland",
+      "rating": 77,
+      "position": "LM"
+    },
+    "Przemysław Frankowski": {
+      "team": "Poland",
+      "rating": 76,
+      "position": "RB"
+    },
+    "Radosław Majecki": {
+      "team": "Poland",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Łukasz Fabiański": {
+      "team": "Poland",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Kamil Grosicki": {
+      "team": "Poland",
+      "rating": 74,
+      "position": "LM"
+    },
+    "Tomasz Kędziora": {
+      "team": "Poland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Mateusz Lis": {
+      "team": "Poland",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Jakub Moder": {
+      "team": "Poland",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Bartosz Slisz": {
+      "team": "Poland",
+      "rating": 73,
+      "position": "CDM"
+    },
+    "Mateusz Bogusz": {
+      "team": "Poland",
+      "rating": 73,
+      "position": "LW"
+    },
+    "Cezary Miszta": {
+      "team": "Poland",
+      "rating": 73,
+      "position": "GK"
+    },
+    "Oliwia Woś": {
+      "team": "Poland",
+      "rating": 73,
+      "position": "CB"
+    },
+    "Mateusz Klich": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "CM"
+    },
+    "Bartłomiej Drągowski": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "GK"
+    },
+    "Karol Świderski": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "ST"
+    },
+    "Adam Buksa": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "ST"
+    },
+    "Jakub Piotrowski": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "CM"
+    },
+    "Sebastian Walukiewicz": {
+      "team": "Poland",
+      "rating": 72,
+      "position": "CB"
+    },
     "Sadio Mané": {
       "team": "Senegal",
       "rating": 83,
@@ -4837,6 +3112,11 @@
       "team": "Senegal",
       "rating": 80,
       "position": "CM"
+    },
+    "Idrissa Gueye": {
+      "team": "Senegal",
+      "rating": 79,
+      "position": "CDM"
     },
     "Nicolas Jackson": {
       "team": "Senegal",
@@ -4893,6 +3173,16 @@
       "rating": 75,
       "position": "LB"
     },
+    "Nobel Mendy": {
+      "team": "Senegal",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Ibrahim Mbaye": {
+      "team": "Senegal",
+      "rating": 74,
+      "position": "RW"
+    },
     "Krépin Diatta": {
       "team": "Senegal",
       "rating": 74,
@@ -4928,25 +3218,10 @@
       "rating": 73,
       "position": "CDM"
     },
-    "Moustapha Mbow": {
-      "team": "Senegal",
-      "rating": 73,
-      "position": "CB"
-    },
     "Issa Soumaré": {
       "team": "Senegal",
       "rating": 73,
       "position": "LM"
-    },
-    "Dion Lopy": {
-      "team": "Senegal",
-      "rating": 73,
-      "position": "CDM"
-    },
-    "Abdallah Sima": {
-      "team": "Senegal",
-      "rating": 73,
-      "position": "LW"
     },
     "Stanislav Lobotka": {
       "team": "Slovakia",
@@ -4998,16 +3273,6 @@
       "rating": 75,
       "position": "CAM"
     },
-    "Diana Bartovičová": {
-      "team": "Slovakia",
-      "rating": 74,
-      "position": "CB"
-    },
-    "Mária Mikolajová": {
-      "team": "Slovakia",
-      "rating": 73,
-      "position": "CM"
-    },
     "Ondrej Duda": {
       "team": "Slovakia",
       "rating": 73,
@@ -5037,11 +3302,6 @@
       "team": "Slovakia",
       "rating": 72,
       "position": "CAM"
-    },
-    "Martina Šurnovská": {
-      "team": "Slovakia",
-      "rating": 72,
-      "position": "CM"
     },
     "Tomáš Nemčík": {
       "team": "Slovakia",
@@ -5092,6 +3352,906 @@
       "team": "Slovakia",
       "rating": 69,
       "position": "ST"
+    },
+    "Federico Valverde": {
+      "team": "Uruguay",
+      "rating": 89,
+      "position": "CM"
+    },
+    "José María Giménez": {
+      "team": "Uruguay",
+      "rating": 83,
+      "position": "CB"
+    },
+    "Giorgian De Arrascaeta": {
+      "team": "Uruguay",
+      "rating": 83,
+      "position": "CAM"
+    },
+    "Lucas Torreira": {
+      "team": "Uruguay",
+      "rating": 82,
+      "position": "CDM"
+    },
+    "Ronald Araujo": {
+      "team": "Uruguay",
+      "rating": 81,
+      "position": "CB"
+    },
+    "Rodrigo Bentancur": {
+      "team": "Uruguay",
+      "rating": 80,
+      "position": "CDM"
+    },
+    "Mauro Arambarri": {
+      "team": "Uruguay",
+      "rating": 80,
+      "position": "CM"
+    },
+    "Rodrigo Zalazar": {
+      "team": "Uruguay",
+      "rating": 80,
+      "position": "CAM"
+    },
+    "Sebastián Coates": {
+      "team": "Uruguay",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Luis Suárez": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Fernando Muslera": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "GK"
+    },
+    "Leonardo Fernández": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "CAM"
+    },
+    "Darwin Núñez": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Manuel Ugarte": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "CDM"
+    },
+    "Maximiliano Araújo": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "LM"
+    },
+    "Santiago Mouriño": {
+      "team": "Uruguay",
+      "rating": 78,
+      "position": "RB"
+    },
+    "Sergio Rochet": {
+      "team": "Uruguay",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Nahitan Nández": {
+      "team": "Uruguay",
+      "rating": 77,
+      "position": "CM"
+    },
+    "Mathías Olivera": {
+      "team": "Uruguay",
+      "rating": 77,
+      "position": "LB"
+    },
+    "Brian Rodríguez": {
+      "team": "Uruguay",
+      "rating": 77,
+      "position": "LW"
+    },
+    "Leandro Cabrera": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Guillermo Varela": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "RB"
+    },
+    "Matías Vecino": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Jonathan Rodríguez": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "LM"
+    },
+    "Santiago Bueno": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Miguel Ángel Merentiel": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Nicolás De la Cruz": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Joaquín Piquerez": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "LB"
+    },
+    "Tiago Palacios": {
+      "team": "Uruguay",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Cristhian Stuani": {
+      "team": "Uruguay",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Erling Haaland": {
+      "team": "Norway",
+      "rating": 91,
+      "position": "ST"
+    },
+    "Alexander Sørloth": {
+      "team": "Norway",
+      "rating": 83,
+      "position": "ST"
+    },
+    "Julian Ryerson": {
+      "team": "Norway",
+      "rating": 80,
+      "position": "RB"
+    },
+    "Fredrik Aursnes": {
+      "team": "Norway",
+      "rating": 80,
+      "position": "CM"
+    },
+    "Patrick Berg": {
+      "team": "Norway",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Sander Berge": {
+      "team": "Norway",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Antonio Nusa": {
+      "team": "Norway",
+      "rating": 78,
+      "position": "LW"
+    },
+    "Zlatko Tripić": {
+      "team": "Norway",
+      "rating": 77,
+      "position": "RM"
+    },
+    "Jørgen Strand Larsen": {
+      "team": "Norway",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Andreas Schjelderup": {
+      "team": "Norway",
+      "rating": 77,
+      "position": "LW"
+    },
+    "Joshua King": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Kristoffer Ajer": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Jens Petter Hauge": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "LW"
+    },
+    "Aron Dønnum": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Kristian Thorstvedt": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Oscar Bobb": {
+      "team": "Norway",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Andrea Norheim": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Mohamed Elyounoussi": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "RM"
+    },
+    "Fredrik Bjørkan": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Leo Østigård": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Håkon Evjen": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Emilie Nautnes": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Sophie Román Haug": {
+      "team": "Norway",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Ørjan Nyland": {
+      "team": "Norway",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Andreas Hanche-Olsen": {
+      "team": "Norway",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Felix Horn Myhre": {
+      "team": "Norway",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Torbjørn Heggem": {
+      "team": "Norway",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Jonas Svensson": {
+      "team": "Norway",
+      "rating": 73,
+      "position": "RB"
+    },
+    "Mathias Rasmussen": {
+      "team": "Norway",
+      "rating": 73,
+      "position": "CM"
+    },
+    "Tobias Lauritsen": {
+      "team": "Norway",
+      "rating": 73,
+      "position": "ST"
+    },
+    "Ademola Lookman": {
+      "team": "Nigeria",
+      "rating": 83,
+      "position": "ST"
+    },
+    "Alex Iwobi": {
+      "team": "Nigeria",
+      "rating": 80,
+      "position": "LM"
+    },
+    "Ola Aina": {
+      "team": "Nigeria",
+      "rating": 80,
+      "position": "RB"
+    },
+    "Samuel Chukwueze": {
+      "team": "Nigeria",
+      "rating": 79,
+      "position": "RM"
+    },
+    "Victor Boniface": {
+      "team": "Nigeria",
+      "rating": 79,
+      "position": "ST"
+    },
+    "Nathan Tella": {
+      "team": "Nigeria",
+      "rating": 78,
+      "position": "RM"
+    },
+    "Calvin Bassey": {
+      "team": "Nigeria",
+      "rating": 78,
+      "position": "CB"
+    },
+    "Raphael Onyedika": {
+      "team": "Nigeria",
+      "rating": 78,
+      "position": "CDM"
+    },
+    "Paul Onuachu": {
+      "team": "Nigeria",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Christantus Uche": {
+      "team": "Nigeria",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Umar Sadiq": {
+      "team": "Nigeria",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Chidera Ejuke": {
+      "team": "Nigeria",
+      "rating": 76,
+      "position": "LW"
+    },
+    "Tolu Arokodare": {
+      "team": "Nigeria",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Wilfred Ndidi": {
+      "team": "Nigeria",
+      "rating": 75,
+      "position": "CDM"
+    },
+    "Igoh Ogbu": {
+      "team": "Nigeria",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Felix Agu": {
+      "team": "Nigeria",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Akor Jerome Adams": {
+      "team": "Nigeria",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Rafiu Durosinmi": {
+      "team": "Nigeria",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Peter Olayinka": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "LM"
+    },
+    "Taiwo Awoniyi": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Jordan Torunarigha": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Frank Onyeka": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Halimatu Ayinde": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Terem Moffi": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Maduka Okoye": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Gift Orban": {
+      "team": "Nigeria",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Kevin Akpoguma": {
+      "team": "Nigeria",
+      "rating": 73,
+      "position": "CB"
+    },
+    "Cyriel Dessers": {
+      "team": "Nigeria",
+      "rating": 73,
+      "position": "ST"
+    },
+    "Victor Olatunji": {
+      "team": "Nigeria",
+      "rating": 73,
+      "position": "ST"
+    },
+    "Obinna Nwobodo": {
+      "team": "Nigeria",
+      "rating": 73,
+      "position": "CM"
+    },
+    "Alphonso Davies": {
+      "team": "Canada",
+      "rating": 83,
+      "position": "LB"
+    },
+    "Jonathan David": {
+      "team": "Canada",
+      "rating": 81,
+      "position": "ST"
+    },
+    "Alistair Johnston": {
+      "team": "Canada",
+      "rating": 78,
+      "position": "RB"
+    },
+    "Milan Borjan": {
+      "team": "Canada",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Tajon Buchanan": {
+      "team": "Canada",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Stephen Eustáquio": {
+      "team": "Canada",
+      "rating": 75,
+      "position": "CDM"
+    },
+    "Ismaël Koné": {
+      "team": "Canada",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Moïse Bombito": {
+      "team": "Canada",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Jade Rose": {
+      "team": "Canada",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Cyle Larin": {
+      "team": "Canada",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Derek Cornelius": {
+      "team": "Canada",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Bianca St-Georges": {
+      "team": "Canada",
+      "rating": 74,
+      "position": "LM"
+    },
+    "Megan Reid": {
+      "team": "Canada",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Caroline Kehrer": {
+      "team": "Canada",
+      "rating": 73,
+      "position": "ST"
+    },
+    "Richie Laryea": {
+      "team": "Canada",
+      "rating": 73,
+      "position": "RM"
+    },
+    "Emily Burns": {
+      "team": "Canada",
+      "rating": 73,
+      "position": "GK"
+    },
+    "Chandra Davidson": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "RW"
+    },
+    "Alfie Jones": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Liam Millar": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "LM"
+    },
+    "Dayne St. Clair": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "GK"
+    },
+    "Alexandria Lamontagne": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "ST"
+    },
+    "Ali Ahmed": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "LM"
+    },
+    "Niko Sigur": {
+      "team": "Canada",
+      "rating": 72,
+      "position": "RB"
+    },
+    "Jonathan Osorio": {
+      "team": "Canada",
+      "rating": 71,
+      "position": "CM"
+    },
+    "Marcelo Flores": {
+      "team": "Canada",
+      "rating": 71,
+      "position": "LW"
+    },
+    "Tani Oluwaseyi": {
+      "team": "Canada",
+      "rating": 71,
+      "position": "ST"
+    },
+    "Kamal Miller": {
+      "team": "Canada",
+      "rating": 70,
+      "position": "CB"
+    },
+    "Nathan-Dylan Saliba": {
+      "team": "Canada",
+      "rating": 70,
+      "position": "CM"
+    },
+    "Lysianne Proulx": {
+      "team": "Canada",
+      "rating": 70,
+      "position": "GK"
+    },
+    "Maxime Crépeau": {
+      "team": "Canada",
+      "rating": 69,
+      "position": "GK"
+    },
+    "Morten Hjulmand": {
+      "team": "Denmark",
+      "rating": 83,
+      "position": "CDM"
+    },
+    "Pierre-Emile Højbjerg": {
+      "team": "Denmark",
+      "rating": 81,
+      "position": "CDM"
+    },
+    "Christian Nørgaard": {
+      "team": "Denmark",
+      "rating": 80,
+      "position": "CDM"
+    },
+    "Andreas Christensen": {
+      "team": "Denmark",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Mikkel Damsgaard": {
+      "team": "Denmark",
+      "rating": 80,
+      "position": "CAM"
+    },
+    "Frederik Rønnow": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "GK"
+    },
+    "Joachim Andersen": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Mathias Jensen": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "CM"
+    },
+    "Jens Stage": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "CM"
+    },
+    "Rasmus Kristensen": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "RB"
+    },
+    "Victor Froholdt": {
+      "team": "Denmark",
+      "rating": 79,
+      "position": "CM"
+    },
+    "Anders Dreyer": {
+      "team": "Denmark",
+      "rating": 78,
+      "position": "RW"
+    },
+    "Rasmus Højlund": {
+      "team": "Denmark",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Kasper Schmeichel": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Kasper Dolberg": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Jens Odgaard": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "CAM"
+    },
+    "Joakim Mæhle": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "LB"
+    },
+    "Matt O'Riley": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "CAM"
+    },
+    "Alexander Bah": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "RB"
+    },
+    "Filip Jörgensen": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Mika Biereth": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Sofie Bredgaard": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Patrick Dorgu": {
+      "team": "Denmark",
+      "rating": 77,
+      "position": "LM"
+    },
+    "Christian Eriksen": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "CAM"
+    },
+    "Philip Zinckernagel": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "RW"
+    },
+    "Philip Billing": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Rasmus Nicolaisen": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Jonas Wind": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Morten Frendrup": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "CDM"
+    },
+    "Gustav Isaksen": {
+      "team": "Denmark",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Alexander Isak": {
+      "team": "Sweden",
+      "rating": 87,
+      "position": "ST"
+    },
+    "Dejan Kulusevski": {
+      "team": "Sweden",
+      "rating": 83,
+      "position": "CM"
+    },
+    "Yasin Ayari": {
+      "team": "Sweden",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Anthony Elanga": {
+      "team": "Sweden",
+      "rating": 79,
+      "position": "RW"
+    },
+    "Daniel Svensson": {
+      "team": "Sweden",
+      "rating": 79,
+      "position": "LB"
+    },
+    "Emil Forsberg": {
+      "team": "Sweden",
+      "rating": 78,
+      "position": "CAM"
+    },
+    "Carl Starfelt": {
+      "team": "Sweden",
+      "rating": 78,
+      "position": "CB"
+    },
+    "Isak Hien": {
+      "team": "Sweden",
+      "rating": 78,
+      "position": "CB"
+    },
+    "Lucas Bergvall": {
+      "team": "Sweden",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Gabriel Gudmundsson": {
+      "team": "Sweden",
+      "rating": 77,
+      "position": "LB"
+    },
+    "Hugo Larsson": {
+      "team": "Sweden",
+      "rating": 77,
+      "position": "CM"
+    },
+    "Victor Lindelöf": {
+      "team": "Sweden",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Mattias Svanberg": {
+      "team": "Sweden",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Jonna Andersson": {
+      "team": "Sweden",
+      "rating": 76,
+      "position": "LB"
+    },
+    "Hanna Bennison": {
+      "team": "Sweden",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Emma Holmgren": {
+      "team": "Sweden",
+      "rating": 76,
+      "position": "GK"
+    },
+    "Josefine Rybrink": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Jesper Karlström": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "CDM"
+    },
+    "Niclas Eliasson": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "RM"
+    },
+    "Emil Holm": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "RB"
+    },
+    "Madelen Janogy": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Sebastian Nanasi": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "CAM"
+    },
+    "Emma Kullberg": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Williot Swedberg": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "LW"
+    },
+    "Rebecka Blomqvist": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Emilia Larsson": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "LM"
+    },
+    "Anna Sandberg": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Samuel Dahl": {
+      "team": "Sweden",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Monica Jusu Bah": {
+      "team": "Sweden",
+      "rating": 74,
+      "position": "LM"
+    },
+    "Nahir Besara": {
+      "team": "Sweden",
+      "rating": 74,
+      "position": "CAM"
     },
     "Piero Hincapié": {
       "team": "Ecuador",
@@ -5243,6 +4403,11 @@
       "rating": 71,
       "position": "ST"
     },
+    "Mohamed Salah": {
+      "team": "Egypt",
+      "rating": 89,
+      "position": "RM"
+    },
     "Omar Marmoush": {
       "team": "Egypt",
       "rating": 83,
@@ -5257,6 +4422,16 @@
       "team": "Egypt",
       "rating": 75,
       "position": "CAM"
+    },
+    "Marwan Attia": {
+      "team": "Egypt",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Ahmed Hegazi": {
+      "team": "Egypt",
+      "rating": 74,
+      "position": "CB"
     },
     "Zizo": {
       "team": "Egypt",
@@ -5342,6 +4517,11 @@
       "team": "Egypt",
       "rating": 69,
       "position": "ST"
+    },
+    "Khvicha Kvaratskhelia": {
+      "team": "Georgia",
+      "rating": 88,
+      "position": "LW"
     },
     "Giorgi Mamardashvili": {
       "team": "Georgia",
@@ -5432,6 +4612,161 @@
       "team": "Georgia",
       "rating": 69,
       "position": "CB"
+    },
+    "Arda Güler": {
+      "team": "Türkiye",
+      "rating": 83,
+      "position": "RM"
+    },
+    "Orkun Kökçü": {
+      "team": "Türkiye",
+      "rating": 82,
+      "position": "CM"
+    },
+    "Kenan Yıldız": {
+      "team": "Türkiye",
+      "rating": 82,
+      "position": "CAM"
+    },
+    "Uğurcan Çakır": {
+      "team": "Türkiye",
+      "rating": 80,
+      "position": "GK"
+    },
+    "Abdülkerim Bardakcı": {
+      "team": "Türkiye",
+      "rating": 80,
+      "position": "CB"
+    },
+    "Barış Alper Yılmaz": {
+      "team": "Türkiye",
+      "rating": 80,
+      "position": "LM"
+    },
+    "Ferdi Kadıoğlu": {
+      "team": "Türkiye",
+      "rating": 79,
+      "position": "LB"
+    },
+    "Merih Demiral": {
+      "team": "Türkiye",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Yunus Akgün": {
+      "team": "Türkiye",
+      "rating": 79,
+      "position": "RM"
+    },
+    "Kerem Aktürkoğlu": {
+      "team": "Türkiye",
+      "rating": 79,
+      "position": "LW"
+    },
+    "Zeki Çelik": {
+      "team": "Türkiye",
+      "rating": 78,
+      "position": "RB"
+    },
+    "Berke Özer": {
+      "team": "Türkiye",
+      "rating": 78,
+      "position": "GK"
+    },
+    "Can Uzun": {
+      "team": "Türkiye",
+      "rating": 78,
+      "position": "CAM"
+    },
+    "İsmail Yüksek": {
+      "team": "Türkiye",
+      "rating": 77,
+      "position": "CDM"
+    },
+    "Enes Ünal": {
+      "team": "Türkiye",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Doğucan Haspolat": {
+      "team": "Türkiye",
+      "rating": 76,
+      "position": "CDM"
+    },
+    "Atakan Karazor": {
+      "team": "Türkiye",
+      "rating": 76,
+      "position": "CDM"
+    },
+    "Ozan Kabak": {
+      "team": "Türkiye",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Aral Şimşir": {
+      "team": "Türkiye",
+      "rating": 76,
+      "position": "LW"
+    },
+    "Mert Günok": {
+      "team": "Türkiye",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Çağlar Söyüncü": {
+      "team": "Türkiye",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Cengiz Ünder": {
+      "team": "Türkiye",
+      "rating": 75,
+      "position": "RM"
+    },
+    "Altay Bayındır": {
+      "team": "Türkiye",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Eren Elmalı": {
+      "team": "Türkiye",
+      "rating": 75,
+      "position": "LB"
+    },
+    "Okay Yokuşlu": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "İrfan Can Kahveci": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "RM"
+    },
+    "Yusuf Yazıcı": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "CAM"
+    },
+    "Salih Özcan": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Mert Müldür": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "RB"
+    },
+    "Emirhan Topçu": {
+      "team": "Türkiye",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Achraf Hakimi": {
+      "team": "Morocco",
+      "rating": 89,
+      "position": "RB"
     },
     "Yassine Bounou": {
       "team": "Morocco",
@@ -5578,11 +4913,6 @@
       "rating": 75,
       "position": "CM"
     },
-    "Ilias Akhomach": {
-      "team": "Morocco",
-      "rating": 75,
-      "position": "RW"
-    },
     "Salem Al Dawsari": {
       "team": "Saudi Arabia",
       "rating": 82,
@@ -5663,6 +4993,156 @@
       "rating": 69,
       "position": "CM"
     },
+    "Luis Díaz": {
+      "team": "Colombia",
+      "rating": 87,
+      "position": "LM"
+    },
+    "Daniel Muñoz": {
+      "team": "Colombia",
+      "rating": 82,
+      "position": "RB"
+    },
+    "Duván Zapata": {
+      "team": "Colombia",
+      "rating": 81,
+      "position": "ST"
+    },
+    "Davinson Sánchez": {
+      "team": "Colombia",
+      "rating": 81,
+      "position": "CB"
+    },
+    "James Rodríguez": {
+      "team": "Colombia",
+      "rating": 80,
+      "position": "CAM"
+    },
+    "Luis Javier Suárez": {
+      "team": "Colombia",
+      "rating": 80,
+      "position": "ST"
+    },
+    "Jhon Córdoba": {
+      "team": "Colombia",
+      "rating": 79,
+      "position": "ST"
+    },
+    "Cucho Hernández": {
+      "team": "Colombia",
+      "rating": 79,
+      "position": "ST"
+    },
+    "Jhon Durán": {
+      "team": "Colombia",
+      "rating": 79,
+      "position": "ST"
+    },
+    "Cristian Arango": {
+      "team": "Colombia",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Jorge Carrascal": {
+      "team": "Colombia",
+      "rating": 78,
+      "position": "CAM"
+    },
+    "Richard Ríos": {
+      "team": "Colombia",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Camilo Vargas": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "GK"
+    },
+    "Jefferson Lerma": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "CDM"
+    },
+    "Johan Mojica": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "LB"
+    },
+    "Sebastián Villa": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "ST"
+    },
+    "Jhon Arias": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "RM"
+    },
+    "Willer Ditta": {
+      "team": "Colombia",
+      "rating": 77,
+      "position": "CB"
+    },
+    "Juan Fernando Quintero": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "CAM"
+    },
+    "Yerry Mina": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Alfredo Morelos": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Álvaro Montero": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "GK"
+    },
+    "Jhon Lucumí": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Jaminton Campaz": {
+      "team": "Colombia",
+      "rating": 76,
+      "position": "LM"
+    },
+    "David Ospina": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Dayro Moreno": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Edwin Cardona": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "CAM"
+    },
+    "Juan Cuadrado": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "RM"
+    },
+    "Luis Muriel": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Mateus Uribe": {
+      "team": "Colombia",
+      "rating": 75,
+      "position": "CM"
+    },
     "Yan Diomande": {
       "team": "Ivory Coast",
       "rating": 81,
@@ -5687,11 +5167,6 @@
       "team": "Ivory Coast",
       "rating": 80,
       "position": "RM"
-    },
-    "Rosemonde Kouassi": {
-      "team": "Ivory Coast",
-      "rating": 80,
-      "position": "LM"
     },
     "Ousmane Diomande": {
       "team": "Ivory Coast",
@@ -5727,11 +5202,6 @@
       "team": "Ivory Coast",
       "rating": 78,
       "position": "ST"
-    },
-    "Bernadette Amani": {
-      "team": "Ivory Coast",
-      "rating": 78,
-      "position": "CDM"
     },
     "Bazoumana Touré": {
       "team": "Ivory Coast",
@@ -5778,6 +5248,11 @@
       "rating": 75,
       "position": "CB"
     },
+    "Sébastien Haller": {
+      "team": "Ivory Coast",
+      "rating": 74,
+      "position": "ST"
+    },
     "Alban Lafont": {
       "team": "Ivory Coast",
       "rating": 74,
@@ -5803,25 +5278,25 @@
       "rating": 74,
       "position": "LM"
     },
-    "Inès Konan": {
-      "team": "Ivory Coast",
-      "rating": 74,
-      "position": "RM"
-    },
     "Martial Godo": {
       "team": "Ivory Coast",
       "rating": 74,
       "position": "LM"
     },
+    "Koko Ange N'Guessan": {
+      "team": "Ivory Coast",
+      "rating": 74,
+      "position": "RW"
+    },
+    "Clément Akpa": {
+      "team": "Ivory Coast",
+      "rating": 74,
+      "position": "CB"
+    },
     "Chris Wood": {
       "team": "New Zealand",
       "rating": 81,
       "position": "ST"
-    },
-    "Ali Riley": {
-      "team": "New Zealand",
-      "rating": 76,
-      "position": "RB"
     },
     "Joe Bell": {
       "team": "New Zealand",
@@ -5843,11 +5318,6 @@
       "rating": 71,
       "position": "CDM"
     },
-    "Kate Taylor": {
-      "team": "New Zealand",
-      "rating": 71,
-      "position": "CB"
-    },
     "Francis de Vries": {
       "team": "New Zealand",
       "rating": 70,
@@ -5863,6 +5333,306 @@
       "rating": 69,
       "position": "GK"
     },
+    "John McGinn": {
+      "team": "Scotland",
+      "rating": 81,
+      "position": "RM"
+    },
+    "Andrew Robertson": {
+      "team": "Scotland",
+      "rating": 81,
+      "position": "LB"
+    },
+    "Callum McGregor": {
+      "team": "Scotland",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Ryan Christie": {
+      "team": "Scotland",
+      "rating": 78,
+      "position": "CDM"
+    },
+    "Ché Adams": {
+      "team": "Scotland",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Lewis Ferguson": {
+      "team": "Scotland",
+      "rating": 78,
+      "position": "CDM"
+    },
+    "Kirsty Hanson": {
+      "team": "Scotland",
+      "rating": 78,
+      "position": "LM"
+    },
+    "Ryan Gauld": {
+      "team": "Scotland",
+      "rating": 77,
+      "position": "LW"
+    },
+    "Kieran Tierney": {
+      "team": "Scotland",
+      "rating": 77,
+      "position": "LB"
+    },
+    "Lawrence Shankland": {
+      "team": "Scotland",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Martha Thomas": {
+      "team": "Scotland",
+      "rating": 76,
+      "position": "ST"
+    },
+    "Craig Halkett": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Scott McKenna": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Jordan Holsgrove": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Lee Gibson": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Billy Gilmour": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "CM"
+    },
+    "Aaron Hickey": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "RB"
+    },
+    "Lisa Evans": {
+      "team": "Scotland",
+      "rating": 75,
+      "position": "RB"
+    },
+    "Tom Cairney": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "CM"
+    },
+    "John Souttar": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Oli McBurnie": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Stuart Findlay": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Sophie Howard": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "CB"
+    },
+    "Rachel McLauchlan": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "RB"
+    },
+    "Lauren Davidson": {
+      "team": "Scotland",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Harry Milne": {
+      "team": "Scotland",
+      "rating": 73,
+      "position": "LB"
+    },
+    "Barry Bannan": {
+      "team": "Scotland",
+      "rating": 73,
+      "position": "CM"
+    },
+    "Kenny McLean": {
+      "team": "Scotland",
+      "rating": 73,
+      "position": "CDM"
+    },
+    "Oliver Burke": {
+      "team": "Scotland",
+      "rating": 73,
+      "position": "ST"
+    },
+    "Greg Taylor": {
+      "team": "Scotland",
+      "rating": 73,
+      "position": "LB"
+    },
+    "Ritsu Doan": {
+      "team": "Japan",
+      "rating": 81,
+      "position": "RM"
+    },
+    "Takefusa Kubo": {
+      "team": "Japan",
+      "rating": 81,
+      "position": "RM"
+    },
+    "Kaoru Mitoma": {
+      "team": "Japan",
+      "rating": 81,
+      "position": "LM"
+    },
+    "Kaishū Sano": {
+      "team": "Japan",
+      "rating": 80,
+      "position": "CDM"
+    },
+    "Wataru Endo": {
+      "team": "Japan",
+      "rating": 79,
+      "position": "CDM"
+    },
+    "Takumi Minamino": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "LM"
+    },
+    "Daichi Kamada": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Hiroki Ito": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "CB"
+    },
+    "Hidemasa Morita": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Daizen Maeda": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "LW"
+    },
+    "Ayase Ueda": {
+      "team": "Japan",
+      "rating": 78,
+      "position": "ST"
+    },
+    "Takehiro Tomiyasu": {
+      "team": "Japan",
+      "rating": 77,
+      "position": "RB"
+    },
+    "Tsuyoshi Watanabe": {
+      "team": "Japan",
+      "rating": 77,
+      "position": "CB"
+    },
+    "Momoko Tanikawa": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "CAM"
+    },
+    "Junya Ito": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "RM"
+    },
+    "Ko Itakura": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "CB"
+    },
+    "Ao Tanaka": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "CDM"
+    },
+    "Keito Nakamura": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "LM"
+    },
+    "Reo Hatate": {
+      "team": "Japan",
+      "rating": 76,
+      "position": "CM"
+    },
+    "Yu Endo": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "RB"
+    },
+    "Koki Machida": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "CB"
+    },
+    "Yukinari Sugawara": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "RB"
+    },
+    "Chika Hirao": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "GK"
+    },
+    "Yuito Suzuki": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "CAM"
+    },
+    "Remina Chiba": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Kodai Sano": {
+      "team": "Japan",
+      "rating": 75,
+      "position": "CDM"
+    },
+    "Ryotaro Ito": {
+      "team": "Japan",
+      "rating": 74,
+      "position": "CAM"
+    },
+    "Takuma Asano": {
+      "team": "Japan",
+      "rating": 74,
+      "position": "RW"
+    },
+    "Zion Suzuki": {
+      "team": "Japan",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Fuka Nagano": {
+      "team": "Japan",
+      "rating": 74,
+      "position": "CDM"
+    },
     "Julian Quiñones": {
       "team": "Mexico",
       "rating": 81,
@@ -5873,11 +5643,6 @@
       "rating": 80,
       "position": "ST"
     },
-    "Lizbeth Ovalle": {
-      "team": "Mexico",
-      "rating": 80,
-      "position": "RM"
-    },
     "Santiago Giménez": {
       "team": "Mexico",
       "rating": 79,
@@ -5887,11 +5652,6 @@
       "team": "Mexico",
       "rating": 78,
       "position": "ST"
-    },
-    "María Sánchez": {
-      "team": "Mexico",
-      "rating": 78,
-      "position": "LM"
     },
     "Alexis Vega": {
       "team": "Mexico",
@@ -5948,11 +5708,6 @@
       "rating": 76,
       "position": "CM"
     },
-    "Karla Nieto": {
-      "team": "Mexico",
-      "rating": 76,
-      "position": "CDM"
-    },
     "César Montes": {
       "team": "Mexico",
       "rating": 76,
@@ -5972,11 +5727,6 @@
       "team": "Mexico",
       "rating": 76,
       "position": "RW"
-    },
-    "Diana Ordóñez": {
-      "team": "Mexico",
-      "rating": 76,
-      "position": "ST"
     },
     "Luis Malagón": {
       "team": "Mexico",
@@ -6008,10 +5758,30 @@
       "rating": 75,
       "position": "CDM"
     },
-    "Scarlett Camberos": {
+    "Christina Burkenroad": {
       "team": "Mexico",
-      "rating": 75,
-      "position": "RM"
+      "rating": 74,
+      "position": "ST"
+    },
+    "Armando González": {
+      "team": "Mexico",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Guillermo Ochoa": {
+      "team": "Mexico",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Carlos Acevedo": {
+      "team": "Mexico",
+      "rating": 74,
+      "position": "GK"
+    },
+    "Julian Araujo": {
+      "team": "Mexico",
+      "rating": 74,
+      "position": "RB"
     },
     "Yoane Wissa": {
       "team": "Congo DR",
@@ -6163,6 +5933,156 @@
       "rating": 70,
       "position": "RB"
     },
+    "Emily van Egmond": {
+      "team": "Australia",
+      "rating": 80,
+      "position": "CDM"
+    },
+    "Mathew Ryan": {
+      "team": "Australia",
+      "rating": 79,
+      "position": "GK"
+    },
+    "Mary Fowler": {
+      "team": "Australia",
+      "rating": 79,
+      "position": "RW"
+    },
+    "Clare Hunt": {
+      "team": "Australia",
+      "rating": 79,
+      "position": "CB"
+    },
+    "Katrina Gorry": {
+      "team": "Australia",
+      "rating": 78,
+      "position": "CM"
+    },
+    "Kyra Cooney-Cross": {
+      "team": "Australia",
+      "rating": 77,
+      "position": "CDM"
+    },
+    "Hayley Raso": {
+      "team": "Australia",
+      "rating": 75,
+      "position": "RM"
+    },
+    "Jackson Irvine": {
+      "team": "Australia",
+      "rating": 74,
+      "position": "CM"
+    },
+    "Kyah Simon": {
+      "team": "Australia",
+      "rating": 74,
+      "position": "CAM"
+    },
+    "Cameron Devlin": {
+      "team": "Australia",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Jordan Bos": {
+      "team": "Australia",
+      "rating": 74,
+      "position": "LB"
+    },
+    "Cameron Burgess": {
+      "team": "Australia",
+      "rating": 73,
+      "position": "CB"
+    },
+    "Paul Izzo": {
+      "team": "Australia",
+      "rating": 72,
+      "position": "GK"
+    },
+    "Massimo Luongo": {
+      "team": "Australia",
+      "rating": 72,
+      "position": "CDM"
+    },
+    "Harry Souttar": {
+      "team": "Australia",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Riley McGree": {
+      "team": "Australia",
+      "rating": 72,
+      "position": "LM"
+    },
+    "Alessandro Circati": {
+      "team": "Australia",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Martin Boyle": {
+      "team": "Australia",
+      "rating": 71,
+      "position": "ST"
+    },
+    "Jamie Maclaren": {
+      "team": "Australia",
+      "rating": 71,
+      "position": "ST"
+    },
+    "Clare Wheeler": {
+      "team": "Australia",
+      "rating": 71,
+      "position": "CM"
+    },
+    "Charlize Rule": {
+      "team": "Australia",
+      "rating": 71,
+      "position": "RB"
+    },
+    "Mathew Leckie": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "CM"
+    },
+    "Alex Grant": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "CB"
+    },
+    "Craig Goodwin": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "LM"
+    },
+    "Aiden O'Neill": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "CDM"
+    },
+    "Kye Rowles": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "CB"
+    },
+    "Fran Karačić": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "RB"
+    },
+    "Jamilla Rankin": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "LB"
+    },
+    "Cristian Volpato": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "RW"
+    },
+    "Anthony Carter": {
+      "team": "Australia",
+      "rating": 70,
+      "position": "ST"
+    },
     "Omar Alderete": {
       "team": "Paraguay",
       "rating": 80,
@@ -6182,11 +6102,6 @@
       "team": "Paraguay",
       "rating": 77,
       "position": "CDM"
-    },
-    "Lice Chamorro": {
-      "team": "Paraguay",
-      "rating": 77,
-      "position": "ST"
     },
     "Mauricio": {
       "team": "Paraguay",
@@ -6217,6 +6132,11 @@
       "team": "Paraguay",
       "rating": 75,
       "position": "CAM"
+    },
+    "Alex Arce": {
+      "team": "Paraguay",
+      "rating": 75,
+      "position": "ST"
     },
     "Junior Alonso": {
       "team": "Paraguay",
@@ -6343,22 +6263,12 @@
       "rating": 76,
       "position": "LB"
     },
-    "Chantelle Swaby": {
-      "team": "Jamaica",
-      "rating": 76,
-      "position": "CB"
-    },
     "Ethan Pinnock": {
       "team": "Jamaica",
       "rating": 75,
       "position": "CB"
     },
     "Andre Blake": {
-      "team": "Jamaica",
-      "rating": 74,
-      "position": "GK"
-    },
-    "Becky Spencer": {
       "team": "Jamaica",
       "rating": 74,
       "position": "GK"
@@ -6376,11 +6286,6 @@
     "Demarai Gray": {
       "team": "Jamaica",
       "rating": 72,
-      "position": "LM"
-    },
-    "Kiki Van Zanten": {
-      "team": "Jamaica",
-      "rating": 71,
       "position": "LM"
     },
     "Amari'i Bell": {
@@ -6423,6 +6328,11 @@
       "rating": 78,
       "position": "LW"
     },
+    "Guilherme": {
+      "team": "Qatar",
+      "rating": 76,
+      "position": "CDM"
+    },
     "Edmilson Junior": {
       "team": "Qatar",
       "rating": 74,
@@ -6457,6 +6367,26 @@
       "team": "Iran",
       "rating": 77,
       "position": "ST"
+    },
+    "Nikan Bamdadnejad": {
+      "team": "Iran",
+      "rating": 74,
+      "position": "ST"
+    },
+    "Pourang Shakaramy": {
+      "team": "Iran",
+      "rating": 74,
+      "position": "LB"
+    },
+    "Puya Ganjineh": {
+      "team": "Iran",
+      "rating": 74,
+      "position": "CDM"
+    },
+    "Mousa Rayanejad": {
+      "team": "Iran",
+      "rating": 74,
+      "position": "RM"
     },
     "Peyman Sorrengar": {
       "team": "Iran",
@@ -6663,11 +6593,6 @@
       "rating": 75,
       "position": "LM"
     },
-    "Hildah Magaia": {
-      "team": "South Africa",
-      "rating": 74,
-      "position": "LM"
-    },
     "Themba Zwane": {
       "team": "South Africa",
       "rating": 73,
@@ -6687,11 +6612,6 @@
       "team": "South Africa",
       "rating": 72,
       "position": "CDM"
-    },
-    "Linda Motlhalo": {
-      "team": "South Africa",
-      "rating": 72,
-      "position": "CM"
     },
     "Aubrey Modiba": {
       "team": "South Africa",
@@ -6757,6 +6677,56 @@
       "team": "Jordan",
       "rating": 69,
       "position": "LM"
+    },
+    "Jean-Ricner Bellegarde": {
+      "team": "Haiti",
+      "rating": 75,
+      "position": "CAM"
+    },
+    "Wilson Isidor": {
+      "team": "Haiti",
+      "rating": 75,
+      "position": "ST"
+    },
+    "Carlens Arcus": {
+      "team": "Haiti",
+      "rating": 72,
+      "position": "RB"
+    },
+    "Jean-Kévin Duverne": {
+      "team": "Haiti",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Ricardo Adé": {
+      "team": "Haiti",
+      "rating": 72,
+      "position": "CB"
+    },
+    "Josué Casimir": {
+      "team": "Haiti",
+      "rating": 71,
+      "position": "RM"
+    },
+    "Ruthny Mathurin": {
+      "team": "Haiti",
+      "rating": 71,
+      "position": "LB"
+    },
+    "Hannes Delcroix": {
+      "team": "Haiti",
+      "rating": 70,
+      "position": "CB"
+    },
+    "Danley Jean Jacques": {
+      "team": "Haiti",
+      "rating": 70,
+      "position": "CM"
+    },
+    "Johny Placide": {
+      "team": "Haiti",
+      "rating": 69,
+      "position": "GK"
     },
     "Amir Murillo": {
       "team": "Panama",
