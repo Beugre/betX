@@ -220,6 +220,7 @@ def recalculate_with_lineup(home: str, away: str, home_mult: float, away_mult: f
             "lambda_home": lh_adj,
             "lambda_away": la_adj,
             "top_score": max(probs.exact_scores.items(), key=lambda x: x[1]),
+            "top_scores": sorted(probs.exact_scores.items(), key=lambda x: -x[1])[:4],
         }
     except Exception as e:
         print(f"Recalcul erreur: {e}")
@@ -265,12 +266,11 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
     if recalc:
         ph, px, pa = recalc["p_home"], recalc["p_draw"], recalc["p_away"]
         top_score, top_prob = recalc["top_score"]
-        lines.append(f"📊 <b>Prédiction (avec compos)</b>")
-        lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
-        lines.append(f"   Score favori: <b>{top_score}</b> ({top_prob:.0%})")
-
-        if original_pred:
-            ph_old = original_pred.get("p_home", ph)
+            lines.append(f"📊 <b>Prédiction (avec compos)</b>")
+            lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
+            medals = ["🥇", "🥈", "🥉", "4️⃣"]
+            for i, (sc, pr) in enumerate(recalc.get("top_scores", [(top_score, top_prob)])[:4]):
+                lines.append(f"   {medals[i]} {sc} ({pr:.0%})")
             pa_old = original_pred.get("p_away", pa)
             dh = ph - ph_old
             da = pa - pa_old
@@ -281,16 +281,11 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
         px = original_pred.get("p_draw", 0)
         pa = original_pred.get("p_away", 0)
         top = original_pred.get("top_scores", [])
-        top_score = top[0]["score"] if top else "?"
-        top_prob = top[0]["prob"] if top else 0
-        lines.append(f"📊 <b>Prédiction (modèle de base)</b>")
-        lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
-        lines.append(f"   Score favori: <b>{top_score}</b> ({top_prob:.0%})")
-
-    return "\n".join(lines)
-
-
-def send_telegram(message: str) -> bool:
+            lines.append(f"📊 <b>Prédiction (modèle de base)</b>")
+            lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
+            medals = ["🥇", "🥈", "🥉", "4️⃣"]
+            for i, s in enumerate(top[:4]):
+                lines.append(f"   {medals[i]} {s['score']} ({s['prob']:.0%})")
     """Envoie un message Telegram."""
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
     channel = os.getenv("TELEGRAM_CHANNEL_ID", "")
