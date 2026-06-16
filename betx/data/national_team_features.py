@@ -300,6 +300,15 @@ def build_features(
             elo_adjust = max(-80.0, min(80.0, elo_adjust))  # cap ±80 pts
             elo_base = round(elo_base + elo_adjust * 0.25, 1)  # poids 25%
 
+        # Correction EA FC 26 : ajuste l'ELO selon la force squad FIFA
+        # Calibré : avg top-11 ref=80.0 → neutre ; ±5 pts rating = ±25 ELO pts
+        ea_rating = _get_ea_squad_rating(profile.team_name)
+        if ea_rating is not None:
+            REF_EA = 80.0
+            elo_adjust_ea = (ea_rating - REF_EA) * 5.0   # 5pts FC26 = 25 ELO
+            elo_adjust_ea = max(-100.0, min(100.0, elo_adjust_ea))
+            elo_base = round(elo_base + elo_adjust_ea * 0.15, 1)  # poids 15%
+
         return elo_base
 
     # ── Étape 2 : λ pondérés par force adversaire ─────────────────────────
@@ -423,6 +432,7 @@ def _friendly_form(profile: "NationalTeamProfile") -> float:
 
 
 _SQUAD_VALUES: dict | None = None
+_EA_SQUAD_RATINGS: dict | None = None
 
 def _get_squad_value(team_name: str) -> float | None:
     """
@@ -443,6 +453,35 @@ def _get_squad_value(team_name: str) -> float | None:
         except Exception:
             _SQUAD_VALUES = {}
     return _SQUAD_VALUES.get(team_name)
+
+
+def _get_ea_squad_rating(team_name: str) -> float | None:
+    """
+    Force squad EA FC 26 : moyenne des 11 meilleurs joueurs de l'équipe.
+    Source : data/player_ratings.json (fifaindex.com, base cards).
+    Échelle 0-100 (France ~87, Iraq ~50).
+    """
+    global _EA_SQUAD_RATINGS
+    if _EA_SQUAD_RATINGS is None:
+        try:
+            import json
+            from pathlib import Path
+            from collections import defaultdict
+            f = Path("data/player_ratings.json")
+            if f.exists():
+                players = json.loads(f.read_text()).get("players", {})
+                by_team: dict = defaultdict(list)
+                for info in players.values():
+                    by_team[info["team"]].append(info["rating"])
+                _EA_SQUAD_RATINGS = {}
+                for team, ratings in by_team.items():
+                    top11 = sorted(ratings, reverse=True)[:11]
+                    _EA_SQUAD_RATINGS[team] = round(sum(top11) / len(top11), 1)
+            else:
+                _EA_SQUAD_RATINGS = {}
+        except Exception:
+            _EA_SQUAD_RATINGS = {}
+    return _EA_SQUAD_RATINGS.get(team_name)
 
 
 # ─── Prédicteur (Poisson calibré + Monte Carlo) ────────────────────────────────

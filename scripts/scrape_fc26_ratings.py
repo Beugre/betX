@@ -316,23 +316,82 @@ def main():
     print(f"Nations ciblées: {len(WC_TEAMS_MAP)}")
     print()
     
-    players = scrape_all_wc_players(min_rating=60, max_pages=150)
+    players = scrape_all_wc_players(min_rating=0, max_pages=500)
+    
+    # Ajouter les top manquants (pages 1-2 souvent en 403)
+    missing_top = {
+        "Kylian Mbappé":      {"team": "France",      "rating": 91, "position": "ST"},
+        "Erling Haaland":     {"team": "Norway",       "rating": 91, "position": "ST"},
+        "Harry Kane":         {"team": "England",      "rating": 90, "position": "ST"},
+        "Ousmane Dembélé":    {"team": "France",       "rating": 90, "position": "ST"},
+        "Pedri":              {"team": "Spain",        "rating": 90, "position": "CM"},
+        "Vitinha":            {"team": "Portugal",     "rating": 90, "position": "CM"},
+        "Thibaut Courtois":   {"team": "Belgium",      "rating": 90, "position": "GK"},
+        "Mohamed Salah":      {"team": "Egypt",        "rating": 89, "position": "RM"},
+        "Joshua Kimmich":     {"team": "Germany",      "rating": 89, "position": "CDM"},
+        "Rodri":              {"team": "Spain",        "rating": 89, "position": "CDM"},
+        "Raphinha":           {"team": "Brazil",       "rating": 89, "position": "LW"},
+        "Gabriel Magalhães":  {"team": "Brazil",       "rating": 89, "position": "CB"},
+        "Achraf Hakimi":      {"team": "Morocco",      "rating": 89, "position": "RB"},
+        "Vini Jr.":           {"team": "Brazil",       "rating": 89, "position": "LW"},
+        "Federico Valverde":  {"team": "Uruguay",      "rating": 89, "position": "CM"},
+        "Michael Olise":      {"team": "France",       "rating": 89, "position": "RW"},
+        "Jude Bellingham":    {"team": "England",      "rating": 89, "position": "CAM"},
+        "Lamine Yamal":       {"team": "Spain",        "rating": 89, "position": "RW"},
+        "William Saliba":     {"team": "France",       "rating": 88, "position": "CB"},
+        "João Neves":         {"team": "Portugal",     "rating": 88, "position": "CM"},
+        "Nuno Mendes":        {"team": "Portugal",     "rating": 88, "position": "LB"},
+        "Bruno Fernandes":    {"team": "Portugal",     "rating": 88, "position": "CAM"},
+        "Virgil van Dijk":    {"team": "Netherlands",  "rating": 88, "position": "CB"},
+        "Lautaro Martínez":   {"team": "Argentina",    "rating": 88, "position": "ST"},
+        "Declan Rice":        {"team": "England",      "rating": 88, "position": "CDM"},
+        "Khvicha Kvaratskhelia": {"team": "Georgia",   "rating": 88, "position": "LW"},
+        "Alisson":            {"team": "Brazil",       "rating": 88, "position": "GK"},
+        "Marquinhos":         {"team": "Brazil",       "rating": 87, "position": "CB"},
+        "Bukayo Saka":        {"team": "England",      "rating": 87, "position": "RW"},
+        "Kevin De Bruyne":    {"team": "Belgium",      "rating": 87, "position": "CM"},
+        "Luis Díaz":          {"team": "Colombia",     "rating": 87, "position": "LM"},
+        "Florian Wirtz":      {"team": "Germany",      "rating": 87, "position": "CAM"},
+        "Jamal Musiala":      {"team": "Germany",      "rating": 87, "position": "CAM"},
+        "Jonathan Tah":       {"team": "Germany",      "rating": 87, "position": "CB"},
+        "Rúben Dias":         {"team": "Portugal",     "rating": 87, "position": "CB"},
+        "Alexander Isak":     {"team": "Sweden",       "rating": 87, "position": "ST"},
+        "Frenkie de Jong":    {"team": "Netherlands",  "rating": 87, "position": "CM"},
+        "Ryan Gravenberch":   {"team": "Netherlands",  "rating": 86, "position": "CDM"},
+        "Scott McTominay":    {"team": "Scotland",     "rating": 86, "position": "CM"},
+        "Martin Ødegaard":    {"team": "Norway",       "rating": 86, "position": "CM"},
+        "Viktor Gyökeres":    {"team": "Sweden",       "rating": 86, "position": "ST"},
+        "Robert Lewandowski": {"team": "Poland",       "rating": 86, "position": "ST"},
+        "Hakan Çalhanoğlu":   {"team": "Türkiye",      "rating": 86, "position": "CDM"},
+        "Yann Sommer":        {"team": "Switzerland",  "rating": 86, "position": "GK"},
+        "Gregor Kobel":       {"team": "Switzerland",  "rating": 86, "position": "GK"},
+        "Victor Osimhen":     {"team": "Nigeria",      "rating": 86, "position": "ST"},
+        "Bremer":             {"team": "Brazil",       "rating": 86, "position": "CB"},
+        "Bruno Guimarães":    {"team": "Brazil",       "rating": 86, "position": "CM"},
+        "Lionel Messi":       {"team": "Argentina",    "rating": 86, "position": "CAM"},
+        "Julián Álvarez":     {"team": "Argentina",    "rating": 86, "position": "ST"},
+    }
+    added = 0
+    for name, info in missing_top.items():
+        if name not in players or players[name]["rating"] < info["rating"]:
+            players[name] = info
+            added += 1
     
     print()
-    print(f"Total joueurs collectés: {len(players)}")
+    print(f"Total joueurs collectés (sans filtre): {len(players)}")
+    if added:
+        print(f"+{added} joueurs top ajoutés (pages 1-2 inaccessibles)")
     
-    # Stats par équipe
     from collections import Counter
     team_counts = Counter(p["team"] for p in players.values())
     print("\nJoueurs par équipe:")
     for team, count in sorted(team_counts.items(), key=lambda x: -x[1]):
         print(f"  {team:30s}: {count:3d}")
     
-    # Construire le JSON final
     result = {
         "_comment": "Ratings joueurs CdM 2026 (EA FC 26 base cards — source: fifaindex.com)",
-        "_methodology": "Cartes de base EA FC 26. rating >= 88 = joueur décisif, 84-87 = joueur important, 80-83 = joueur solide, <80 = standard.",
-        "_source": f"fifaindex.com/players/fc26 — scraping automatique {len(players)} joueurs WC 2026",
+        "_methodology": "Cartes de base EA FC 26. Tous les joueurs des nations WC (rating >= 60), sans filtre par équipe.",
+        "_source": f"fifaindex.com/players/fc26 — {len(players)} joueurs hommes WC 2026",
         "players": players,
     }
     
@@ -342,3 +401,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
