@@ -705,7 +705,107 @@ with tab_wc:
     # ── Bloc Analyse Compos ───────────────────────────────────────────────
     st.divider()
     st.subheader("🎮 Analyse des compositions — Simulation positionnelle")
-    st.caption("Sélectionne un match et saisis la composition pour simuler ATK vs DEF ligne par ligne (style FC26).")
+    st.caption("Sélectionne un match, récupère les compos ESPN ou saisis-les manuellement, puis simule le match ligne par ligne (GK / DEF / MID / ATT).")
+
+    # ── Helper : dessin du terrain ────────────────────────────────────────
+    def draw_pitch(home_players, away_players, home_name, away_name):
+        """Terrain football avec les deux équipes positionnées par ligne."""
+        import matplotlib.patches as mpatches
+        W, H = 68.0, 105.0
+        fig, ax = plt.subplots(figsize=(9, 13))
+        ax.set_facecolor("#2e7d32")
+        fig.patch.set_facecolor("#121212")
+        ax.set_xlim(-3, W + 3)
+        ax.set_ylim(-6, H + 6)
+        ax.axis("off")
+
+        lw, wc = 1.5, "white"
+        # Contour
+        ax.add_patch(mpatches.Rectangle((0, 0), W, H, fill=False, edgecolor=wc, linewidth=lw))
+        # Ligne médiane
+        ax.plot([0, W], [H/2, H/2], color=wc, linewidth=lw)
+        # Cercle central
+        ax.add_patch(mpatches.Circle((W/2, H/2), 9.15, fill=False, edgecolor=wc, linewidth=lw))
+        ax.add_patch(mpatches.Circle((W/2, H/2), 0.5, fill=True, facecolor=wc))
+        # Surfaces de réparation
+        for yb, yt in [(0, 16.5), (H-16.5, H)]:
+            ax.add_patch(mpatches.Rectangle(((W-40.32)/2, yb), 40.32, 16.5, fill=False, edgecolor=wc, linewidth=lw))
+        for yb, yt in [(0, 5.5), (H-5.5, H)]:
+            ax.add_patch(mpatches.Rectangle(((W-18.32)/2, yb), 18.32, 5.5, fill=False, edgecolor=wc, linewidth=lw))
+        # Points de penalty
+        ax.add_patch(mpatches.Circle((W/2, 11), 0.5, fill=True, facecolor=wc))
+        ax.add_patch(mpatches.Circle((W/2, H-11), 0.5, fill=True, facecolor=wc))
+        # Buts
+        gx = (W - 7.32) / 2
+        for gy in [(-2, 0), (H, H+2)]:
+            ax.add_patch(mpatches.Rectangle((gx, gy[0]), 7.32, 2, fill=True, facecolor="#555", edgecolor=wc, linewidth=lw))
+        # Bandes vertes alternées
+        band_h = H / 10
+        for i in range(10):
+            if i % 2 == 0:
+                ax.add_patch(mpatches.Rectangle((0, i*band_h), W, band_h,
+                             fill=True, facecolor="#256029", alpha=0.3, zorder=0))
+
+        _POS_LINE = {
+            "GK": "GK",
+            "CB": "DEF", "LB": "DEF", "RB": "DEF", "LWB": "DEF", "RWB": "DEF", "DF": "DEF",
+            "CDM": "MID", "DM": "MID", "CM": "MID", "CAM": "MID",
+            "LM": "MID", "RM": "MID", "AM": "MID", "MF": "MID",
+            "ST": "ATT", "CF": "ATT", "SS": "ATT",
+            "LW": "ATT", "RW": "ATT", "LF": "ATT", "RF": "ATT",
+        }
+
+        def _group(players):
+            g = {"GK": [], "DEF": [], "MID": [], "ATT": []}
+            for p in players:
+                pos = p.get("position", "MID").upper()
+                line = _POS_LINE.get(pos, "MID")
+                g[line].append(p)
+            return g
+
+        def _place(players, y_map, color, shadow_color):
+            groups = _group(players)
+            for line, y in y_map.items():
+                grp = groups.get(line, [])
+                n = len(grp)
+                if n == 0:
+                    continue
+                xs = [W * (i+1)/(n+1) for i in range(n)]
+                for p, x in zip(grp, xs):
+                    # Ombre
+                    ax.add_patch(mpatches.Circle((x+0.4, y-0.4), 3.4, color=shadow_color, zorder=4, alpha=0.5))
+                    # Cercle joueur
+                    ax.add_patch(mpatches.Circle((x, y), 3.4, color=color, zorder=5,
+                                                 ec="white", linewidth=1.2))
+                    name = p["name"].split()[-1][:10]
+                    rating = p.get("rating", 60)
+                    ax.text(x, y+0.5, name, ha="center", va="center",
+                            fontsize=5.5, color="white", fontweight="bold", zorder=6)
+                    ax.text(x, y-1.8, str(rating), ha="center", va="center",
+                            fontsize=5, color="#FFD700", zorder=6, fontweight="bold")
+
+        # Home (bleu) joue en bas, Away (rouge) joue en haut
+        _place(home_players,
+               {"GK": 6, "DEF": 22, "MID": 39, "ATT": 54},
+               "#1565c0", "#0a2a5e")
+        _place(away_players,
+               {"GK": H-6, "DEF": H-22, "MID": H-39, "ATT": H-54},
+               "#b71c1c", "#4a0000")
+
+        # Noms des équipes
+        ax.text(W/2, -4.5, f"🏠 {home_name}", ha="center", va="center",
+                fontsize=11, color="#90caf9", fontweight="bold")
+        ax.text(W/2, H+4.5, f"✈️ {away_name}", ha="center", va="center",
+                fontsize=11, color="#ef9a9a", fontweight="bold")
+
+        # Légende ligne médiane
+        ax.text(-2.5, H/2, "⬅ AWAY", ha="center", va="center",
+                fontsize=7, color="#ef9a9a", rotation=90)
+        ax.text(W+2.5, H/2, "HOME ➡", ha="center", va="center",
+                fontsize=7, color="#90caf9", rotation=90)
+
+        plt.tight_layout(pad=0.5)
+        return fig
 
     if wc_data:
         upcoming = [m for m in wc_data.get("matches", []) if m.get("status") not in ("STATUS_FULL_TIME", "STATUS_FINAL")]
@@ -719,13 +819,11 @@ with tab_wc:
             m_compo = upcoming[idx_compo]
             home_c, away_c = m_compo["home"], m_compo["away"]
 
-            # Charger les ratings
-            from lineup_notifier import load_ratings, calc_lineup_impact, calc_positional_lambda
+            from lineup_notifier import load_ratings, calc_lineup_impact, calc_positional_lambda, get_today_matches, fetch_lineup
 
             ratings_cache = load_ratings()
 
-            # Récupérer les joueurs de chaque équipe depuis la DB
-            def get_team_players(team_name: str, max_players: int = 26):
+            def get_team_players(team_name: str, max_players: int = 30):
                 return sorted(
                     [(n, i["rating"], i.get("position", "?"))
                      for n, i in ratings_cache.items() if i.get("team") == team_name],
@@ -735,34 +833,85 @@ with tab_wc:
             home_pool = get_team_players(home_c)
             away_pool = get_team_players(away_c)
 
+            # ── Auto-fetch ESPN ───────────────────────────────────────────
+            espn_status = ""
+            espn_home_default = None
+            espn_away_default = None
+
+            btn_col, status_col = st.columns([1, 4])
+            with btn_col:
+                fetch_clicked = st.button("📡 Compos ESPN", key="fetch_espn",
+                                          help="Récupère la vraie compo depuis ESPN (~1h avant le match)")
+            with status_col:
+                espn_placeholder = st.empty()
+
+            if fetch_clicked:
+                with st.spinner("Récupération ESPN..."):
+                    try:
+                        today_ms = get_today_matches()
+                        eid = None
+                        for tm in today_ms:
+                            if any(t in tm.get("home", "") for t in [home_c, home_c[:5]]) or \
+                               any(t in tm.get("away", "") for t in [away_c, away_c[:5]]):
+                                eid = tm["id"]
+                                break
+                        if eid:
+                            lineup_espn = fetch_lineup(eid)
+                            if lineup_espn:
+                                # Mapper les noms ESPN → noms DB
+                                home_names_set = {p[0].lower() for p in home_pool}
+                                away_names_set = {p[0].lower() for p in away_pool}
+                                espn_home_default = []
+                                espn_away_default = []
+                                home_names_fmt = [f"{p[0]} ({p[1]} – {p[2]})" for p in home_pool]
+                                away_names_fmt = [f"{p[0]} ({p[1]} – {p[2]})" for p in away_pool]
+                                for starters_list, fmt_list, result_list in [
+                                    (lineup_espn.get(list(lineup_espn.keys())[0], {}).get("starters", []),
+                                     home_names_fmt, espn_home_default),
+                                    (lineup_espn.get(list(lineup_espn.keys())[-1], {}).get("starters", []),
+                                     away_names_fmt, espn_away_default),
+                                ]:
+                                    for s in starters_list:
+                                        sn = s["name"].lower()
+                                        for fmt in fmt_list:
+                                            db_name = fmt.split(" (")[0].lower()
+                                            if db_name in sn or sn in db_name or \
+                                               db_name.split()[-1] in sn:
+                                                result_list.append(fmt)
+                                                break
+                                st.session_state["espn_home"] = espn_home_default or home_names_fmt[:11]
+                                st.session_state["espn_away"] = espn_away_default or away_names_fmt[:11]
+                                espn_placeholder.success(f"✅ Compos ESPN récupérées pour event {eid} ! ({len(espn_home_default)} / {len(espn_away_default)} joueurs matchés)")
+                            else:
+                                espn_placeholder.warning("⏳ Compos pas encore disponibles sur ESPN (publiées ~1h avant le coup d'envoi).")
+                        else:
+                            espn_placeholder.info("ℹ️ Match introuvable parmi les matchs ESPN du jour. Vérifie la date.")
+                    except Exception as e:
+                        espn_placeholder.error(f"Erreur ESPN : {e}")
+
+            # Defaults : ESPN si dispo, sinon top-11 DB
+            home_names_fmt = [f"{p[0]} ({p[1]} – {p[2]})" for p in home_pool]
+            away_names_fmt = [f"{p[0]} ({p[1]} – {p[2]})" for p in away_pool]
+            default_h = st.session_state.get("espn_home", home_names_fmt[:11])
+            default_a = st.session_state.get("espn_away", away_names_fmt[:11])
+
             col_h, col_a = st.columns(2)
-
             with col_h:
-                st.markdown(f"**🏠 {home_c}** — choisir 11 titulaires")
-                home_names = [f"{p[0]} ({p[1]} – {p[2]})" for p in home_pool]
-                home_sel = st.multiselect(
-                    "Titulaires", home_names, default=home_names[:11],
-                    max_selections=11, key="home_sel"
-                )
-
+                st.markdown(f"**🏠 {home_c}**")
+                home_sel = st.multiselect("Titulaires", home_names_fmt,
+                                          default=[x for x in default_h if x in home_names_fmt][:11],
+                                          max_selections=11, key="home_sel")
             with col_a:
-                st.markdown(f"**✈️ {away_c}** — choisir 11 titulaires")
-                away_names = [f"{p[0]} ({p[1]} – {p[2]})" for p in away_pool]
-                away_sel = st.multiselect(
-                    "Titulaires", away_names, default=away_names[:11],
-                    max_selections=11, key="away_sel"
-                )
+                st.markdown(f"**✈️ {away_c}**")
+                away_sel = st.multiselect("Titulaires", away_names_fmt,
+                                          default=[x for x in default_a if x in away_names_fmt][:11],
+                                          max_selections=11, key="away_sel")
 
             if st.button("⚡ Simuler le match", type="primary", key="sim_btn"):
-                # Construire les starters au format attendu
+
                 def parse_sel(sel_list):
-                    starters = []
-                    for s in sel_list:
-                        # format: "Nom Prénom (rating – POS)"
-                        name = s.split(" (")[0]
-                        pos = s.split("– ")[-1].rstrip(")")
-                        starters.append({"name": name, "position": pos})
-                    return starters
+                    return [{"name": s.split(" (")[0],
+                             "position": s.split("– ")[-1].rstrip(")")} for s in sel_list]
 
                 h_starters = parse_sel(home_sel)
                 a_starters = parse_sel(away_sel)
@@ -774,57 +923,62 @@ with tab_wc:
                     a_impact = calc_lineup_impact(away_c, a_starters, ratings_cache)
                     lh_mult, la_mult = calc_positional_lambda(h_impact, a_impact)
 
-                    # Afficher résultats ligne par ligne
+                    from lineup_notifier import recalculate_with_lineup
+                    recalc = recalculate_with_lineup(home_c, away_c, h_impact, a_impact)
+
                     st.markdown("---")
-                    st.markdown("### 📊 Résultat de la simulation")
 
-                    # Tableau comparatif des lignes
-                    cmp_rows = []
-                    for line in ["GK", "DEF", "MID", "ATT"]:
-                        hv = h_impact["avg_line"].get(line, 60)
-                        av = a_impact["avg_line"].get(line, 60)
-                        adv = "🏠" if hv > av + 1 else ("✈️" if av > hv + 1 else "=")
-                        cmp_rows.append({
-                            "Ligne": line,
-                            home_c: f"{hv:.1f}",
-                            "vs": adv,
-                            away_c: f"{av:.1f}",
-                        })
-                    st.dataframe(pd.DataFrame(cmp_rows), use_container_width=True, hide_index=True)
+                    # ── Terrain ──────────────────────────────────────────
+                    h_players_for_pitch = [{"name": p["name"], "position": p["position"],
+                                            "rating": next((x[1] for x in home_pool if x[0] == p["name"]), 60)}
+                                           for p in h_starters]
+                    a_players_for_pitch = [{"name": p["name"], "position": p["position"],
+                                            "rating": next((x[1] for x in away_pool if x[0] == p["name"]), 60)}
+                                           for p in a_starters]
 
-                    # Multiplicateurs
-                    col_m1, col_m2, col_m3 = st.columns(3)
-                    with col_m1:
-                        color_h = "normal" if lh_mult >= 1.0 else "inverse"
-                        st.metric(f"λ mult {home_c}", f"×{lh_mult:.3f}",
-                                  delta=f"{(lh_mult-1)*100:+.1f}%", delta_color=color_h)
-                    with col_m2:
-                        color_a = "normal" if la_mult >= 1.0 else "inverse"
-                        st.metric(f"λ mult {away_c}", f"×{la_mult:.3f}",
-                                  delta=f"{(la_mult-1)*100:+.1f}%", delta_color=color_a)
-                    with col_m3:
-                        # Recalculer les prédictions
-                        from lineup_notifier import recalculate_with_lineup
-                        recalc = recalculate_with_lineup(home_c, away_c, h_impact, a_impact)
+                    fig = draw_pitch(h_players_for_pitch, a_players_for_pitch, home_c, away_c)
+                    col_pitch, col_stats = st.columns([1, 1])
+                    with col_pitch:
+                        st.pyplot(fig, use_container_width=True)
+                        plt.close(fig)
+
+                    with col_stats:
+                        st.markdown("### 📊 Simulation")
+
+                        # Tableau lignes
+                        cmp_rows = []
+                        for line in ["GK", "DEF", "MID", "ATT"]:
+                            hv = h_impact["avg_line"].get(line, 60)
+                            av = a_impact["avg_line"].get(line, 60)
+                            adv = "🏠" if hv > av + 1 else ("✈️" if av > hv + 1 else "＝")
+                            cmp_rows.append({"Ligne": line, home_c: f"{hv:.0f}", "": adv, away_c: f"{av:.0f}"})
+                        st.dataframe(pd.DataFrame(cmp_rows), hide_index=True, use_container_width=True)
+
+                        # Multiplicateurs λ
+                        mc1, mc2 = st.columns(2)
+                        with mc1:
+                            st.metric(f"λ {home_c}", f"×{lh_mult:.3f}",
+                                      delta=f"{(lh_mult-1)*100:+.1f}%",
+                                      delta_color="normal" if lh_mult >= 1 else "inverse")
+                        with mc2:
+                            st.metric(f"λ {away_c}", f"×{la_mult:.3f}",
+                                      delta=f"{(la_mult-1)*100:+.1f}%",
+                                      delta_color="normal" if la_mult >= 1 else "inverse")
+
                         if recalc:
                             ph, px, pa = recalc["p_home"], recalc["p_draw"], recalc["p_away"]
-                            winner = home_c if ph > pa and ph > px else (away_c if pa > ph and pa > px else "Nul")
-                            st.metric("Favori", winner, help=f"1:{ph:.0%} X:{px:.0%} 2:{pa:.0%}")
+                            st.markdown(f"**Résultat :** {home_c} **{ph:.0%}** | Nul **{px:.0%}** | {away_c} **{pa:.0%}**")
+                            medals = ["🥇", "🥈", "🥉", "4️⃣"]
+                            for i, (sc, pr) in enumerate(recalc.get("top_scores", [])[:4]):
+                                st.markdown(f"{medals[i]} **{sc}** — {pr:.0%}")
 
-                    if recalc:
-                        st.markdown(f"**Proba finale :** {home_c} **{ph:.0%}** | Nul **{px:.0%}** | {away_c} **{pa:.0%}**")
-                        medals = ["🥇", "🥈", "🥉", "4️⃣"]
-                        scores_str = "  ".join(
-                            f"{medals[i]} **{sc}** ({pr:.0%})"
-                            for i, (sc, pr) in enumerate(recalc.get("top_scores", [])[:4])
-                        )
-                        st.markdown(f"**Scores les + probables :** {scores_str}")
-
-                    # Absents notables
-                    for team, impact in [(home_c, h_impact), (away_c, a_impact)]:
-                        if impact.get("absent_notable"):
-                            absents = [f"{a['name'].split()[-1]} ({a['rating']})" for a in impact["absent_notable"][:5]]
-                            st.warning(f"⚠️ **{team}** — notables absents : {', '.join(absents)}")
+                        # Absents notables
+                        for team, impact in [(home_c, h_impact), (away_c, a_impact)]:
+                            if impact.get("absent_notable"):
+                                absents = [f"{a['name'].split()[-1]} ({a['rating']})"
+                                           for a in impact["absent_notable"][:4]]
+                                st.warning(f"⚠️ **{team}** absents : {', '.join(absents)}")
         else:
             st.info("Aucun match à venir.")
+
 
