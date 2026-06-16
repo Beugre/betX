@@ -109,121 +109,107 @@ def fetch_lineup(event_id: str) -> dict | None:
         return None
 
 
+# Mapping position → ligne tactique
+POSITION_LINE = {
+    "GK": "GK",
+    "CB": "DEF", "LB": "DEF", "RB": "DEF", "LWB": "DEF", "RWB": "DEF", "DF": "DEF",
+    "CDM": "MID", "DM": "MID", "CM": "MID", "CAM": "MID", "LM": "MID", "RM": "MID", "AM": "MID", "MF": "MID",
+    "ST": "ATT", "CF": "ATT", "SS": "ATT", "LW": "ATT", "RW": "ATT", "LF": "ATT", "RF": "ATT",
+}
+
+
+def _resolve_starter(starter: dict, team_ratings: dict) -> dict:
+    """Résout un titulaire ESPN vers son rating EA FC 26."""
+    DEFAULT_RATING = 60
+    sname = starter["name"]
+    pos_raw = starter.get("position", {})
+    espn_pos = pos_raw.get("abbreviation", "?") if isinstance(pos_raw, dict) else str(pos_raw)
+    for db_name, info in team_ratings.items():
+        if db_name.lower() in sname.lower() or sname.lower() in db_name.lower():
+            return {"name": db_name, "rating": info["rating"],
+                    "position": info.get("position", espn_pos), "found": True}
+    return {"name": sname, "rating": DEFAULT_RATING, "position": espn_pos, "found": False}
+
+
+def calc_positional_lambda(home_impact: dict, away_impact: dict) -> tuple:
+    """
+    Multiplie les λ base en croisant les lignes tactiques :
+    ATK_home vs DEF_away → λ_home | ATK_away vs DEF_home → λ_away
+    MID dominance → ±5% | GK fort → réduit légèrement λ adverse.
+    """
+    REF = 80.0
+    h = home_impact["avg_line"]
+    a = away_impact["avg_line"]
+
+    h_atk_adv = (h.get("ATT", REF) / REF) / (a.get("DEF", REF) / REF)
+    a_atk_adv = (a.get("ATT", REF) / REF) / (h.get("DEF", REF) / REF)
+
+    mid_total = h.get("MID", REF) + a.get("MID", REF)
+    h_mid_bonus = ((h.get("MID", REF) / mid_total) - 0.5) * 0.10 if mid_total else 0
+
+    h_gk_malus = (h.get("GK", REF) - REF) / REF * 0.05
+    a_gk_malus = (a.get("GK", REF) - REF) / REF * 0.05
+
+    lh = max(0.70, min(1.40, h_atk_adv * 0.70 + 0.30 + h_mid_bonus - a_gk_malus))
+    la = max(0.70, min(1.40, a_atk_adv * 0.70 + 0.30 - h_mid_bonus - h_gk_malus))
+
+    return round(lh, 3), round(la, 3)
+
+
 def calc_lineup_impact(team_name: str, starters: list[dict], ratings: dict) -> dict:
     """
-    Calcule l'impact d'une composition sur les prédictions.
-
-    Logique :
-    - Identifie les joueurs clés présents / absents
-    - Calcule un "squad strength index" (0-100)
-    - Dérive un facteur λ_multiplier
-
-    Retourne:
-        {
-          "key_players": [{"name": ..., "rating": ..., "present": True}],
-          "squad_strength": 82.5,
-          "lambda_multiplier": 1.05,
-          "summary": "Mané (93) ✓, Mbappé (98) ✓ ..."
-        }
+    Calcule l'impact d'une composition ligne par ligne (GK/DEF/MID/ATT).
+    Retourne avg_line pour permettre le croisement ATK vs DEF inter-équipes.
     """
-    starter_names = {p["name"] for p in starters}
-
-    # Joueurs connus de cette équipe dans notre DB
-    team_ratings = {
-        name: info for name, info in ratings.items()
-        if info.get("team") == team_name
-    }
-
-    # Rating par défaut pour les joueurs non référencés dans EA FC 26
+    team_ratings = {n: i for n, i in ratings.items() if i.get("team") == team_name}
     DEFAULT_RATING = 60
 
-    key_players = []
+    resolved = [_resolve_starter(s, team_ratings) for s in starters]
 
-    # 1) Tous les starters ESPN — connus ou non
-    for starter in starters:
-        sname = starter["name"]
-        # Cherche un match dans notre DB (approximatif, gère accents)
-        matched = None
-        for db_name, info in team_ratings.items():
-            if db_name.lower() in sname.lower() or sname.lower() in db_name.lower():
-                matched = (db_name, info)
-                break
-        if matched:
-            key_players.append({
-                "name": matched[0],
-                "rating": matched[1]["rating"],
-                "position": matched[1].get("position", "?"),
-                "present": True,
-            })
-        else:
-            key_players.append({
-                "name": sname,
-                "rating": DEFAULT_RATING,
-                "position": "?",
-                "present": True,
-            })
+    # Grouper par ligne tactique
+    lines_r: dict[str, list] = {"GK": [], "DEF": [], "MID": [], "ATT": []}
+    for p in resolved:
+        pos = p["position"].upper()
+        line = POSITION_LINE.get(pos)
+        if line is None:
+            if any(x in pos for x in ["KEEPER", "GOALKEEPER"]): line = "GK"
+            elif any(x in pos for x in ["BACK", "DEFEND"]): line = "DEF"
+            elif any(x in pos for x in ["FORWARD", "STRIKER", "WING"]): line = "ATT"
+            else: line = "MID"
+        lines_r[line].append(p["rating"])
 
-    # 2) Joueurs connus de la DB NON présents dans la compo (absents notables)
-    starter_lower = {s["name"].lower() for s in starters}
-    for db_name, info in sorted(team_ratings.items(), key=lambda x: -x[1]["rating"]):
-        already = any(
-            db_name.lower() in s or s in db_name.lower()
-            for s in starter_lower
-        )
-        if not already and info["rating"] >= 82:
-            key_players.append({
-                "name": db_name,
-                "rating": info["rating"],
-                "position": info.get("position", "?"),
-                "present": False,
-            })
+    avg_line = {ln: round(sum(r)/len(r), 1) if r else DEFAULT_RATING for ln, r in lines_r.items()}
 
-    # Squad strength = moyenne des 11 titulaires
-    present_ratings = [p["rating"] for p in key_players if p["present"]]
+    # Absents notables (rating >= 80 non alignés)
+    starters_lower = {s["name"].lower() for s in starters}
+    absent_notable = [
+        {"name": n, "rating": i["rating"], "position": i.get("position", "?")}
+        for n, i in sorted(team_ratings.items(), key=lambda x: -x[1]["rating"])
+        if i["rating"] >= 80 and not any(n.lower() in sl or sl in n.lower() for sl in starters_lower)
+    ]
 
-    if present_ratings:
-        avg_present = sum(present_ratings) / len(present_ratings)
-    else:
-        avg_present = DEFAULT_RATING
-
-    # Baseline = moyenne DB équipe (ou défaut si équipe inconnue)
-    if team_ratings:
-        avg_all = sum(i["rating"] for i in team_ratings.values()) / len(team_ratings)
-    else:
-        avg_all = DEFAULT_RATING
-
-    if key_players:
-        # Facteur λ basé sur l'écart compo réelle vs baseline DB
-        lambda_mult = 1.0 + (avg_present - avg_all) / 500.0
-        lambda_mult = max(0.85, min(1.20, lambda_mult))
-
-        squad_strength = round(avg_present, 1)
-    else:
-        lambda_mult = 1.0
-        squad_strength = DEFAULT_RATING
-
-    # Résumé : joueurs connus présents (rating >= 82) + absents notables
-    known_present = [p for p in key_players if p["present"] and p["rating"] >= 82]
-    notable_absent = [p for p in key_players if not p["present"] and p["rating"] >= 82]
-    parts = []
-    for p in top5:
-        flag = "✓" if p["present"] else "✗"
-        parts.append(f"{p['name'].split()[-1]} ({p['rating']}) {flag}")
+    # Résumé
+    known_present = [p for p in resolved if p["found"] and p["rating"] >= 80]
+    parts = [f"{p['name'].split()[-1]} ({p['rating']})" for p in known_present[:4]]
+    if absent_notable:
+        parts += [f"⚠{a['name'].split()[-1]} ({a['rating']})" for a in absent_notable[:2]]
     summary = ", ".join(parts) if parts else "—"
 
     return {
-        "squad_strength": squad_strength,
-        "lambda_multiplier": round(lambda_mult, 3),
-        "key_players": key_players,
+        "avg_line": avg_line,
+        "resolved": resolved,
+        "absent_notable": absent_notable,
         "summary": summary,
+        "lambda_multiplier": 1.0,  # fallback — remplacé par calc_positional_lambda
     }
 
 
-def recalculate_with_lineup(home: str, away: str, home_mult: float, away_mult: float) -> dict | None:
-    """Recalcule les probabilités en appliquant les multiplicateurs de lineup."""
+def recalculate_with_lineup(home: str, away: str,
+                             home_impact: dict, away_impact: dict) -> dict | None:
+    """Recalcule les probabilités en utilisant le croisement positionnel ATK/DEF/MID."""
     try:
         from betx.data.national_team_collector import NationalTeamCollector
-        from betx.data.national_team_features import build_features, NationalMatchPredictor, _confidence_levels
+        from betx.data.national_team_features import build_features, NationalMatchPredictor
 
         c = NationalTeamCollector()
         pred = NationalMatchPredictor()
@@ -234,11 +220,17 @@ def recalculate_with_lineup(home: str, away: str, home_mult: float, away_mult: f
             return None
 
         feats = build_features(hp, ap)
-
-        # Patcher les λ avant la prédiction analytique
         lh, la = pred.compute_lambdas(feats)
-        lh_adj = round(lh * home_mult, 3)
-        la_adj = round(la * away_mult, 3)
+
+        # Croisement positionnel ATK vs DEF si les deux impacts sont disponibles
+        if home_impact.get("avg_line") and away_impact.get("avg_line"):
+            lh_mult, la_mult = calc_positional_lambda(home_impact, away_impact)
+        else:
+            lh_mult = home_impact.get("lambda_multiplier", 1.0)
+            la_mult = away_impact.get("lambda_multiplier", 1.0)
+
+        lh_adj = round(lh * lh_mult, 3)
+        la_adj = round(la * la_mult, 3)
 
         probs = pred.predict_analytical(lh_adj, la_adj, home_team=home, away_team=away)
 
@@ -248,6 +240,8 @@ def recalculate_with_lineup(home: str, away: str, home_mult: float, away_mult: f
             "p_away": probs.p_away_win,
             "lambda_home": lh_adj,
             "lambda_away": la_adj,
+            "lh_mult": lh_mult,
+            "la_mult": la_mult,
             "top_score": max(probs.exact_scores.items(), key=lambda x: x[1]),
             "top_scores": sorted(probs.exact_scores.items(), key=lambda x: -x[1])[:4],
         }
@@ -261,7 +255,6 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
     """Formate le message Telegram pour une composition."""
     home, away = match["home"], match["away"]
 
-    # Heure fr
     date_str = match.get("date", "")
     try:
         h_utc = int(date_str[11:13])
@@ -270,12 +263,8 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
     except Exception:
         time_str = "?"
 
-    lines = [
-        f"⚽ <b>COMPOS — {home} vs {away}</b> ({time_str} heure fr)",
-        "",
-    ]
+    lines = [f"⚽ <b>COMPOS — {home} vs {away}</b> ({time_str} heure fr)", ""]
 
-    # Compos
     for team_name, data in lineup.items():
         starters = data.get("starters", [])
         if starters:
@@ -284,22 +273,40 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
 
     lines.append("")
 
-    # Impact joueurs clés
+    # Résumé positonnel
+    for team_name, impact in [(home, home_impact), (away, away_impact)]:
+        al = impact.get("avg_line", {})
+        if al:
+            parts = []
+            if al.get("DEF"): parts.append(f"DEF {al['DEF']:.0f}")
+            if al.get("MID"): parts.append(f"MID {al['MID']:.0f}")
+            if al.get("ATT"): parts.append(f"ATT {al['ATT']:.0f}")
+            if parts:
+                lines.append(f"🎮 <b>{team_name}</b>: {' | '.join(parts)}")
+
+    if recalc:
+        lhm = recalc.get("lh_mult", 1.0)
+        lam = recalc.get("la_mult", 1.0)
+        lines.append(f"   λ mult: {home} ×{lhm:.2f} | {away} ×{lam:.2f}")
+
+    lines.append("")
+
     for team_name, impact in [(home, home_impact), (away, away_impact)]:
         if impact.get("summary") and impact["summary"] != "—":
             lines.append(f"🔑 <b>{team_name}</b>: {impact['summary']}")
 
     lines.append("")
 
-    # Prédictions
     if recalc:
         ph, px, pa = recalc["p_home"], recalc["p_draw"], recalc["p_away"]
         top_score, top_prob = recalc["top_score"]
-            lines.append(f"📊 <b>Prédiction (avec compos)</b>")
-            lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
-            medals = ["🥇", "🥈", "🥉", "4️⃣"]
-            for i, (sc, pr) in enumerate(recalc.get("top_scores", [(top_score, top_prob)])[:4]):
-                lines.append(f"   {medals[i]} {sc} ({pr:.0%})")
+        lines.append(f"📊 <b>Prédiction (avec compos)</b>")
+        lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
+        medals = ["🥇", "🥈", "🥉", "4️⃣"]
+        for i, (sc, pr) in enumerate(recalc.get("top_scores", [(top_score, top_prob)])[:4]):
+            lines.append(f"   {medals[i]} {sc} ({pr:.0%})")
+        if original_pred:
+            ph_old = original_pred.get("p_home", ph)
             pa_old = original_pred.get("p_away", pa)
             dh = ph - ph_old
             da = pa - pa_old
@@ -310,11 +317,16 @@ def format_telegram(match: dict, lineup: dict, home_impact: dict, away_impact: d
         px = original_pred.get("p_draw", 0)
         pa = original_pred.get("p_away", 0)
         top = original_pred.get("top_scores", [])
-            lines.append(f"📊 <b>Prédiction (modèle de base)</b>")
-            lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
-            medals = ["🥇", "🥈", "🥉", "4️⃣"]
-            for i, s in enumerate(top[:4]):
-                lines.append(f"   {medals[i]} {s['score']} ({s['prob']:.0%})")
+        lines.append(f"📊 <b>Prédiction (modèle de base)</b>")
+        lines.append(f"   {home}: {ph:.0%} | Nul: {px:.0%} | {away}: {pa:.0%}")
+        medals = ["🥇", "🥈", "🥉", "4️⃣"]
+        for i, s in enumerate(top[:4]):
+            lines.append(f"   {medals[i]} {s['score']} ({s['prob']:.0%})")
+
+    return "\n".join(lines)
+
+
+def send_telegram(message: str) -> bool:
     """Envoie un message Telegram."""
     token = os.getenv("TELEGRAM_BOT_TOKEN", "")
     channel = os.getenv("TELEGRAM_CHANNEL_ID", "")
@@ -338,7 +350,6 @@ def run(force: bool = False, specific_event: str | None = None):
     ratings = load_ratings()
     print(f"Ratings chargés: {len(ratings)} joueurs")
 
-    # Charger lock pour éviter les doublons
     sent: dict = {}
     if LINEUP_LOCK_FILE.exists():
         try:
@@ -346,7 +357,6 @@ def run(force: bool = False, specific_event: str | None = None):
         except Exception:
             pass
 
-    # Charger prédictions existantes
     existing_preds: dict = {}
     if WC_PREDS_FILE.exists():
         try:
@@ -357,10 +367,8 @@ def run(force: bool = False, specific_event: str | None = None):
         except Exception:
             pass
 
-    # Récupérer les matchs
     if specific_event:
         matches_to_check = [{"id": specific_event, "home": "?", "away": "?", "date": "", "status": ""}]
-        # Résoudre les noms depuis ESPN
         try:
             r = httpx.get(ESPN_SUMMARY, params={"event": specific_event}, headers=HEADERS, timeout=10)
             header = r.json().get("header", {})
@@ -385,11 +393,9 @@ def run(force: bool = False, specific_event: str | None = None):
         home, away = match["home"], match["away"]
         status = match.get("status", "")
 
-        # Skip les matchs déjà joués sauf si --force
         if status in ("STATUS_FULL_TIME", "STATUS_FINAL") and not force:
             continue
 
-        # Skip si compo déjà envoyée aujourd'hui
         lock_key = f"{eid}_{date.today().isoformat()}"
         if lock_key in sent and not force:
             print(f"  {home} vs {away}: compo déjà envoyée aujourd'hui")
@@ -402,7 +408,6 @@ def run(force: bool = False, specific_event: str | None = None):
             print(f"    → Pas encore disponible")
             continue
 
-        # Vérifier qu'on a des starters
         has_starters = any(len(data.get("starters", [])) > 0 for data in lineup.values())
         if not has_starters:
             print(f"    → Starters pas encore publiés")
@@ -410,20 +415,18 @@ def run(force: bool = False, specific_event: str | None = None):
 
         print(f"    → Compo disponible!")
         for team_name, data in lineup.items():
-            n_s = len(data.get("starters", []))
-            print(f"       {team_name}: {n_s} titulaires")
+            print(f"       {team_name}: {len(data.get('starters', []))} titulaires")
 
-        # Calculer l'impact
-        home_impact = calc_lineup_impact(home, lineup.get(home, {}), ratings) if home in lineup else {"squad_strength": 80, "lambda_multiplier": 1.0, "key_players": [], "summary": "—"}
-        away_impact = calc_lineup_impact(away, lineup.get(away, {}), ratings) if away in lineup else {"squad_strength": 80, "lambda_multiplier": 1.0, "key_players": [], "summary": "—"}
+        home_starters = lineup.get(home, {}).get("starters", [])
+        away_starters = lineup.get(away, {}).get("starters", [])
 
-        # Recalcul prédictions avec multiplicateurs
-        recalc = recalculate_with_lineup(home, away, home_impact["lambda_multiplier"], away_impact["lambda_multiplier"])
+        empty_impact = {"avg_line": {}, "summary": "—", "lambda_multiplier": 1.0, "resolved": [], "absent_notable": []}
+        home_impact = calc_lineup_impact(home, home_starters, ratings) if home_starters else empty_impact
+        away_impact = calc_lineup_impact(away, away_starters, ratings) if away_starters else empty_impact
 
-        # Prédiction originale
+        recalc = recalculate_with_lineup(home, away, home_impact, away_impact)
         original_pred = existing_preds.get(f"{home}|{away}")
 
-        # Formatter et envoyer
         msg = format_telegram(match, lineup, home_impact, away_impact, recalc, original_pred)
         print(f"    Message:\n{msg}\n")
 
@@ -435,7 +438,6 @@ def run(force: bool = False, specific_event: str | None = None):
         else:
             print(f"    ❌ Telegram échoué")
 
-    # Sauvegarder le lock
     LINEUP_LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
     LINEUP_LOCK_FILE.write_text(json.dumps(sent, indent=2))
     print(f"\nTotal notifications envoyées: {notifications_sent}")
@@ -445,3 +447,4 @@ if __name__ == "__main__":
     force = "--force" in sys.argv
     specific = next((sys.argv[i + 1] for i, a in enumerate(sys.argv) if a == "--match" and i + 1 < len(sys.argv)), None)
     run(force=force, specific_event=specific)
+
