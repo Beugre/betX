@@ -291,10 +291,43 @@ def predict_match(
 
     predictor = NationalMatchPredictor()
 
+    # ── Facteur domicile : Mexico, USA, Canada jouent chez eux ──────────
+    # Villes confirmées depuis ESPN : Mexico City/Guadalajara (MEX),
+    # Toronto/Vancouver (CAN), LA/Seattle (USA)
+    HOST_NATIONS = {"Mexico", "United States", "Canada"}
+    is_pseudo_home = home_name in HOST_NATIONS  # l'équipe "home" joue dans son pays
+    neutral = not is_pseudo_home  # True = terrain vraiment neutre, False = avantage domicile
+
+    # ── Facteur climatique : chaleur favorise les équipes tropicales ────
+    # Juin-juillet aux USA : 30-38°C. Les Sud-Américains et Africains y
+    # sont acclimatés, les Européens du Nord moins.
+    # Boost léger (+5% λ_atk) pour équipes tropical vs équipes nordiques.
+    TROPICAL_TEAMS = {
+        "Brazil","Argentina","Colombia","Ecuador","Paraguay","Uruguay",
+        "Mexico","Panama","Costa Rica","El Salvador","Honduras","Haiti","Curaçao",
+        "Morocco","Senegal","Egypt","Algeria","Tunisia","Ghana","Ivory Coast",
+        "South Africa","Cape Verde","Cameroon","DR Congo","Congo DR",
+        "Saudi Arabia","Iran","Iraq","Jordan","Qatar","United Arab Emirates",
+        "Australia","Japan","South Korea",
+    }
+    NORDIC_TEAMS = {
+        "Norway","Sweden","Denmark","Finland","Iceland","Scotland","England",
+        "Germany","Netherlands","Belgium","France","Portugal","Spain",
+        "Switzerland","Austria","Croatia","Czech Republic","Czechia","Poland",
+        "Serbia","Bosnia-Herzegovina","Bosnia and Herzegovina",
+    }
+    home_tropical = home_name in TROPICAL_TEAMS
+    away_tropical = away_name in TROPICAL_TEAMS
+    home_nordic = home_name in NORDIC_TEAMS
+    away_nordic = away_name in NORDIC_TEAMS
+    # Facteur uniquement si un tropical affronte un nordique (pas entre pairs)
+    climate_boost_home = 1.04 if (home_tropical and away_nordic) else (0.96 if (home_nordic and away_tropical) else 1.0)
+    climate_boost_away = 1.04 if (away_tropical and home_nordic) else (0.96 if (away_nordic and home_tropical) else 1.0)
+
     # Construire les features selon disponibilité
     if home_api and away_api:
         from betx.data.national_team_features import build_features
-        feats = build_features(home_api, away_api, neutral=True, match_importance=1.8)
+        feats = build_features(home_api, away_api, neutral=neutral, match_importance=1.8)
         source = "API"
     else:
         # Fallback FIFA ranking
@@ -340,6 +373,21 @@ def predict_match(
         source = "FIFA" if not home_api and not away_api else "MIXED"
 
     probs = predictor.predict(feats)
+
+    # ── Appliquer facteur climatique post-prédiction ──────────────────────
+    # Rééquilibrer les probas si tropical vs nordique (boost ±4% λ)
+    if climate_boost_home != 1.0 or climate_boost_away != 1.0:
+        import math
+        # Recalculer via ajustement direct des probas (approx Bradley-Terry)
+        # boost_home > 1 → home plus fort → P(home) monte, P(away) baisse
+        ratio = climate_boost_home / climate_boost_away
+        adj_home = probs.p_home_win * ratio
+        adj_away = probs.p_away_win / ratio
+        adj_draw = probs.p_draw
+        total = adj_home + adj_draw + adj_away
+        probs.p_home_win = round(adj_home / total, 4)
+        probs.p_draw = round(adj_draw / total, 4)
+        probs.p_away_win = round(adj_away / total, 4)
     top3 = sorted(probs.exact_scores.items(), key=lambda x: x[1], reverse=True)[:3]
 
     # P(Clean Sheet) = P(équipe adverse marque 0 buts)
