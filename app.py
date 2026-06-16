@@ -941,7 +941,7 @@ with tab_wc:
                     col_pitch, col_stats = st.columns([1, 1])
                     with col_pitch:
                         st.pyplot(fig, use_container_width=True)
-                        plt.close(fig)
+                        import matplotlib.pyplot as _plt; _plt.close(fig)
 
                     with col_stats:
                         st.markdown("### 📊 Simulation")
